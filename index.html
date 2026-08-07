@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.2.12</title>
+<title>KoW Companion v4.2.13</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -127,10 +127,10 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </style>
 </head>
 <body>
-<div id="testBanner" style="position:sticky;top:0;z-index:9999;text-align:center;padding:7px;background:#8b0000;color:#fff;font-weight:900;letter-spacing:.12em">TEST VERSION — v4.2.12 — NOT LIVE</div><header class="topbar">
+<div id="testBanner" style="position:sticky;top:0;z-index:9999;text-align:center;padding:7px;background:#8b0000;color:#fff;font-weight:900;letter-spacing:.12em">TEST VERSION — v4.2.13 — NOT LIVE</div><header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
-    <p>Officer Companion v4.2.12</p>
+    <p>Officer Companion v4.2.13</p>
   </div>
 </header>
 
@@ -361,7 +361,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <button id="resetAppearance" class="primary">Reset Appearance & Backgrounds</button>
       <h3>App Updates</h3>
       <div class="notice">
-        <div><b>Installed version:</b> <span id="installedVersion">v4.2.12</span></div>
+        <div><b>Installed version:</b> <span id="installedVersion">v4.2.13</span></div>
         <div id="updateStatus">Tap Check for Updates to compare with the latest GitHub Pages version.</div>
       </div>
       <div class="two">
@@ -530,7 +530,7 @@ function setPortraitWithFallback(img,placeholder,candidates,index=0){
   if(placeholder)placeholder.style.display='none';
  };
  img.onerror=()=>setPortraitWithFallback(img,placeholder,candidates,index+1);
- img.src=candidates[index]+'?v=4212';
+ img.src=candidates[index]+'?v=4213';
 }
 function updateOfficerExperience(){
  const o=currentOfficer();if(!o)return;
@@ -551,13 +551,13 @@ function updateOfficerExperience(){
    const next=Number(current)+1;
    if(next<candidates.length){
     dash.setAttribute('data-portrait-index',String(next));
-    dash.src=candidates[next]+'?v=4212';
+    dash.src=candidates[next]+'?v=4213';
    }else{
     dash.style.display='none';
    }
   };
   dash.setAttribute('data-portrait-index','0');
-  dash.src=candidates[0]+'?v=4212';
+  dash.src=candidates[0]+'?v=4213';
  }
 }
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -742,7 +742,7 @@ function populateCompareOfficers(){
  if(prev && [...s.options].some(o=>o.value===prev))s.value=prev;
 }
 function buildUpgradeSummary(){
- const box=$('upgradeSummary'),opt=$('optimiserSummary'),o=currentOfficer();if(!o)return;
+ const box=$('upgradeSummary'),opt=$('optimiserSummary'),hint=$('compareHint'),o=currentOfficer();if(!o)return;
 
  const badgeUsed=numericText('badgesUsed');
  const starsUsed=numericText('starsUsed');
@@ -766,22 +766,38 @@ function buildUpgradeSummary(){
   if(compareIndex!==''){
     const c=officers[Number(compareIndex)];
     if(c){
+      if(hint)hint.innerHTML=`Comparing <b>${esc(o.name)}</b> with <b>${esc(c.name)}</b>.`;
       const primaryCost=Number(o.orv)||0;
       const compareCost=Number(c.orv)||0;
+
+      let recommendation='ORV comparison is not available for one of these Officers.';
+      if(primaryCost && compareCost){
+        if(primaryCost < compareCost){
+          recommendation=`Use shared Universal Legendary Badges / Selection Chests on <b>${esc(c.name)}</b> first, and favour ORV on <b>${esc(o.name)}</b>. This protects the more expensive Officer from ORV spending.`;
+        }else if(primaryCost > compareCost){
+          recommendation=`Use shared Universal Legendary Badges / Selection Chests on <b>${esc(o.name)}</b> first, and favour ORV on <b>${esc(c.name)}</b>. This protects the more expensive Officer from ORV spending.`;
+        }else{
+          recommendation=`Both Officers have the same ORV cost per badge, so shared badges can be allocated according to your upgrade priority.`;
+        }
+      }
+
       comparison=`<hr style="border:0;border-top:1px solid rgba(255,255,255,.1);margin:10px 0">
-      <b>Comparison: ${esc(c.name)}</b><br>
+      <b>Comparison: ${esc(o.name)} vs ${esc(c.name)}</b><br>
       ${esc(o.name)} ORV per Badge: <b>${primaryCost||'N/A'}</b><br>
       ${esc(c.name)} ORV per Badge: <b>${compareCost||'N/A'}</b><br>
       ${
         primaryCost && compareCost
           ? (primaryCost<compareCost
-              ? `<b>${esc(o.name)}</b> is more ORV-efficient by ${(compareCost-primaryCost).toLocaleString()} ORV per badge.`
+              ? `<b>${esc(o.name)}</b> is cheaper by ${(compareCost-primaryCost).toLocaleString()} ORV per badge.`
               : primaryCost>compareCost
-                ? `<b>${esc(c.name)}</b> is more ORV-efficient by ${(primaryCost-compareCost).toLocaleString()} ORV per badge.`
+                ? `<b>${esc(c.name)}</b> is cheaper by ${(primaryCost-compareCost).toLocaleString()} ORV per badge.`
                 : `Both Officers have the same ORV cost per badge.`)
-          : 'ORV comparison is not available for one of these Officers.'
-      }`;
+          : ''
+      }
+      <div class="notice" style="margin-top:10px"><b>Suggested resource strategy:</b><br>${recommendation}</div>`;
     }
+  }else{
+    if(hint)hint.textContent='Choose another Officer to compare badge efficiency.';
   }
 
   opt.innerHTML=`<b>${esc(o.name)}</b><br>
@@ -854,7 +870,7 @@ async function init(){
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.2.12';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.2.13';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
@@ -886,7 +902,7 @@ async function init(){
 
  loadProgress();
 
- // v4.2.12 TEST feature wiring
+ // v4.2.13 TEST feature wiring
  populateCompareOfficers();
  const compareSelect=$('compareOfficerSelect');
  if(compareSelect){

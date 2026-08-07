@@ -1,10 +1,10 @@
 # Changelog
 
-## v4.2.12 TEST — Control Wiring Fix
-- Fixed Compare with Officer dropdown population.
-- Fixed comparison dropdown change handling.
-- Fixed Export App Backup button event wiring.
-- Fixed Restore App Backup file selector event wiring.
-- Added visible backup/restore status messages.
-- Refreshes comparison options when the primary Officer or filters change.
+## v4.2.13 TEST — Resource Optimiser Display
+- Comparison status now updates when a second Officer is selected.
+- Comparison now clearly shows both Officers being compared.
+- Added a suggested resource strategy:
+  - favour Officer Readiness Vouchers (ORV) on the cheaper Officer;
+  - favour Universal Legendary Badges / Selection Chests on the more expensive Officer.
+- Keeps comparison preview-only; no resources are automatically spent.
 - No Officer images included.
