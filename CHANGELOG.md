@@ -1,8 +1,12 @@
 # Changelog
 
-## v4.2.4 — Restore Original Officer Portraits
-- Restored the complete earlier Officer portrait library exactly as previously prepared.
-- Removed the later screenshot-derived/cropped portrait replacements.
-- No portrait artwork has been re-cropped or redesigned in this build.
-- Retains the v4.2.3 Season + Officer Type/Role filtering fixes.
-- Cache bumped to v4.2.4 for the TEST repository.
+## v4.2.5 TEST — Officer Portrait Path Fix
+- Fixed Officer portrait loading.
+- The app now loads portraits from the existing `officer-portraits/` folder.
+- Existing portrait filenames remain unchanged, e.g.:
+  - `officer-portraits/officer-s7-liora.jpg`
+  - `officer-portraits/officer-s7-roisin.jpg`
+  - `officer-portraits/officer-katherine.jpg`
+- No Officer image files are included in this package.
+- Season and Officer Type / Role filters remain unchanged.
+- Cache bumped to v4.2.5.
