@@ -1,4 +1,4 @@
-# KoW Companion v4.2.0 — Officer Experience
+# KoW Companion v4.2.0 — Officer Experience.
 
 v4.2 focuses on finding and identifying Officers quickly as the database grows.
 
