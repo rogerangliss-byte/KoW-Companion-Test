@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.2.11</title>
+<title>KoW Companion v4.2.12</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -127,10 +127,10 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </style>
 </head>
 <body>
-<div id="testBanner" style="position:sticky;top:0;z-index:9999;text-align:center;padding:7px;background:#8b0000;color:#fff;font-weight:900;letter-spacing:.12em">TEST VERSION — v4.2.11 — NOT LIVE</div><header class="topbar">
+<div id="testBanner" style="position:sticky;top:0;z-index:9999;text-align:center;padding:7px;background:#8b0000;color:#fff;font-weight:900;letter-spacing:.12em">TEST VERSION — v4.2.12 — NOT LIVE</div><header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
-    <p>Officer Companion v4.2.11</p>
+    <p>Officer Companion v4.2.12</p>
   </div>
 </header>
 
@@ -361,7 +361,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <button id="resetAppearance" class="primary">Reset Appearance & Backgrounds</button>
       <h3>App Updates</h3>
       <div class="notice">
-        <div><b>Installed version:</b> <span id="installedVersion">v4.2.11</span></div>
+        <div><b>Installed version:</b> <span id="installedVersion">v4.2.12</span></div>
         <div id="updateStatus">Tap Check for Updates to compare with the latest GitHub Pages version.</div>
       </div>
       <div class="two">
@@ -530,7 +530,7 @@ function setPortraitWithFallback(img,placeholder,candidates,index=0){
   if(placeholder)placeholder.style.display='none';
  };
  img.onerror=()=>setPortraitWithFallback(img,placeholder,candidates,index+1);
- img.src=candidates[index]+'?v=4211';
+ img.src=candidates[index]+'?v=4212';
 }
 function updateOfficerExperience(){
  const o=currentOfficer();if(!o)return;
@@ -551,13 +551,13 @@ function updateOfficerExperience(){
    const next=Number(current)+1;
    if(next<candidates.length){
     dash.setAttribute('data-portrait-index',String(next));
-    dash.src=candidates[next]+'?v=4211';
+    dash.src=candidates[next]+'?v=4212';
    }else{
     dash.style.display='none';
    }
   };
   dash.setAttribute('data-portrait-index','0');
-  dash.src=candidates[0]+'?v=4211';
+  dash.src=candidates[0]+'?v=4212';
  }
 }
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -825,7 +825,7 @@ async function init(){
  ['officerSearch','officerSeasonFilter','officerRoleFilter'].forEach(id=>{
   const el=$(id);if(!el)return;
   const evt=id==='officerSearch'?'input':'change';
-  el.addEventListener(evt,()=>{renderOfficerOptions();calculate()});
+  el.addEventListener(evt,()=>{renderOfficerOptions();calculate();populateCompareOfficers();buildUpgradeSummary()});
  });
  $('officerSelect').addEventListener('change',()=>{updateOfficerExperience();calculate();populateCompareOfficers();buildUpgradeSummary()});
  [0,1,2,3,4,5].forEach(v=>{$('currentStar').add(new Option(v+'★',v));$('targetStar').add(new Option(v+'★',v))});$('targetStar').value=5;
@@ -854,7 +854,7 @@ async function init(){
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.2.11';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.2.12';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
@@ -885,10 +885,39 @@ async function init(){
  $('refreshLatest').onclick=clearAppCacheAndReload;
 
  loadProgress();
+
+ // v4.2.12 TEST feature wiring
+ populateCompareOfficers();
+ const compareSelect=$('compareOfficerSelect');
+ if(compareSelect){
+  compareSelect.addEventListener('change',buildUpgradeSummary);
+ }
+
+ const backupBtn=$('backupAppData');
+ if(backupBtn){
+  backupBtn.addEventListener('click',exportFullBackup);
+ }
+
+ const restoreInput=$('restoreAppData');
+ if(restoreInput){
+  restoreInput.addEventListener('change',async e=>{
+   try{
+    const f=e.target.files?.[0];
+    if(f)await restoreFullBackup(f);
+   }catch(err){
+    const s=$('backupStatus');
+    if(s)s.textContent='Restore failed: '+err.message;
+    alert('Restore failed: '+err.message);
+   }finally{
+    e.target.value='';
+   }
+  });
+ }
+
  ['universalBadgeHeld','legendaryBadgeChestHeld','legendaryBadgeChestMode'].forEach(id=>{
   const el=$(id);if(el)el.addEventListener(id==='legendaryBadgeChestMode'?'change':'input',calculate);
  });
- document.querySelectorAll('.skill').forEach((b,i)=>b.classList.toggle('active',!!skills[i]));renderDb();calculate();
+ document.querySelectorAll('.skill').forEach((b,i)=>b.classList.toggle('active',!!skills[i]));renderDb();calculate();populateCompareOfficers();buildUpgradeSummary();
  window.addEventListener('resize',applyResponsivePageBackground);
  if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'));
 }
