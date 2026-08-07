@@ -397,7 +397,7 @@ function normalizeOfficer(o){
 async function loadOfficers(){
  let published=clone(DEFAULT_OFFICERS).map(normalizeOfficer).filter(o=>o.name);
  try{
-   const response=await fetch('./officers.json?v=423',{cache:'no-store'});
+   const response=await fetch('./officers.json?v=424',{cache:'no-store'});
    if(response.ok){
      const data=await response.json();
      if(Array.isArray(data)&&data.length) published=data.map(normalizeOfficer).filter(o=>o.name);
@@ -500,13 +500,13 @@ function updateOfficerExperience(){
  if(img){
    img.onload=()=>{img.style.display='block';if(placeholder)placeholder.style.display='none'};
    img.onerror=()=>{img.style.display='none';if(placeholder)placeholder.style.display='flex'};
-   img.src=file+'?v=423';
+   img.src=file+'?v=424';
  }
  const dash=$('dashOfficerPortrait');
  if(dash){
    dash.onload=()=>dash.style.display='block';
    dash.onerror=()=>dash.style.display='none';
-   dash.src=file+'?v=423';
+   dash.src=file+'?v=424';
  }
 }
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}

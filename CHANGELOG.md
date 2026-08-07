@@ -1,9 +1,8 @@
 # Changelog
 
-## v4.2.3 — Filter + Original Image Fix
-- Season and Officer Type / Role filters now work together as an intersection.
-- Example: S7 + Tank shows only S7 Tank officers, not every S7 officer.
-- Repairs stale Officer Type / Role metadata cached by v4.2.1.
-- Restored the earlier badge-free, no-white-edge Officer portraits.
-- Removed the cropped SHARE-card screenshots used in v4.2.0–v4.2.2.
-- Portrait cache and app cache bumped to v4.2.3.
+## v4.2.4 — Restore Original Officer Portraits
+- Restored the complete earlier Officer portrait library exactly as previously prepared.
+- Removed the later screenshot-derived/cropped portrait replacements.
+- No portrait artwork has been re-cropped or redesigned in this build.
+- Retains the v4.2.3 Season + Officer Type/Role filtering fixes.
+- Cache bumped to v4.2.4 for the TEST repository.
