@@ -1,8 +1,9 @@
 # Changelog
 
-## v4.2.10 TEST
-- Officer Upgrade Summary moved to Officer tab.
-- Resource Optimiser Preview added to Planner.
-- Backup & Restore clearly exposed in Settings.
-- TEST banner retained.
+## v4.2.11 TEST
+- Fixed Export App Backup download action.
+- Added visible backup status message.
+- Added a second Officer selector to the Planner Resource Optimiser.
+- Allows direct ORV-per-badge efficiency comparison between the selected Officer and another Officer.
+- Keeps the primary Officer selection unchanged while comparing.
 - No Officer images included.
