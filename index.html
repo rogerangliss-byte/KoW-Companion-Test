@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.2.9</title>
+<title>KoW Companion v4.2.10</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -127,10 +127,10 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </style>
 </head>
 <body>
-<div id="testBanner" style="position:sticky;top:0;z-index:9999;text-align:center;padding:7px;background:#8b0000;color:#fff;font-weight:900;letter-spacing:.12em">TEST VERSION — v4.2.9 — NOT LIVE</div><header class="topbar">
+<div id="testBanner" style="position:sticky;top:0;z-index:9999;text-align:center;padding:7px;background:#8b0000;color:#fff;font-weight:900;letter-spacing:.12em">TEST VERSION — v4.2.10 — NOT LIVE</div><header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
-    <p>Officer Companion v4.2.9</p>
+    <p>Officer Companion v4.2.10</p>
   </div>
 </header>
 
@@ -182,6 +182,11 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
           </div>
         </div>
       </div>
+    </article>
+    <article class="card">
+      <h2>📈 Officer Upgrade Summary</h2>
+      <p class="muted">Live summary for the selected Officer using the resources currently entered in the calculator.</p>
+      <div id="upgradeSummary" class="result-box">Select an Officer and enter resources to see the current upgrade position.</div>
     </article>
   </section>
 
@@ -270,7 +275,12 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <div class="table-wrap"><table><thead><tr><th>Resource</th><th>Required</th><th>Held</th><th>Shortfall</th></tr></thead><tbody id="plannerRows"></tbody></table></div>
       <button id="saveProgress" class="primary">Save Progress</button>
     </article>
-  </section>
+      <article class="card">
+      <h2>🧮 Resource Optimiser — Preview</h2>
+      <p class="muted">Preview of shared badge resources against the selected Officer. It does not spend or alter resources.</p>
+      <div id="optimiserSummary" class="result-box">Enter resources and select an Officer to see the optimiser preview.</div>
+    </article>
+</section>
 
   <section id="database" class="view">
     <article class="card">
@@ -347,7 +357,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <button id="resetAppearance" class="primary">Reset Appearance & Backgrounds</button>
       <h3>App Updates</h3>
       <div class="notice">
-        <div><b>Installed version:</b> <span id="installedVersion">v4.2.9</span></div>
+        <div><b>Installed version:</b> <span id="installedVersion">v4.2.10</span></div>
         <div id="updateStatus">Tap Check for Updates to compare with the latest GitHub Pages version.</div>
       </div>
       <div class="two">
@@ -357,7 +367,13 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <h3>Help & Instructions</h3>
       <p class="notice">Open the in-app User Guide for the recommended setup order, explanations of every tab, saving, database publishing, vouchers, badges and Original Officer restrictions.</p>
       <button id="openUserGuide" class="primary">📖 User Guide</button>
-    </article>
+          <h3>Backup & Restore</h3>
+      <p class="notice">Export all locally saved KoW Companion browser data, or restore a previous JSON backup.</p>
+      <div class="two">
+        <button id="backupAppData" class="primary">⬇ Export App Backup</button>
+        <label class="button-like">⬆ Restore App Backup<input id="restoreAppData" type="file" accept=".json,application/json" hidden></label>
+      </div>
+</article>
   </section>
 </main>
 
@@ -509,7 +525,7 @@ function setPortraitWithFallback(img,placeholder,candidates,index=0){
   if(placeholder)placeholder.style.display='none';
  };
  img.onerror=()=>setPortraitWithFallback(img,placeholder,candidates,index+1);
- img.src=candidates[index]+'?v=428';
+ img.src=candidates[index]+'?v=4210';
 }
 function updateOfficerExperience(){
  const o=currentOfficer();if(!o)return;
@@ -530,13 +546,13 @@ function updateOfficerExperience(){
    const next=Number(current)+1;
    if(next<candidates.length){
     dash.setAttribute('data-portrait-index',String(next));
-    dash.src=candidates[next]+'?v=428';
+    dash.src=candidates[next]+'?v=4210';
    }else{
     dash.style.display='none';
    }
   };
   dash.setAttribute('data-portrait-index','0');
-  dash.src=candidates[0]+'?v=428';
+  dash.src=candidates[0]+'?v=4210';
  }
 }
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -706,16 +722,20 @@ async function clearAppCacheAndReload(){
 }
 
 
+function numericText(id){
+ const el=$(id);if(!el)return 0;
+ return Number(String(('value' in el?el.value:el.textContent)||0).replace(/[^0-9.-]/g,''))||0;
+}
 function buildUpgradeSummary(){
- const box=$('upgradeSummary'); if(!box)return;
- const o=currentOfficer(); if(!o){box.textContent='No Officer selected.';return;}
- const badgeHave=Number($('officerBadges')?.value||0);
- const starHave=Number($('legendaryStars')?.value||0);
- const xpHave=Number($('xpTotal')?.textContent?.replace(/[^0-9]/g,'')||0);
- const badgeNeed=Math.max(0,1600-badgeHave);
- const starNeed=Math.max(0,98000-starHave);
- const xpNeed=Math.max(0,199646700-xpHave);
- box.innerHTML=`<b>${esc(o.name)}</b><br>Officer Badges remaining: <b>${badgeNeed.toLocaleString()}</b><br>Officer Stars remaining: <b>${starNeed.toLocaleString()}</b><br>Officer XP remaining: <b>${xpNeed.toLocaleString()}</b>`;
+ const box=$('upgradeSummary'),opt=$('optimiserSummary'),o=currentOfficer();if(!o)return;
+ const badgeUsed=numericText('badgesUsed'),starsUsed=numericText('starsUsed'),xpUsed=numericText('xpUsed');
+ const badgeNeed=Math.max(0,1600-badgeUsed),starNeed=Math.max(0,98000-starsUsed),xpNeed=Math.max(0,199646700-xpUsed);
+ if(box)box.innerHTML=`<b>${esc(o.name)}</b><br>Officer Badges remaining: <b>${badgeNeed.toLocaleString()}</b><br>Officer Stars remaining: <b>${starNeed.toLocaleString()}</b><br>Officer XP remaining: <b>${xpNeed.toLocaleString()}</b>`;
+ if(opt){
+  const shared=numericText('universalBadges')+numericText('selectionChests');
+  const usable=Math.min(shared,badgeNeed);
+  opt.innerHTML=`<b>${esc(o.name)}</b><br>Shared Legendary badge resources: <b>${shared.toLocaleString()}</b><br>Available toward badge requirement: <b>${usable.toLocaleString()}</b><br>Remaining badge shortfall: <b>${Math.max(0,badgeNeed-usable).toLocaleString()}</b><br><span class="muted">Preview only — resources are not spent.</span>`;
+ }
 }
 function exportFullBackup(){
  const payload={app:'KoW Companion',version:APP_VERSION,exported:new Date().toISOString(),localStorage:{}};
@@ -763,7 +783,7 @@ async function init(){
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.2.9';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.2.10';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();

@@ -1,8 +1,8 @@
 # Changelog
-## v4.2.9 TEST
-- Prominent TEST VERSION banner.
-- Export full browser app-data backup to JSON.
-- Restore full browser app-data backup from JSON.
-- Added first Officer Upgrade Summary panel.
-- Preserves v4.2.8 Officer filters and robust portrait loader.
-- No Officer portrait files included.
+
+## v4.2.10 TEST
+- Officer Upgrade Summary moved to Officer tab.
+- Resource Optimiser Preview added to Planner.
+- Backup & Restore clearly exposed in Settings.
+- TEST banner retained.
+- No Officer images included.
