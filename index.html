@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.2.8</title>
+<title>KoW Companion v4.2.9</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -121,13 +121,16 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 .dashboard-officer{display:flex;align-items:center;gap:12px}.dash-officer-portrait{display:none;width:76px;height:92px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
 @media(max-width:760px){.officer-filter-grid,.officer-experience-grid{grid-template-columns:1fr}.officer-meta{grid-template-columns:repeat(3,1fr)}.officer-portrait-panel{min-height:220px}.officer-portrait-placeholder{min-height:220px}}
 
+
+.button-like{display:flex;align-items:center;justify-content:center;min-height:44px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer;background:rgba(0,0,0,.28);font-weight:700}
+.result-box{padding:12px;border:1px solid var(--line);border-radius:10px;background:rgba(0,0,0,.28);line-height:1.55}
 </style>
 </head>
 <body>
-<header class="topbar">
+<div id="testBanner" style="position:sticky;top:0;z-index:9999;text-align:center;padding:7px;background:#8b0000;color:#fff;font-weight:900;letter-spacing:.12em">TEST VERSION — v4.2.9 — NOT LIVE</div><header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
-    <p>Officer Companion v4.2.8</p>
+    <p>Officer Companion v4.2.9</p>
   </div>
 </header>
 
@@ -344,7 +347,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <button id="resetAppearance" class="primary">Reset Appearance & Backgrounds</button>
       <h3>App Updates</h3>
       <div class="notice">
-        <div><b>Installed version:</b> <span id="installedVersion">v4.2.8</span></div>
+        <div><b>Installed version:</b> <span id="installedVersion">v4.2.9</span></div>
         <div id="updateStatus">Tap Check for Updates to compare with the latest GitHub Pages version.</div>
       </div>
       <div class="two">
@@ -660,7 +663,7 @@ function saveProgress(){const d={officer:$('officerSelect').value,currentStar:$(
 function loadProgress(){try{const d=JSON.parse(localStorage.getItem('kow_progress_v4')||'null');if(!d)return;$('officerSelect').value=d.officer??0;$('currentStar').value=d.currentStar??0;$('targetStar').value=d.targetStar??5;$('ls1').value=d.ls1??0;$('ls2').value=d.ls2??0;$('ls3').value=d.ls3??0;$('srvHeld').value=d.srvHeld??0;$('unlocked').checked=!!d.unlocked;skills=Array.isArray(d.skills)?d.skills:skills;$('training').value=d.training??0;$('badgeHeld').value=d.badgeHeld??0;$('universalBadgeHeld').value=d.universalBadgeHeld??0;$('legendaryBadgeChestHeld').value=d.legendaryBadgeChestHeld??0;$('legendaryBadgeChestMode').value=d.legendaryBadgeChestMode??'badge';$('orvHeld').value=d.orvHeld??0;$('currentLevel').value=d.currentLevel??1;$('targetLevel').value=d.targetLevel??70;$('goalSelect').value=d.goal??'max';XP_DENOMS.forEach(v=>$('xp'+v).value=d.xp?.[v]??0)}catch{}}
 
 
-const APP_VERSION='4.2.8';
+const APP_VERSION='4.2.9';
 
 function parseVersion(v){
  return String(v||'').replace(/^v/i,'').split('.').map(n=>parseInt(n,10)||0);
@@ -702,6 +705,30 @@ async function clearAppCacheAndReload(){
  location.replace(baseUrl+'?refresh='+Date.now());
 }
 
+
+function buildUpgradeSummary(){
+ const box=$('upgradeSummary'); if(!box)return;
+ const o=currentOfficer(); if(!o){box.textContent='No Officer selected.';return;}
+ const badgeHave=Number($('officerBadges')?.value||0);
+ const starHave=Number($('legendaryStars')?.value||0);
+ const xpHave=Number($('xpTotal')?.textContent?.replace(/[^0-9]/g,'')||0);
+ const badgeNeed=Math.max(0,1600-badgeHave);
+ const starNeed=Math.max(0,98000-starHave);
+ const xpNeed=Math.max(0,199646700-xpHave);
+ box.innerHTML=`<b>${esc(o.name)}</b><br>Officer Badges remaining: <b>${badgeNeed.toLocaleString()}</b><br>Officer Stars remaining: <b>${starNeed.toLocaleString()}</b><br>Officer XP remaining: <b>${xpNeed.toLocaleString()}</b>`;
+}
+function exportFullBackup(){
+ const payload={app:'KoW Companion',version:APP_VERSION,exported:new Date().toISOString(),localStorage:{}};
+ for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);payload.localStorage[k]=localStorage.getItem(k);}
+ const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='KoW-Companion-Backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);
+}
+async function restoreFullBackup(file){
+ const payload=JSON.parse(await file.text());
+ if(!payload||!payload.localStorage)throw new Error('Invalid KoW Companion backup file.');
+ Object.entries(payload.localStorage).forEach(([k,v])=>localStorage.setItem(k,v));
+ alert('Backup restored. The app will reload now.');location.reload();
+}
 async function init(){
  await loadOfficers();renderOfficerFilters();renderOfficerOptions();
  ['officerSearch','officerSeasonFilter','officerRoleFilter'].forEach(id=>{
@@ -736,7 +763,7 @@ async function init(){
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.2.8';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.2.9';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();

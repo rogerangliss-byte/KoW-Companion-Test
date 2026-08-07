@@ -1,10 +1,8 @@
 # Changelog
-
-## v4.2.8 TEST — Robust Officer Portrait Loader
-- Uses the exact `officer-portraits/officer-<name>.jpg` filename structure shown in the TEST repository.
-- Seasonal example: `officer-portraits/officer-s7-romana.jpg`.
-- Original Officer example: `officer-portraits/officer-katherine.jpg`.
-- Added automatic fallback checks for older portrait filename layouts.
-- No Officer images are included in this package.
-- Season and Officer Type / Role filters remain unchanged.
-- Cache bumped to v4.2.8.
+## v4.2.9 TEST
+- Prominent TEST VERSION banner.
+- Export full browser app-data backup to JSON.
+- Restore full browser app-data backup from JSON.
+- Added first Officer Upgrade Summary panel.
+- Preserves v4.2.8 Officer filters and robust portrait loader.
+- No Officer portrait files included.
