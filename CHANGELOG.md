@@ -1,12 +1,13 @@
 # Changelog
 
-## v4.2.5 TEST — Officer Portrait Path Fix
-- Fixed Officer portrait loading.
-- The app now loads portraits from the existing `officer-portraits/` folder.
-- Existing portrait filenames remain unchanged, e.g.:
-  - `officer-portraits/officer-s7-liora.jpg`
-  - `officer-portraits/officer-s7-roisin.jpg`
-  - `officer-portraits/officer-katherine.jpg`
-- No Officer image files are included in this package.
-- Season and Officer Type / Role filters remain unchanged.
-- Cache bumped to v4.2.5.
+## v4.2.6 TEST — Officer Portrait Filename Fix
+- Fixed the remaining Officer portrait loading issue.
+- The existing `officer-portraits` folder uses filenames such as:
+  - `s7-liora.jpg`
+  - `s7-roisin.jpg`
+  - `s6-regina.jpg`
+  - `katherine.jpg`
+- The app was incorrectly requesting names with an extra `officer-` prefix.
+- v4.2.6 now requests the exact filenames already stored in the folder.
+- No Officer images are included in this package.
+- Existing Season and Officer Type / Role filters are unchanged.
