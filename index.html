@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.2.15</title>
+<title>KoW Companion v4.2.16</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -58,9 +58,9 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 .primary,.toolbar button,.filebtn{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#5e4512;color:white;cursor:pointer}.primary{width:100%;margin-top:12px}
 .toolbar{display:grid;grid-template-columns:2fr 1fr repeat(5,auto);gap:8px;align-items:end}.filebtn input{display:none}
 .table-wrap{overflow:auto;margin-top:12px}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,.08);text-align:right}th:first-child,td:first-child{text-align:left}.db-table input{min-width:100px}.actions{display:flex;gap:6px}.actions button{padding:7px 9px}
-.bottom-nav{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);width:min(980px,calc(100% - 16px));display:grid;grid-template-columns:repeat(9,1fr);gap:4px;padding:8px;border:1px solid var(--line);border-radius:16px;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);z-index:20}
-.bottom-nav button{border:0;background:transparent;color:var(--muted);padding:8px 2px;border-radius:10px}.bottom-nav button.active{background:rgba(213,167,47,.17);color:var(--gold2)}.bottom-nav span{display:block;font-size:.68rem;margin-top:3px}
-@media(max-width:760px){.grid,.two{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr 1fr}.bottom-nav{grid-template-columns:repeat(9,1fr)}}
+.bottom-nav{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);width:min(980px,calc(100% - 16px));display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;padding:8px;border:1px solid var(--line);border-radius:16px;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);z-index:20}
+.bottom-nav button{border:0;background:transparent;color:var(--muted);padding:7px 1px;border-radius:10px;min-width:0;white-space:nowrap;font-size:.9rem}.bottom-nav button.active{background:rgba(213,167,47,.17);color:var(--gold2)}.bottom-nav span{display:block;font-size:.62rem;margin-top:3px;white-space:nowrap}
+@media(max-width:760px){.grid,.two{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr 1fr}.bottom-nav{grid-template-columns:repeat(10,minmax(0,1fr))}}
 
 .background-status{display:flex;justify-content:space-between;gap:12px;margin:6px 0 14px;padding:9px 10px;border:1px solid rgba(255,255,255,.08);border-radius:10px;background:rgba(0,0,0,.28);font-size:.82rem}
 .background-status span{color:var(--muted)}
@@ -129,11 +129,11 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </style>
 </head>
 <body>
-<div style="position:sticky;top:0;z-index:9999;background:#a40000;color:white;text-align:center;font-weight:900;letter-spacing:2px;padding:9px">TEST VERSION — v4.2.15 — NOT LIVE</div>
+<div style="position:sticky;top:0;z-index:9999;background:#a40000;color:white;text-align:center;font-weight:900;letter-spacing:2px;padding:9px">TEST VERSION — v4.2.16 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
-    <p>Officer Companion v4.2.15</p>
+    <p>Officer Companion v4.2.16</p>
   </div>
   <div class="creator-credit">Created by FireStorm (371)</div>
 </header>
@@ -381,7 +381,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <button id="resetAppearance" class="primary">Reset Appearance & Backgrounds</button>
       <h3>App Updates</h3>
       <div class="notice">
-        <div><b>Installed version:</b> <span id="installedVersion">v4.2.15</span></div>
+        <div><b>Installed version:</b> <span id="installedVersion">v4.2.16</span></div>
         <div id="updateStatus">Tap Check for Updates to compare with the latest GitHub Pages version.</div>
       </div>
       <div class="two">
@@ -389,7 +389,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
         <button id="refreshLatest" class="primary">Refresh Latest Version</button>
       </div>
       <h3>About</h3>
-      <p class="notice"><b>KoW Companion v4.2.15 TEST</b><br>Created by FireStorm (371)</p>
+      <p class="notice"><b>KoW Companion v4.2.16 TEST</b><br>Created by FireStorm (371)</p>
       <h3>Help & Instructions</h3>
       <p class="notice">Open the in-app User Guide for the recommended setup order, explanations of every tab, saving, database publishing, vouchers, badges and Original Officer restrictions.</p>
       <button id="openUserGuide" class="primary">📖 User Guide</button>
@@ -896,7 +896,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.2.15';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.2.16';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
@@ -928,7 +928,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
 
  loadProgress();
 
- // v4.2.15 feature wiring
+ // v4.2.16 feature wiring
  populateCompareOfficers();
  const compareSelect=$('compareOfficerSelect');
  if(compareSelect){

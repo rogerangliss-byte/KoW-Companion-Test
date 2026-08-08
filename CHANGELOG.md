@@ -1,3 +1,8 @@
+# v4.2.16 TEST
+- Bottom navigation now uses one 10-item row.
+- Reduced navigation spacing and label size to prevent Help wrapping to a second line.
+- No calculator or database logic changed.
+
 # v4.2.15 TEST
 - Added recurring August–July Release Calendar page.
 - Automatically highlights current month and shows next scheduled release.
