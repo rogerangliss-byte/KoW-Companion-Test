@@ -140,7 +140,7 @@ window.KOW_I18N_DE = {
   "Restore App Backup": "App-Sicherung wiederherstellen",
   "Save Progress": "Fortschritt speichern",
   "Reset Progress": "Fortschritt zurücksetzen",
-  "Current Upgrades": "Aktuelle Ausbauten",
+  "Current Upgrades": "Aktuelle Offiziersausbauten",
   "Select saved plan": "Gespeicherten Plan auswählen",
   "— Select saved plan —": "— Gespeicherten Plan auswählen —",
   "Optimise automatically": "Automatisch optimieren",
@@ -175,7 +175,7 @@ window.KOW_HELP_HTML_DE = '<div class="notice"><b>Empfohlener Ablauf:</b> Offizi
 Object.assign(window.KOW_I18N_DE, {
   "Goals Planner":"Zielplaner", "Goal":"Ziel", "Resource":"Ressource", "Required":"Benötigt", "Held":"Vorhanden", "Shortfall":"Fehlbestand",
   "Legendary Stars":"Legendäre Sterne", "Officer Badges":"Offiziersabzeichen", "Officer Readiness Vouchers":"Offiziersbereitschaftsgutscheine", "Exclusive Stars":"Exklusivsterne", "Star Readiness Vouchers":"Sternbereitschaftsgutscheine",
-  "Max Officer":"Offizier maximieren", "Current Upgrades":"Aktuelle Ausbauten", "Fully funded":"Vollständig gedeckt", "Select saved plan":"Gespeicherten Plan auswählen",
+  "Max Officer":"Offizier maximieren", "Current Upgrades":"Aktuelle Offiziersausbauten", "Fully funded":"Vollständig gedeckt", "Select saved plan":"Gespeicherten Plan auswählen",
   "Optimise automatically":"Automatisch optimieren", "Enter resources and select an Officer to see the optimiser preview.":"Gib Ressourcen ein und wähle einen Offizier, um die Optimierer-Vorschau zu sehen.",
   "Select an Officer and enter resources to see the current upgrade position.":"Wähle einen Offizier und gib Ressourcen ein, um den aktuellen Ausbaufortschritt zu sehen.",
   "Officer XP Books":"Offiziers-XP-Bücher", "XP required for selected levels":"Benötigte XP für die gewählten Level", "Badges used":"Verwendete Abzeichen", "Badges required":"Benötigte Abzeichen",
