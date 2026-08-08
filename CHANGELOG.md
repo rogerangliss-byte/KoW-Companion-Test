@@ -1,5 +1,19 @@
 # Changelog
 
+## v4.3.3 TEST
+- Fixed Smart Dashboard not populating.
+- Corrected an invalid Officer reference that stopped the Dashboard updater.
+- Smart Dashboard now mirrors the app's existing authoritative MAX Officer results:
+  - Development from `dashBadgesRequired`
+  - Stars from `dashStarsRequired`
+  - XP from `dashXpRequired`
+- Reads the real active Officer from the Officer selector.
+- Reads saved Multi-Officer plans from the correct saved-plan control.
+- Upcoming Release now populates from the recurring release calendar.
+- Dashboard refreshes after every normal calculator calculation and whenever Home is opened.
+- No duplicate Home resource inputs were added.
+- v4.3.0 remains the Live baseline until this TEST build is approved.
+
 ## v4.3.2 TEST
 - Fixed Smart Dashboard population.
 - Dashboard now reads the existing saved Officer/resource state instead of requiring separate Home inputs.
