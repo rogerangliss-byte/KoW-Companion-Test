@@ -498,10 +498,10 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
   <button data-view="help">📖<span>Help</span></button>
 </nav>
 
-<script src="lang/en.js?v=4.3.21"></script>
-<script src="lang/it.js?v=4.3.21"></script>
-<script src="lang/fr.js?v=4.3.21"></script>
-<script src="lang/de.js?v=4.3.21"></script>
+<script src="lang/en.js?v=4.3.24"></script>
+<script src="lang/it.js?v=4.3.24"></script>
+<script src="lang/fr.js?v=4.3.24"></script>
+<script src="lang/de.js?v=4.3.24"></script>
 <script type="module">
 const DEFAULT_OFFICERS=[{"name": "S7 Roisin", "role": "Tank", "season": "S7", "orv": 600, "srv": 300, "notes": ""}, {"name": "S7 Barbara", "role": "Tank", "season": "S7", "orv": 600, "srv": 300, "notes": ""}, {"name": "S7 Romana", "season": "S7", "orv": 500, "srv": 250, "notes": ""}, {"name": "S7 Liora", "season": "S7", "orv": 500, "srv": 250, "notes": ""}, {"name": "S7 Stella", "role": "Tank", "season": "S7", "orv": 416, "srv": 208, "notes": ""}, {"name": "S7 Klara", "role": "Tank", "season": "S7", "orv": 416, "srv": 208, "notes": ""}, {"name": "S7 Code", "role": "Tank", "season": "S7", "orv": 346, "srv": 173, "notes": ""}, {"name": "S7 Kamila", "role": "Tank", "season": "S7", "orv": 346, "srv": 173, "notes": ""}, {"name": "S6 Regina", "role": "Tank", "season": "S6", "orv": 289, "srv": 144, "notes": ""}, {"name": "S6 Veronica", "role": "Tank", "season": "S6", "orv": 289, "srv": 144, "notes": ""}, {"name": "S6 Silverhand", "season": "S6", "orv": 240, "srv": 120, "notes": ""}, {"name": "S6 Red Queen", "season": "S6", "orv": 240, "srv": 120, "notes": ""}, {"name": "S6 Samantha", "season": "S6", "orv": 200, "srv": 100, "notes": ""}, {"name": "S6 Saoirse", "season": "S6", "orv": 200, "srv": 100, "notes": ""}, {"name": "S6 Emily", "season": "S6", "orv": 167, "srv": 84, "notes": ""}, {"name": "S6 Zoya", "season": "S6", "orv": 167, "srv": 84, "notes": ""}];
 const STAR_CUM=[0,500,1500,8000,33000,98000];
@@ -1491,6 +1491,31 @@ function renderHelpLanguage(lang){
   box.innerHTML=html || '<div class="notice"><b>Help unavailable.</b> Refresh the page to reload the language resources.</div>';
 }
 
+
+function kowTranslateTree(lang,root){
+  if(lang==='en')return;
+  const dict=I18N[lang]||{};
+  const base=root||document.body;
+  const walker=document.createTreeWalker(base,NodeFilter.SHOW_TEXT);
+  let n;
+  while((n=walker.nextNode())){
+    const p=n.parentElement;
+    if(!p||['SCRIPT','STYLE','TEXTAREA','OPTION'].includes(p.tagName))continue;
+    const raw=n.nodeValue, t=raw.trim();
+    if(!t)continue;
+    if(dict[t]){
+      n.nodeValue=raw.slice(0,raw.indexOf(t))+dict[t]+raw.slice(raw.indexOf(t)+t.length);
+      continue;
+    }
+    // Conservative phrase replacement for dynamic sentences/status lines.
+    let v=raw;
+    for(const [a,b] of Object.entries(dict)){
+      if(a.length>=8 && v.includes(a))v=v.split(a).join(b);
+    }
+    n.nodeValue=v;
+  }
+}
+
 function applyLanguage(lang){
   lang=SUPPORTED_LANGUAGES.includes(lang)?lang:'en';
   restoreEnglishUi();
@@ -1528,6 +1553,7 @@ function applyLanguage(lang){
   
   // Dynamic renderers can recreate English strings, so run the existing translator once more.
   if(lang!=='en' && typeof translateItalianDom==='function' && lang==='it')try{translateItalianDom(document.body);}catch(e){}
+  kowTranslateTree(lang,document.body);
   renderHelpLanguage(lang);
 }
 
@@ -1948,7 +1974,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
 
  loadProgress();
 
- // v4.3.23 translation hardening: translate UI text recreated by dynamic renderers.
+ // v4.3.24 translation hardening: translate UI text recreated by dynamic renderers.
  let kowI18nBusy=false;
  const kowI18nObserver=new MutationObserver(()=>{
    const lang=currentLang();
