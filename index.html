@@ -130,11 +130,11 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </style>
 </head>
 <body><div id="testBanner" style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:7px 10px;letter-spacing:.5px"></div>
-<div class="test-banner">TEST VERSION — v4.3.13 — NOT LIVE</div>
+<div class="test-banner">TEST VERSION — v4.3.14 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
-    <p>Officer Companion v4.3.13</p>
+    <p>Officer Companion v4.3.14</p>
   </div>
   <div class="creator-credit">Created by FireStorm (371)</div>
 </header>
@@ -1026,7 +1026,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='4.3.13';
+const APP_VERSION='4.3.14';
 
 function parseVersion(v){
  return String(v||'').replace(/^v/i,'').split('.').map(n=>parseInt(n,10)||0);
@@ -1230,14 +1230,14 @@ function calculateMultiPlanner(){
    const fromUniversal=Math.min(needed-allocated,universal);
    allocated+=fromUniversal; universal-=fromUniversal;
    totalAllocated+=allocated;
-   const status=allocated>=needed?'Fully Funded':allocated>0?'Partially Funded':'Shortfall';
-   if(status==='Fully Funded')fully++; else if(status==='Partially Funded')partial++; else unfunded++;
+   const status=allocated>=needed?(currentLang()==='it'?'Completamente coperto':'Fully Funded'):allocated>0?(currentLang()==='it'?'Parzialmente coperto':'Partially Funded'):(currentLang()==='it'?'Mancanza':'Shortfall');
+   if(allocated>=needed)fully++; else if(allocated>0)partial++; else unfunded++;
    const tr=rows[pos]; if(tr){
      tr.querySelector('[data-multi-allocated]').textContent=fmt(allocated)+' / '+fmt(needed);
      tr.querySelector('[data-multi-status]').textContent=status;
    }
  });
- $('multiPlannerSummary').innerHTML=`<b>Plan result:</b> ${fully} fully funded · ${partial} partially funded · ${unfunded} shortfall<br><span class="muted">${fmt(totalAllocated)} of ${fmt(totalNeed)} required badges covered. Remaining shared resources: ${fmt(orv)} ORV · ${fmt(universal)} Universal Badges.</span>`;
+ $('multiPlannerSummary').innerHTML=currentLang()==='it'?`<b>Risultato piano:</b> ${fully} completamente coperti · ${partial} parzialmente coperti · ${unfunded} mancanti<br><span class="muted">${fmt(totalAllocated)} di ${fmt(totalNeed)} distintivi richiesti coperti. Risorse condivise rimanenti: ${fmt(orv)} ORV · ${fmt(universal)} Distintivi Universali.</span>`:`<b>Plan result:</b> ${fully} fully funded · ${partial} partially funded · ${unfunded} shortfall<br><span class="muted">${fmt(totalAllocated)} of ${fmt(totalNeed)} required badges covered. Remaining shared resources: ${fmt(orv)} ORV · ${fmt(universal)} Universal Badges.</span>`;
 }
 function getMultiPlans(){try{return JSON.parse(localStorage.getItem('kow_multi_plans_v430')||'{}')}catch{return {}}}
 function refreshMultiSavedPlans(selectName=''){
@@ -1288,15 +1288,15 @@ function updateSmartDashboard(){
  const allOK=devOK&&starOK&&xpOK;
 
  $('dashDevelopment').textContent=devOK
-   ? 'Fully funded'
+   ? (currentLang()==='it'?'Completamente coperto':'Fully funded')
    : `${fmt(badgeShort)} Officer Badges still required`;
  $('dashStars').textContent=starOK
-   ? 'Fully funded'
+   ? (currentLang()==='it'?'Completamente coperto':'Fully funded')
    : `${fmt(starShort)} Officer Star value still required`;
  $('dashXP').textContent=xpOK
-   ? 'Fully funded'
+   ? (currentLang()==='it'?'Completamente coperto':'Fully funded')
    : `${fmt(xpShort)} XP still required`;
- $('dashCanMax').innerHTML=allOK?'<b>YES</b>':'<b>NO</b>';
+ $('dashCanMax').innerHTML=allOK?(currentLang()==='it'?'<b>SÌ</b>':'<b>YES</b>'):(currentLang()==='it'?'<b>NO</b>':'<b>NO</b>');
 
  const missing=[];
  if(!devOK)missing.push('Development');
@@ -1304,7 +1304,7 @@ function updateSmartDashboard(){
  if(!xpOK)missing.push('XP');
 
  if(allOK){
-  $('readinessStatus').innerHTML=`<b>🟢 READY TO MAX — ${esc(officerName)}</b>`;
+  $('readinessStatus').innerHTML=`<b>🟢 ${currentLang()==='it'?'PRONTO PER IL MASSIMO':'READY TO MAX'} — ${esc(officerName)}</b>`;
  }else{
   const fundedCount=[devOK,starOK,xpOK].filter(Boolean).length;
   const icon=fundedCount>0?'🟠':'🔴';
@@ -1580,6 +1580,7 @@ function applyLanguage(lang){
     if(typeof translateItalianDom==='function'){
       setTimeout(()=>translateItalianDom(document.body),20);
       setTimeout(()=>translateItalianDom(document.body),100);
+      setTimeout(()=>forceItalianResiduals(),140);
     }
   }
 }
@@ -1854,6 +1855,36 @@ function startItalianObserver(){
  translateItalianDom(document.body);
 }
 
+function forceItalianResiduals(){
+ if(currentLang()!=='it')return;
+ const exact={
+  'Smart Dashboard':'Dashboard intelligente',
+  'ACTIVE OFFICER':'UFFICIALE ATTIVO',
+  'Current Upgrades':'Potenziamenti attuali',
+  'Fully funded':'Completamente coperto',
+  'READY TO MAX':'PRONTO PER IL MASSIMO',
+  'Multi-Officer Upgrade Planner':'Pianificatore potenziamento multi-ufficiale'
+ };
+ const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+ const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
+ nodes.forEach(n=>{
+   const p=n.parentElement;if(!p||['SCRIPT','STYLE','TEXTAREA'].includes(p.tagName))return;
+   let v=n.nodeValue;
+   for(const [a,b] of Object.entries(exact))v=v.split(a).join(b);
+   v=v.replace(/\bfully funded\b/g,'completamente coperti')
+      .replace(/\bpartially funded\b/g,'parzialmente coperti')
+      .replace(/\bshortfall\b/g,'mancanti');
+   if(v!==n.nodeValue)n.nodeValue=v;
+ });
+ // Development Selection Chest explanatory notice.
+ document.querySelectorAll('.notice').forEach(el=>{
+   const tx=(el.textContent||'').trim();
+   if(tx.startsWith('Each Selection Chest can be used as either')){
+     el.innerHTML='Ogni Forziere di selezione può essere usato come <b>1 Distintivo Leggendario Universale</b> oppure <b>600 Buoni preparazione ufficiale</b>. Il valore ORV segue il costo ORV per distintivo più alto dell’ultima stagione pubblicata.';
+   }
+ });
+}
+
 async function init(){
  await loadOfficers();renderOfficerFilters();renderOfficerOptions();
  ['officerSearch','officerSeasonFilter','officerRoleFilter'].forEach(id=>{
@@ -1926,7 +1957,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.13';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.14';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
