@@ -130,11 +130,11 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </style>
 </head>
 <body><div id="testBanner" style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:7px 10px;letter-spacing:.5px"></div>
-<div class="test-banner">TEST VERSION — v4.3.11 — NOT LIVE</div>
+<div class="test-banner">TEST VERSION — v4.3.12 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
-    <p>Officer Companion v4.3.11</p>
+    <p>Officer Companion v4.3.12</p>
   </div>
   <div class="creator-credit">Created by FireStorm (371)</div>
 </header>
@@ -1026,7 +1026,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='4.3.11';
+const APP_VERSION='4.3.12';
 
 function parseVersion(v){
  return String(v||'').replace(/^v/i,'').split('.').map(n=>parseInt(n,10)||0);
@@ -1586,6 +1586,30 @@ function applyLanguage(lang){
 
 
 const IT_EXACT={
+"Can I Max This Officer?":"Posso massimizzare questo ufficiale?",
+"Next Upgrade Plan":"Prossimo piano di potenziamento",
+"Upcoming Release":"Prossima uscita",
+"No saved plan selected.":"Nessun piano salvato selezionato.",
+"Enter resources to see planning guidance.":"Inserisci le risorse per vedere i suggerimenti di pianificazione.",
+"XP in Books":"XP nei libri",
+"XP required for selected levels":"XP richiesti per i livelli selezionati",
+"XP shortfall":"XP mancanti",
+"Forecast ORV / Badge":"ORV previsto / Distintivo",
+"Forecast SRV / Exclusive Star":"SRV previsto / Stella esclusiva",
+"Estimated ORV to fund Badges":"ORV stimati per i Distintivi",
+"Estimated SRV to fund Stars":"SRV stimati per le Stelle",
+"Forecast only — actual release costs should replace the estimate when published.":"Solo previsione — i costi effettivi dell’uscita dovranno sostituire la stima quando saranno pubblicati.",
+"KoW releases follow this recurring August → July annual cycle. The current month is highlighted automatically.":"Le uscite di KoW seguono questo ciclo annuale ricorrente da agosto a luglio. Il mese corrente viene evidenziato automaticamente.",
+"Enter resources and select an Officer to see the optimiser preview.":"Inserisci le risorse e seleziona un ufficiale per vedere l’anteprima dell’ottimizzatore.",
+"Select an Officer and enter resources to see the current upgrade position.":"Seleziona un ufficiale e inserisci le risorse per vedere la situazione attuale del potenziamento.",
+"Profile":"Profilo",
+"Save status":"Stato salvataggio",
+"Use current held resources":"Usa risorse possedute",
+"Select saved plan":"Seleziona piano salvato",
+"Optimise automatically":"Ottimizza automaticamente",
+"Officer":"Ufficiale",
+"Universal Badges":"Distintivi Universali",
+"Current Upgrade":"Potenziamento attuale",
 "Language":"Lingua",
 "Choose the language used by the app interface. Officer names and game data are not translated.":"Scegli la lingua utilizzata dall’interfaccia dell’app. I nomi degli ufficiali e i dati di gioco non vengono tradotti.",
 "App language":"Lingua dell’app",
@@ -1684,6 +1708,15 @@ const IT_EXACT={
 };
 
 const IT_SUBS=[
+["Can I Max This Officer?","Posso massimizzare questo ufficiale?"],
+["Next Upgrade Plan","Prossimo piano di potenziamento"],
+["Upcoming Release","Prossima uscita"],
+["Current Upgrade","Potenziamento attuale"],
+["XP in Books","XP nei libri"],
+["XP required for selected levels","XP richiesti per i livelli selezionati"],
+["XP shortfall","XP mancanti"],
+["required badges covered","distintivi richiesti coperti"],
+["Remaining shared resources:","Risorse condivise rimanenti:"],
 [" can be maxed with the resources currently entered in the app."," può essere massimizzato con le risorse attualmente inserite nell’app."],
 [" Officer Badges still required"," Distintivi ufficiale ancora richiesti"],
 [" Officer Star value still required"," valore Stelle ufficiale ancora richiesto"],
@@ -1867,7 +1900,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.11';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.12';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
