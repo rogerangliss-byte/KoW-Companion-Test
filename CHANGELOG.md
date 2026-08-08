@@ -1,5 +1,11 @@
 # Changelog
 
+## v4.3.25 Multilingual Release
+- Dedicated Multilingual release branch.
+- English, Italian, French and German language resources included.
+- Removed TEST banner and normalised versioning to v4.3.25.
+- Added final French/German residual status translations.
+
 ## v4.3.11 TEST
 - Fixed Italian -> English switching by restoring a pristine English UI before every language change.
 - Language preference now uses a stable version-independent `kow_language` setting.
