@@ -207,7 +207,7 @@ Object.assign(window.KOW_I18N_DE, {
   'Saved': 'Gespeichert'
 });
 
-// v4.3.26 German dynamic/status translation completion
+// v4.3.27 German dynamic/status translation completion
 Object.assign(window.KOW_I18N_DE, {
   "RESOURCES REQUIRED":"RESSOURCEN ERFORDERLICH",
   "Still required:":"Noch erforderlich:",
