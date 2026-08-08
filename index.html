@@ -1404,6 +1404,24 @@ function translateNodeText(root=document.body){
    const tr=tText(ph); if(tr!==ph)el.setAttribute('placeholder',tr);
  });
 }
+function translateFormValues(){
+ const lang=currentLang();
+ const planName=document.getElementById('multiPlanName');
+ if(planName){
+   const known={
+     en:['Current Upgrades','Aktuelle Offiziersausbauten','Améliorations actuelles','Potenziamenti attuali'],
+     de:['Current Upgrades','Aktuelle Offiziersausbauten','Améliorations actuelles','Potenziamenti attuali'],
+     fr:['Current Upgrades','Aktuelle Offiziersausbauten','Améliorations actuelles','Potenziamenti attuali'],
+     it:['Current Upgrades','Aktuelle Offiziersausbauten','Améliorations actuelles','Potenziamenti attuali']
+   };
+   const current=String(planName.value||'').trim();
+   if((known[lang]||known.en).includes(current)){
+     const translated=(I18N[lang]&&I18N[lang]['Current Upgrades']) || 'Current Upgrades';
+     planName.value=translated;
+   }
+ }
+}
+
 function translateOptions(){
  const lang=currentLang();
  const releaseTranslations={
@@ -1547,6 +1565,7 @@ function applyLanguage(lang){
 
   translateNodeText(document.body);
   translateOptions();
+  translateFormValues();
   renderHelpLanguage(lang);
   
   // Dynamic renderers can recreate English strings, so run the existing translator once more.
@@ -1971,6 +1990,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  $('refreshLatest').onclick=clearAppCacheAndReload;
 
  loadProgress();
+ translateFormValues();
 
  // v4.3.27 translation hardening: translate UI text recreated by dynamic renderers.
  let kowI18nBusy=false;
@@ -1978,7 +1998,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
    const lang=currentLang();
    if(lang==='en'||kowI18nBusy)return;
    kowI18nBusy=true;
-   try{translateNodeText(document.body);translateOptions();kowTranslateTree(lang,document.body);}catch(e){}
+   try{translateNodeText(document.body);translateOptions();translateFormValues();kowTranslateTree(lang,document.body);}catch(e){}
    kowI18nBusy=false;
  });
  kowI18nObserver.observe(document.body,{childList:true,subtree:true,characterData:true});
@@ -2023,7 +2043,7 @@ const kowI18nObserver=new MutationObserver(()=>{
   if(currentLang()==='en')return;
   clearTimeout(kowI18nObserverTimer);
   kowI18nObserverTimer=setTimeout(()=>{
-    try{const lang=currentLang();translateNodeText(document.body);translateOptions();kowTranslateTree(lang,document.body);renderHelpLanguage(lang);}catch(e){}
+    try{const lang=currentLang();translateNodeText(document.body);translateOptions();translateFormValues();kowTranslateTree(lang,document.body);renderHelpLanguage(lang);}catch(e){}
   },0);
 });
 kowI18nObserver.observe(document.body,{subtree:true,childList:true,characterData:true});
