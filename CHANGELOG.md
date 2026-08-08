@@ -1,6 +1,15 @@
 # Changelog
 
-## v4.3.3 TEST
+## v4.3.4 TEST
+- Added a separate persistent progress profile for every Officer.
+- Officer switching automatically saves the Officer being left and loads the selected Officer's profile.
+- Added `Save This Officer` and `Reset This Officer` controls.
+- Saved profile covers Stars, Development, XP Books/levels and Planner goal.
+- Added one-time migration of the previous single saved-progress record.
+- Existing full Backup & Restore automatically includes the new Officer profiles.
+- LIVE v4.3.3 remains untouched while this feature is tested.
+
+## v4.3.3 LIVE
 - Fixed Smart Dashboard not populating.
 - Corrected an invalid Officer reference that stopped the Dashboard updater.
 - Smart Dashboard now mirrors the app's existing authoritative MAX Officer results:
@@ -12,7 +21,8 @@
 - Upcoming Release now populates from the recurring release calendar.
 - Dashboard refreshes after every normal calculator calculation and whenever Home is opened.
 - No duplicate Home resource inputs were added.
-- v4.3.0 remains the Live baseline until this TEST build is approved.
+- Approved TEST build promoted to LIVE.
+- Red TEST VERSION banner removed.
 
 ## v4.3.2 TEST
 - Fixed Smart Dashboard population.
