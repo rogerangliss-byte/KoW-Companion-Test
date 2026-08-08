@@ -1,5 +1,16 @@
 # Changelog
 
+## v4.3.9 TEST
+- Completed a much deeper Italian translation pass.
+- Added translation of dynamic JavaScript-generated status/result text, not just static page labels.
+- Added live MutationObserver translation so recalculated Smart Dashboard, Optimiser, Planner and Release content remains Italian after updates.
+- Expanded Italian Help/User Guide text shown inside the app.
+- Expanded resource-table, status, month, release, goal and selection wording.
+- Officer names and numeric game data remain unchanged.
+- English remains the default/fallback.
+- French, German and Spanish are still partial and should not be promoted as complete until brought to the same coverage level.
+- v4.3.6 remains LIVE while multilingual support is tested.
+
 ## v4.3.8 TEST
 - Expanded multilingual system so the selected language applies across the whole visible UI, not only selected headings/navigation.
 - Added broad Italian translation coverage for Settings, Releases, Forecast, Officer, Stars, Development, XP, Planner, Database, Help labels and controls.

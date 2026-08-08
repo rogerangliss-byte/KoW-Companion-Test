@@ -130,11 +130,11 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </style>
 </head>
 <body><div id="testBanner" style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:7px 10px;letter-spacing:.5px"></div>
-<div class="test-banner">TEST VERSION — v4.3.8 — NOT LIVE</div>
+<div class="test-banner">TEST VERSION — v4.3.9 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
-    <p>Officer Companion v4.3.8</p>
+    <p>Officer Companion v4.3.9</p>
   </div>
   <div class="creator-credit">Created by FireStorm (371)</div>
 </header>
@@ -788,6 +788,9 @@ function calculate(){
 
  renderPlanner(o,cs,starsUsed,legendaryHeld,srvHeld,badgesUsed,badgesHeld+universalBadgesAvailable,orvHeld,xpHeld,xpRequired);
  if(typeof updateSmartDashboard==='function')updateSmartDashboard();
+ if(lang==='it')setTimeout(startItalianObserver,0);
+ else if(itObserver){itObserver.disconnect();itObserver=null;}
+ setTimeout(()=>{ if(lang==='it')translateItalianDom(document.body); },50);
 }
 
 function renderPlanner(o,cs,starsUsed,legendaryHeld,srvHeld,badgesUsed,badgesHeld,orvHeld,xpHeld,xpRequiredSelected){
@@ -1023,7 +1026,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='4.3.8';
+const APP_VERSION='4.3.9';
 
 function parseVersion(v){
  return String(v||'').replace(/^v/i,'').split('.').map(n=>parseInt(n,10)||0);
@@ -1463,7 +1466,7 @@ I18N.de={...I18N.en,...{
 I18N.es={...I18N.en,...{
 "Language":"Idioma","App language":"Idioma de la aplicación","Home":"Inicio","Officer":"Oficial","Stars":"Estrellas","Develop":"Desarrollo","Planner":"Planificador","Releases":"Lanzamientos","Settings":"Ajustes","Help":"Ayuda","Smart Dashboard":"Panel inteligente","Development":"Desarrollo","Future Officer Cost Forecast":"Previsión de coste de futuros oficiales","Officer Experience":"Experiencia del oficial","Officer Development":"Desarrollo del oficial","Star Planner":"Planificador de estrellas","Officer XP":"XP del oficial","Database Manager":"Gestor de base de datos","Help & Instructions":"Ayuda e instrucciones"}};
 
-function currentLang(){return localStorage.getItem('kow_language_v438')||'en'}
+function currentLang(){return localStorage.getItem('kow_language_v439')||'en'}
 function tText(text){
  const lang=currentLang();
  return I18N[lang]?.[text] ?? I18N.en[text] ?? text;
@@ -1506,7 +1509,7 @@ function translateOptions(){
 }
 function applyLanguage(lang){
  if(!I18N[lang])lang='en';
- localStorage.setItem('kow_language_v438',lang);
+ localStorage.setItem('kow_language_v439',lang);
  document.documentElement.lang=lang;
  if($('appLanguage'))$('appLanguage').value=lang;
  translateNodeText(document.body);
@@ -1514,6 +1517,184 @@ function applyLanguage(lang){
  // Dynamic cards/messages are recalculated so they can be translated on the current screen.
  if(typeof updateFutureOfficerForecast==='function')updateFutureOfficerForecast();
  if(typeof updateSmartDashboard==='function')updateSmartDashboard();
+}
+
+
+const IT_EXACT={
+"Smart Dashboard":"Dashboard intelligente",
+"READY TO MAX":"PRONTO PER IL MASSIMO",
+"PARTIALLY READY":"PARZIALMENTE PRONTO",
+"RESOURCES REQUIRED":"RISORSE NECESSARIE",
+"Fully funded":"Completamente coperto",
+"YES":"SÌ","NO":"NO",
+"Current Upgrades":"Potenziamenti attuali",
+"Active Officer":"UFFICIALE ATTIVO",
+"Held":"Posseduto","Required":"Richiesto","Shortfall":"Mancanza","Resource":"Risorsa",
+"Legendary Stars":"Stelle Leggendarie","Officer Badges":"Distintivi ufficiale",
+"Officer Readiness Vouchers":"Buoni preparazione ufficiale",
+"Exclusive Stars":"Stelle esclusive","Star Readiness Vouchers":"Buoni preparazione stella",
+"Max Officer":"Massimizza ufficiale","Next Star":"Prossima stella","Reach 5★":"Raggiungi 5★",
+"Max Skills":"Massimizza abilità","Max Training":"Massimizza addestramento",
+"Goals Planner":"Pianificatore obiettivi","Goal":"Obiettivo",
+"Select Officer":"Seleziona ufficiale","Choose another Officer to compare badge efficiency.":"Scegli un altro ufficiale per confrontare l’efficienza dei distintivi.",
+"Shared Legendary badge resources detected:":"Risorse condivise di distintivi leggendari rilevate:",
+"Available toward badge requirement:":"Disponibili per il requisito distintivi:",
+"Remaining badge shortfall:":"Distintivi ancora mancanti:",
+"Preview only — resources are not spent.":"Solo anteprima — le risorse non vengono spese.",
+"Badges used":"Distintivi usati",
+"Universal Legendary Badges available":"Distintivi Leggendari Universali disponibili",
+"ORV generated from Selection Chests":"ORV generati dai Forzieri di selezione",
+"Badges from held Officer Readiness Vouchers (ORV)":"Distintivi dai Buoni preparazione ufficiale (ORV) posseduti",
+"Officer Readiness Vouchers (ORV) remaining after whole badges":"Buoni preparazione ufficiale (ORV) rimanenti dopo i distintivi interi",
+"Badges required":"Distintivi richiesti",
+"Officer Readiness Vouchers (ORV) required":"Buoni preparazione ufficiale (ORV) richiesti",
+"Use Selection Chests as":"Usa i Forzieri di selezione come",
+"Universal Legendary Badges":"Distintivi Leggendari Universali",
+"Officer Readiness Vouchers (ORV)":"Buoni preparazione ufficiale (ORV)",
+"Recurring Release Calendar":"Calendario uscite ricorrenti",
+"CURRENT":"ATTUALE",
+"Next scheduled release:":"Prossima uscita programmata:",
+"August":"Agosto","September":"Settembre","October":"Ottobre","November":"Novembre",
+"December":"Dicembre","January":"Gennaio","February":"Febbraio","March":"Marzo",
+"April":"Aprile","May":"Maggio","June":"Giugno","July":"Luglio",
+"New Dogs":"Nuovi cani","New Ships":"Nuove navi",
+"Guns: Field · Jets: Fighter":"Armi: Campo · Jet: Caccia",
+"Officers: Rally / Garrison":"Ufficiali: Rally / Guarnigione",
+"Guns: Rally / Garrison · Jets: Bomber":"Armi: Rally / Guarnigione · Jet: Bombardiere",
+"Officers: Infantry":"Ufficiali: Fanteria","Officers: Tanks":"Ufficiali: Carri armati",
+"Officers: Tank Destroyers":"Ufficiali: Cacciacarri",
+"Plan result:":"Risultato piano:","fully funded":"completamente coperti",
+"partially funded":"parzialmente coperti","shortfall":"mancanti",
+"Remaining shared resources:":"Risorse condivise rimanenti:",
+"Officer Upgrade Summary":"Riepilogo potenziamento ufficiale",
+"Save Progress":"Salva progresso","Save This Officer":"Salva questo ufficiale",
+"Reset This Officer":"Reimposta questo ufficiale",
+"Comparison":"Confronto","Compare with Officer":"Confronta con ufficiale",
+"Suggested resource strategy:":"Strategia risorse suggerita:",
+"Resource Optimiser — Preview":"Ottimizzatore risorse — Anteprima",
+"Multi-Officer Upgrade Planner":"Pianificatore potenziamento multi-ufficiale",
+"Use current held resources":"Usa risorse possedute",
+"Save Plan":"Salva piano","Delete Saved Plan":"Elimina piano salvato",
+"Plan name":"Nome piano","Saved plan":"Piano salvato","Chest strategy":"Strategia forzieri",
+"Priority":"Priorità","Badges Needed":"Distintivi necessari","Allocated":"Allocati","Status":"Stato","Order":"Ordine",
+"Settings":"Impostazioni","App Name":"Nome app","Responsive Backgrounds":"Sfondi adattivi",
+"App Updates":"Aggiornamenti app","Check for Updates":"Controlla aggiornamenti",
+"Refresh Latest Version":"Aggiorna all’ultima versione","Help & Instructions":"Aiuto e istruzioni",
+"User Guide":"Guida utente","Backup & Restore":"Backup e ripristino",
+"Export App Backup":"Esporta backup app","Restore App Backup":"Ripristina backup app",
+"Database Manager":"Gestione database","Export CSV":"Esporta CSV","Import CSV":"Importa CSV","Save Database":"Salva database"
+};
+
+const IT_SUBS=[
+[" can be maxed with the resources currently entered in the app."," può essere massimizzato con le risorse attualmente inserite nell’app."],
+[" Officer Badges still required"," Distintivi ufficiale ancora richiesti"],
+[" Officer Star value still required"," valore Stelle ufficiale ancora richiesto"],
+[" XP still required"," XP ancora richiesti"],
+["Still required: ","Ancora richiesto: "],
+["Priority: Development","Priorità: Sviluppo"],
+["Priority: Stars","Priorità: Stelle"],
+["Priority: XP","Priorità: XP"],
+[" more Officer Badges are required."," Distintivi ufficiale aggiuntivi sono richiesti."],
+[" more Officer Star value is required."," valore Stelle ufficiale aggiuntivo è richiesto."],
+[" more XP is required."," XP aggiuntivi sono richiesti."],
+["Next: ","Prossimo: "],
+[" + 1 more"," + 1 altro"],
+[" + "," + "],
+[" badges"," distintivi"],
+["Planning estimate using ","Stima di pianificazione con "],
+["% growth per Officer release from the latest known 600 ORV / 300 SRV release.","% di crescita per ogni uscita ufficiale dall’ultimo costo noto di 600 ORV / 300 SRV."],
+["Forecast only — replace with confirmed costs when released.","Solo previsione — sostituire con i costi confermati quando saranno pubblicati."],
+["Shared Legendary badge resources detected:","Risorse condivise di distintivi leggendari rilevate:"],
+["Available toward badge requirement:","Disponibili per il requisito distintivi:"],
+["Remaining badge shortfall:","Distintivi ancora mancanti:"],
+["Preview only — resources are not spent.","Solo anteprima — le risorse non vengono spese."],
+[" is cheaper by "," è più economico di "],
+[" ORV per badge."," ORV per distintivo."],
+[" ORV per Badge:"," ORV per Distintivo:"],
+["Use shared Universal Legendary Badges / Selection Chests on ","Usa Distintivi Leggendari Universali / Forzieri di selezione condivisi su "],
+[" first, and favour ORV on "," per primo, e privilegia ORV su "],
+[". This protects the more expensive Officer from ORV spending.",". Questo protegge l’ufficiale più costoso dall’uso di ORV."],
+["Comparing ","Confronto tra "],
+[" with "," con "],
+["No saved upgrade plan selected.","Nessun piano di potenziamento salvato selezionato."],
+["No saved upgrade plans yet.","Nessun piano di potenziamento salvato."],
+["No scheduled release","Nessuna uscita programmata"],
+["Officer Companion","Companion Ufficiali"],
+["Installed version:","Versione installata:"]
+];
+
+const IT_HELP_EXACT={
+"Use Planner after entering Stars, Development and XP. Select a goal such as Max Officer, Next Star, Reach 5★, Max Skills or Max Training to see requirements, resources held and shortfalls.":"Usa il Pianificatore dopo aver inserito Stelle, Sviluppo e XP. Seleziona un obiettivo come Massimizza ufficiale, Prossima stella, Raggiungi 5★, Massimizza abilità o Massimizza addestramento per vedere requisiti, risorse possedute e mancanze.",
+"The Resource Optimiser lets you select a second Officer in Compare with Officer. It compares the Officer Readiness Voucher (ORV) cost per Officer Badge for the two Officers.":"L’Ottimizzatore risorse consente di selezionare un secondo ufficiale in Confronta con ufficiale. Confronta il costo in Buoni preparazione ufficiale (ORV) per Distintivo ufficiale dei due ufficiali.",
+"How to interpret the recommendation: where both Officers can use ORV, the optimiser recommends favouring ORV on the Officer with the lower ORV cost per badge and favouring shared Universal Legendary Badges / Legendary Officer Badge Selection Chests on the Officer with the higher ORV cost per badge. This protects the more expensive Officer from unnecessary ORV spending.":"Come interpretare il consiglio: quando entrambi gli ufficiali possono usare ORV, l’ottimizzatore consiglia di privilegiare ORV sull’ufficiale con il costo ORV per distintivo più basso e di usare Distintivi Leggendari Universali / Forzieri selezione Distintivi Leggendari condivisi sull’ufficiale con il costo ORV per distintivo più alto. In questo modo si evita di spendere inutilmente ORV sull’ufficiale più costoso.",
+"The optimiser is preview only. It does not automatically spend, allocate or change your saved resources.":"L’ottimizzatore è solo un’anteprima. Non spende, assegna o modifica automaticamente le risorse salvate.",
+"The Multi-Officer Planner lets you create a priority list of several Officers, set the Officer Badges still needed for each, and preview how shared ORV, Universal Legendary Badges and Legendary Officer Badge Selection Chests could cover the plan.":"Il Pianificatore multi-ufficiale consente di creare un elenco di priorità di più ufficiali, impostare i Distintivi ufficiale ancora necessari per ciascuno e vedere come ORV, Distintivi Leggendari Universali e Forzieri selezione Distintivi Leggendari condivisi possono coprire il piano.",
+"Use Use current held resources to copy the resources currently entered in Development. Plans are preview-only and do not spend or alter the normal calculator data. Named plans can be saved locally in the browser and loaded again later.":"Usa Usa risorse possedute per copiare le risorse attualmente inserite in Sviluppo. I piani sono solo anteprime e non spendono né modificano i dati normali del calcolatore. I piani con nome possono essere salvati localmente nel browser e caricati di nuovo in seguito.",
+"Use Save Progress after entering or changing calculator information. Progress is stored locally in the browser on the current device. Save Progress does not publish your personal data to other users.":"Usa Salva progresso dopo aver inserito o modificato i dati del calcolatore. Il progresso viene memorizzato localmente nel browser del dispositivo corrente. Salva progresso non pubblica i tuoi dati personali ad altri utenti.",
+"The Database Manager controls the Officer master list. Use it to add or edit Officers and export the database. Export CSV exports the Officer database; it is different from Save Progress and App Backup.":"Gestione database controlla l’elenco principale degli ufficiali. Usalo per aggiungere o modificare ufficiali ed esportare il database. Esporta CSV esporta il database degli ufficiali; è diverso da Salva progresso e Backup app.",
+"To publish new or edited Officers for everyone, update the published officers.json and officers.csv files in the GitHub repository.":"Per pubblicare ufficiali nuovi o modificati per tutti, aggiorna i file officers.json e officers.csv pubblicati nel repository GitHub.",
+"Settings contains the app name, portrait and landscape backgrounds, update controls and Backup & Restore.":"Impostazioni contiene il nome dell’app, gli sfondi verticale e orizzontale, i controlli di aggiornamento e Backup e ripristino."
+};
+
+function translateItalianText(text){
+ if(currentLang()!=='it' || !text)return text;
+ const lead=text.match(/^\s*/)?.[0]||'', trail=text.match(/\s*$/)?.[0]||'';
+ let core=text.trim();
+ if(!core)return text;
+ if(IT_HELP_EXACT[core])core=IT_HELP_EXACT[core];
+ else if(IT_EXACT[core])core=IT_EXACT[core];
+ else{
+   for(const [a,b] of IT_SUBS) core=core.split(a).join(b);
+   // Conservative embedded UI words.
+   core=core.replace(/\bFully funded\b/g,'Completamente coperto')
+            .replace(/\bREADY TO MAX\b/g,'PRONTO PER IL MASSIMO')
+            .replace(/\bPARTIALLY READY\b/g,'PARZIALMENTE PRONTO')
+            .replace(/\bRESOURCES REQUIRED\b/g,'RISORSE NECESSARIE');
+ }
+ return lead+core+trail;
+}
+
+let itTranslating=false;
+function translateItalianDom(root=document.body){
+ if(currentLang()!=='it'||itTranslating)return;
+ itTranslating=true;
+ try{
+   const skip=new Set(['SCRIPT','STYLE','TEXTAREA']);
+   const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+   const nodes=[];
+   while(walker.nextNode())nodes.push(walker.currentNode);
+   nodes.forEach(n=>{
+     const p=n.parentElement;if(!p||skip.has(p.tagName))return;
+     const before=n.nodeValue, after=translateItalianText(before);
+     if(after!==before)n.nodeValue=after;
+   });
+   document.querySelectorAll('input[placeholder]').forEach(el=>{
+     const v=el.getAttribute('placeholder'), nv=translateItalianText(v);
+     if(nv!==v)el.setAttribute('placeholder',nv);
+   });
+   // Translate non-officer select options, but never Officer database names.
+   document.querySelectorAll('select option').forEach(o=>{
+     const sel=o.parentElement;
+     if(!sel || ['officerSelect','compareOfficerSelect','multiSavedPlans'].includes(sel.id))return;
+     const before=o.textContent, after=translateItalianText(before);
+     if(after!==before)o.textContent=after;
+   });
+ }finally{itTranslating=false}
+}
+
+let itObserver=null;
+function startItalianObserver(){
+ if(itObserver)itObserver.disconnect();
+ if(currentLang()!=='it')return;
+ itObserver=new MutationObserver(muts=>{
+   if(itTranslating)return;
+   for(const m of muts){
+     if(m.type==='characterData'){translateItalianDom(m.target.parentElement||document.body);break}
+     if(m.type==='childList'&&m.addedNodes.length){translateItalianDom(m.target||document.body);break}
+   }
+ });
+ itObserver.observe(document.body,{subtree:true,childList:true,characterData:true});
+ translateItalianDom(document.body);
 }
 
 async function init(){
@@ -1564,7 +1745,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  updateFutureOfficerForecast();
 
 
- const savedLanguage=localStorage.getItem('kow_language_v438')||'en';
+ const savedLanguage=localStorage.getItem('kow_language_v439')||'en';
  if($('appLanguage'))$('appLanguage').addEventListener('change',e=>applyLanguage(e.target.value));
  applyLanguage(savedLanguage);
 
@@ -1580,7 +1761,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.8';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.9';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
