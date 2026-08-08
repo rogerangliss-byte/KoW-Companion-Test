@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.3.18</title>
+<title>KoW Companion v4.3.19</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -130,11 +130,11 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </style>
 </head>
 <body><div id="testBanner" style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:7px 10px;letter-spacing:.5px"></div>
-<div class="test-banner">TEST VERSION — v4.3.18 — NOT LIVE</div>
+<div class="test-banner">TEST VERSION — v4.3.19 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
-    <p>Officer Companion v4.3.18</p>
+    <p>Officer Companion v4.3.19</p>
   </div>
   <div class="creator-credit">Created by FireStorm (371)</div>
 </header>
@@ -462,7 +462,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <button id="resetAppearance" class="primary">Reset Appearance & Backgrounds</button>
       <h3>App Updates</h3>
       <div class="notice">
-        <div><b>Installed version:</b> <span id="installedVersion">v4.3.18</span></div>
+        <div><b>Installed version:</b> <span id="installedVersion">v4.3.19</span></div>
         <div id="updateStatus">Tap Check for Updates to compare with the latest GitHub Pages version.</div>
       </div>
       <div class="two">
@@ -470,7 +470,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
         <button id="refreshLatest" class="primary">Refresh Latest Version</button>
       </div>
       <h3>About</h3>
-      <p class="notice"><b>KoW Companion v4.3.18 LIVE</b><br>Created by FireStorm (371)</p>
+      <p class="notice"><b>KoW Companion v4.3.19 LIVE</b><br>Created by FireStorm (371)</p>
       <h3>Help & Instructions</h3>
       <p class="notice">Open the in-app User Guide for the recommended setup order, explanations of every tab, saving, database publishing, vouchers, badges and Original Officer restrictions.</p>
       <button id="openUserGuide" class="primary">📖 User Guide</button>
@@ -498,8 +498,8 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
   <button data-view="help">📖<span>Help</span></button>
 </nav>
 
-<script src="lang/en.js?v=4.3.18"></script>
-<script src="lang/it.js?v=4.3.18"></script>
+<script src="lang/en.js?v=4.3.19"></script>
+<script src="lang/it.js?v=4.3.19"></script>
 <script type="module">
 const DEFAULT_OFFICERS=[{"name": "S7 Roisin", "role": "Tank", "season": "S7", "orv": 600, "srv": 300, "notes": ""}, {"name": "S7 Barbara", "role": "Tank", "season": "S7", "orv": 600, "srv": 300, "notes": ""}, {"name": "S7 Romana", "season": "S7", "orv": 500, "srv": 250, "notes": ""}, {"name": "S7 Liora", "season": "S7", "orv": 500, "srv": 250, "notes": ""}, {"name": "S7 Stella", "role": "Tank", "season": "S7", "orv": 416, "srv": 208, "notes": ""}, {"name": "S7 Klara", "role": "Tank", "season": "S7", "orv": 416, "srv": 208, "notes": ""}, {"name": "S7 Code", "role": "Tank", "season": "S7", "orv": 346, "srv": 173, "notes": ""}, {"name": "S7 Kamila", "role": "Tank", "season": "S7", "orv": 346, "srv": 173, "notes": ""}, {"name": "S6 Regina", "role": "Tank", "season": "S6", "orv": 289, "srv": 144, "notes": ""}, {"name": "S6 Veronica", "role": "Tank", "season": "S6", "orv": 289, "srv": 144, "notes": ""}, {"name": "S6 Silverhand", "season": "S6", "orv": 240, "srv": 120, "notes": ""}, {"name": "S6 Red Queen", "season": "S6", "orv": 240, "srv": 120, "notes": ""}, {"name": "S6 Samantha", "season": "S6", "orv": 200, "srv": 100, "notes": ""}, {"name": "S6 Saoirse", "season": "S6", "orv": 200, "srv": 100, "notes": ""}, {"name": "S6 Emily", "season": "S6", "orv": 167, "srv": 84, "notes": ""}, {"name": "S6 Zoya", "season": "S6", "orv": 167, "srv": 84, "notes": ""}];
 const STAR_CUM=[0,500,1500,8000,33000,98000];
@@ -1369,18 +1369,14 @@ function updateFutureOfficerForecast(){
 }
 
 
-const I18N={en:window.KOW_I18N_EN||{},it:window.KOW_I18N_IT||{}};
+const I18N={
+ en:window.KOW_I18N_EN||{},
+ it:window.KOW_I18N_IT||{},
+ fr:window.KOW_I18N_FR||{},
+ de:window.KOW_I18N_DE||{},
+ es:window.KOW_I18N_ES||{}
+};
 
-// Fill French/German/Spanish from English so the framework stays stable; specific full translations
-// can be extended next without ever falling back to broken/missing UI.
-I18N.fr={...I18N.en,...{
-"Language":"Langue","App language":"Langue de l’application","Home":"Accueil","Officer":"Officier","Stars":"Étoiles","Develop":"Développement","Planner":"Planificateur","Releases":"Sorties","Settings":"Paramètres","Help":"Aide","Smart Dashboard":"Tableau de bord intelligent","Development":"Développement","Future Officer Cost Forecast":"Prévision du coût des futurs officiers","Officer Experience":"Expérience de l’officier","Officer Development":"Développement de l’officier","Star Planner":"Planificateur d’étoiles","Officer XP":"XP de l’officier","Database Manager":"Gestionnaire de base de données","Help & Instructions":"Aide et instructions"}};
-I18N.de={...I18N.en,...{
-"Language":"Sprache","App language":"App-Sprache","Home":"Start","Officer":"Offizier","Stars":"Sterne","Develop":"Entwicklung","Planner":"Planer","Releases":"Veröffentlichungen","Settings":"Einstellungen","Help":"Hilfe","Smart Dashboard":"Smart-Dashboard","Development":"Entwicklung","Future Officer Cost Forecast":"Prognose zukünftiger Offizierskosten","Officer Experience":"Offizierserfahrung","Officer Development":"Offiziersentwicklung","Star Planner":"Stern-Planer","Officer XP":"Offiziers-XP","Database Manager":"Datenbankverwaltung","Help & Instructions":"Hilfe & Anweisungen"}};
-I18N.es={...I18N.en,...{
-"Language":"Idioma","App language":"Idioma de la aplicación","Home":"Inicio","Officer":"Oficial","Stars":"Estrellas","Develop":"Desarrollo","Planner":"Planificador","Releases":"Lanzamientos","Settings":"Ajustes","Help":"Ayuda","Smart Dashboard":"Panel inteligente","Development":"Desarrollo","Future Officer Cost Forecast":"Previsión de coste de futuros oficiales","Officer Experience":"Experiencia del oficial","Officer Development":"Desarrollo del oficial","Star Planner":"Planificador de estrellas","Officer XP":"XP del oficial","Database Manager":"Gestor de base de datos","Help & Instructions":"Ayuda e instrucciones"}};
-
-const LANGUAGE_KEY='kow_language';
 function currentLang(){return localStorage.getItem(LANGUAGE_KEY)||localStorage.getItem('kow_language_v439')||'en'}
 function tText(text){
  const lang=currentLang();
@@ -1413,6 +1409,24 @@ function translateOptions(){
     'January — S8 Infantry':'Gennaio — S8 Fanteria',
     'April — S8 Tanks':'Aprile — S8 Carri armati',
     'July — S8 Tank Destroyers':'Luglio — S8 Cacciacarri'
+   },
+   fr:{
+    'October — S8 Rally / Garrison':'Octobre — S8 Ralliement / Garnison',
+    'January — S8 Infantry':'Janvier — S8 Infanterie',
+    'April — S8 Tanks':'Avril — S8 Chars',
+    'July — S8 Tank Destroyers':'Juillet — S8 Chasseurs de chars'
+   },
+   de:{
+    'October — S8 Rally / Garrison':'Oktober — S8 Rally / Garnison',
+    'January — S8 Infantry':'Januar — S8 Infanterie',
+    'April — S8 Tanks':'April — S8 Panzer',
+    'July — S8 Tank Destroyers':'Juli — S8 Jagdpanzer'
+   },
+   es:{
+    'October — S8 Rally / Garrison':'Octubre — S8 Rally / Guarnición',
+    'January — S8 Infantry':'Enero — S8 Infantería',
+    'April — S8 Tanks':'Abril — S8 Tanques',
+    'July — S8 Tank Destroyers':'Julio — S8 Cazacarros'
    }
  };
  document.querySelectorAll('option').forEach(o=>{
@@ -1467,14 +1481,15 @@ function resetLanguageToEnglish(){
 function renderHelpLanguage(lang){
   const box=document.getElementById('helpLanguageBody');
   if(!box)return;
-  const html = lang==='it'
-    ? (window.KOW_HELP_HTML_IT || window.KOW_HELP_HTML_EN || '')
-    : (window.KOW_HELP_HTML_EN || '');
-  if(html){
-    box.innerHTML=html;
-  }else{
-    box.innerHTML='<div class="notice">Help language file is loading. Refresh the page once if this message remains.</div>';
-  }
+  const map={
+    en:window.KOW_HELP_HTML_EN,
+    it:window.KOW_HELP_HTML_IT,
+    fr:window.KOW_HELP_HTML_FR,
+    de:window.KOW_HELP_HTML_DE,
+    es:window.KOW_HELP_HTML_ES
+  };
+  const html=map[lang] || map.en || '';
+  box.innerHTML=html || '<div class="notice">Help language file is loading. Refresh the page once if this message remains.</div>';
 }
 
 function applyLanguage(lang){
@@ -1899,7 +1914,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.18';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.19';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
@@ -1931,7 +1946,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
 
  loadProgress();
 
- // v4.3.18 feature wiring
+ // v4.3.19 feature wiring
  populateCompareOfficers();
  const compareSelect=$('compareOfficerSelect');
  if(compareSelect){
