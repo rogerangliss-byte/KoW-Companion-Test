@@ -130,11 +130,11 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </style>
 </head>
 <body><div id="testBanner" style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:7px 10px;letter-spacing:.5px"></div>
-<div class="test-banner">TEST VERSION — v4.3.14 — NOT LIVE</div>
+<div class="test-banner">TEST VERSION — v4.3.15 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
-    <p>Officer Companion v4.3.14</p>
+    <p>Officer Companion v4.3.15</p>
   </div>
   <div class="creator-credit">Created by FireStorm (371)</div>
 </header>
@@ -1026,7 +1026,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='4.3.14';
+const APP_VERSION='4.3.15';
 
 function parseVersion(v){
  return String(v||'').replace(/^v/i,'').split('.').map(n=>parseInt(n,10)||0);
@@ -1775,6 +1775,18 @@ const IT_SUBS=[
 
 const IT_HELP_EXACT={
 "The Resource Optimiser lets you select a second Officer in Compare with Officer. It compares the Officer Readiness Voucher (ORV) cost per Officer Badge for the two Officers.":"L’Ottimizzatore risorse consente di selezionare un secondo ufficiale in Confronta con ufficiale. Confronta il costo in Buoni preparazione ufficiale (ORV) per Distintivo ufficiale dei due ufficiali.",
+"How to interpret the recommendation: where both Officers can use ORV, the optimiser recommends favouring ORV on the Officer with the lower ORV cost per badge and favouring shared Universal Legendary Badges / Legendary Officer Badge Selection Chests on the Officer with the higher ORV cost per badge. This protects the more expensive Officer from unnecessary ORV spending.":"Come interpretare il consiglio: quando entrambi gli ufficiali possono usare ORV, l’ottimizzatore consiglia di privilegiare gli ORV sull’ufficiale con il costo ORV per distintivo più basso e di usare i Distintivi Leggendari Universali / Forzieri selezione Distintivi Leggendari condivisi sull’ufficiale con il costo ORV per distintivo più alto. Questo evita una spesa ORV non necessaria sull’ufficiale più costoso.",
+"The optimiser is preview only. It does not automatically spend, allocate or change your saved resources.":"L’ottimizzatore è solo un’anteprima. Non spende, assegna o modifica automaticamente le risorse salvate.",
+"Use Use current held resources to copy the resources currently entered in Development. Plans are preview-only and do not spend or alter the normal calculator data. Named plans can be saved locally in the browser and loaded again later.":"Usa Usa risorse possedute per copiare le risorse attualmente inserite in Sviluppo. I piani sono solo anteprime e non spendono né modificano i normali dati del calcolatore. I piani con nome possono essere salvati localmente nel browser e caricati nuovamente in seguito.",
+"6. Save Progress":"6. Salva progresso",
+"Use Save Progress after entering or changing calculator information. Progress is stored locally in the browser on the current device. Save Progress does not publish your personal data to other users.":"Usa Salva progresso dopo aver inserito o modificato le informazioni del calcolatore. Il progresso viene memorizzato localmente nel browser del dispositivo corrente. Salva progresso non pubblica i tuoi dati personali ad altri utenti.",
+"7. Database":"7. Database",
+"The Database Manager controls the Officer master list. Use it to add or edit Officers and export the database. Export CSV exports the Officer database; it is different from Save Progress and App Backup.":"Gestione database controlla l’elenco principale degli ufficiali. Usalo per aggiungere o modificare ufficiali ed esportare il database. Esporta CSV esporta il database degli ufficiali; è diverso da Salva progresso e Backup app.",
+"To publish new or edited Officers for everyone, update the published officers.json and officers.csv files in the GitHub repository.":"Per pubblicare ufficiali nuovi o modificati per tutti, aggiorna i file officers.json e officers.csv pubblicati nel repository GitHub.",
+"8. Settings, Backup & Restore":"8. Impostazioni, backup e ripristino",
+"Settings contains the app name, portrait and landscape backgrounds, update controls and Backup & Restore.":"Impostazioni contiene il nome dell’app, gli sfondi verticale e orizzontale, i controlli di aggiornamento e Backup e ripristino.",
+"Export App Backup creates a JSON backup of KoW Companion data stored locally by the browser. Keep this file somewhere safe. Restore App Backup loads a previously exported JSON backup and reloads the app.":"Esporta backup app crea un backup JSON dei dati di KoW Companion memorizzati localmente dal browser. Conserva questo file in un luogo sicuro. Ripristina backup app carica un backup JSON esportato in precedenza e ricarica l’app.",
+"The Resource Optimiser lets you select a second Officer in Compare with Officer. It compares the Officer Readiness Voucher (ORV) cost per Officer Badge for the two Officers.":"L’Ottimizzatore risorse consente di selezionare un secondo ufficiale in Confronta con ufficiale. Confronta il costo in Buoni preparazione ufficiale (ORV) per Distintivo ufficiale dei due ufficiali.",
 "How to interpret the recommendation: where both Officers can use ORV, the optimiser recommends favouring ORV on the Officer with the lower ORV cost per badge and favouring shared Universal Legendary Badges / Legendary Officer Badge Selection Chests on the Officer with the higher ORV cost per badge. This protects the more expensive Officer from unnecessary ORV spending.":"Come interpretare il consiglio: quando entrambi gli ufficiali possono usare ORV, l’ottimizzatore consiglia di privilegiare ORV sull’ufficiale con il costo ORV per distintivo più basso e di usare Distintivi Leggendari Universali / Forzieri selezione Distintivi Leggendari condivisi sull’ufficiale con il costo ORV per distintivo più alto. In questo modo si evita di spendere inutilmente ORV sull’ufficiale più costoso.",
 "The optimiser is preview only. It does not automatically spend, allocate or change your saved resources.":"L’ottimizzatore è solo un’anteprima. Non spende, assegna o modifica automaticamente le risorse salvate.",
 "Use Use current held resources to copy the resources currently entered in Development. Plans are preview-only and do not spend or alter the normal calculator data. Named plans can be saved locally in the browser and loaded again later.":"Usa Usa risorse possedute per copiare le risorse attualmente inserite in Sviluppo. I piani sono solo anteprime e non spendono né modificano i dati normali del calcolatore. I piani con nome possono essere salvati localmente nel browser e caricati di nuovo in seguito.",
@@ -1957,7 +1969,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.14';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.15';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
