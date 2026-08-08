@@ -130,11 +130,11 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </style>
 </head>
 <body><div id="testBanner" style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:7px 10px;letter-spacing:.5px"></div>
-<div class="test-banner">TEST VERSION — v4.3.6 — NOT LIVE</div>
+<div class="test-banner">TEST VERSION — v4.3.7 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
-    <p>Officer Companion v4.3.6</p>
+    <p>Officer Companion v4.3.7</p>
   </div>
   <div class="creator-credit">Created by FireStorm (371)</div>
 </header>
@@ -479,6 +479,20 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </section>
 
 <section id="settings" class="view">
+<article class="card">
+  <h2 data-i18n="languageTitle">🌐 Language</h2>
+  <p class="muted" data-i18n="languageHelp">Choose the language used by the app interface. Officer names and game data are not translated.</p>
+  <label data-i18n="languageLabel">App language</label>
+  <select id="appLanguage">
+    <option value="en">English</option>
+    <option value="fr">Français</option>
+    <option value="de">Deutsch</option>
+    <option value="es">Español</option>
+    <option value="it">Italiano</option>
+  </select>
+  <div class="notice" data-i18n="languageSaved">Your language choice is saved automatically on this device.</div>
+</article>
+
     <article class="card">
       <h2>⚙ Settings</h2>
       <label>App Name</label><input id="appName" value="GODS OF WAR 371">
@@ -1009,7 +1023,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='4.3.6';
+const APP_VERSION='4.3.7';
 
 function parseVersion(v){
  return String(v||'').replace(/^v/i,'').split('.').map(n=>parseInt(n,10)||0);
@@ -1385,6 +1399,93 @@ function updateFutureOfficerForecast(){
  };
  $('forecastNote').innerHTML=`<b>${labels[steps]}</b><br>Planning estimate using ${($('forecastGrowth').value||20)}% growth per Officer release from the latest known 600 ORV / 300 SRV release. For ${fmt(badges)} badges and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
 }
+
+const I18N={
+ en:{
+  languageTitle:'🌐 Language',languageHelp:'Choose the language used by the app interface. Officer names and game data are not translated.',languageLabel:'App language',languageSaved:'Your language choice is saved automatically on this device.',
+  navHome:'🏠 Home',navOfficer:'🎖 Officer',navStars:'⭐ Stars',navDevelop:'📈 Develop',navXP:'📚 XP',navPlanner:'🗓 Planner',navDatabase:'📋 Database',navReleases:'📅 Releases',navSettings:'⚙ Settings',navHelp:'❓ Help',
+  smartDashboard:'🎯 Smart Dashboard',development:'Development',stars:'Stars',xp:'XP',canMax:'Can I Max This Officer?',nextPlan:'Next Upgrade Plan',upcomingRelease:'Upcoming Release',
+  futureForecast:'🔮 Future Officer Cost Forecast',futureRelease:'Future Officer release',growth:'Forecast increase per Officer release',badgesRequired:'Officer Badges required',starValueRequired:'Officer Star value required',
+  forecastOrv:'Forecast ORV / Badge',forecastSrv:'Forecast SRV / Exclusive Star',estimatedOrv:'Estimated ORV to fund Badges',estimatedSrv:'Estimated SRV to fund Stars',
+  saveProgress:'Save Progress',resetProgress:'Reset Progress',saveOfficer:'Save This Officer',resetOfficer:'Reset This Officer'
+ },
+ fr:{
+  languageTitle:'🌐 Langue',languageHelp:"Choisissez la langue utilisée par l’interface. Les noms des officiers et les données du jeu ne sont pas traduits.",languageLabel:"Langue de l’application",languageSaved:'Votre choix de langue est enregistré automatiquement sur cet appareil.',
+  navHome:'🏠 Accueil',navOfficer:'🎖 Officier',navStars:'⭐ Étoiles',navDevelop:'📈 Développement',navXP:'📚 XP',navPlanner:'🗓 Planificateur',navDatabase:'📋 Base de données',navReleases:'📅 Sorties',navSettings:'⚙ Paramètres',navHelp:'❓ Aide',
+  smartDashboard:'🎯 Tableau de bord',development:'Développement',stars:'Étoiles',xp:'XP',canMax:"Puis-je maximiser cet officier ?",nextPlan:'Prochain plan d’amélioration',upcomingRelease:'Prochaine sortie',
+  futureForecast:'🔮 Prévision du coût des futurs officiers',futureRelease:"Future sortie d’officier",growth:'Hausse prévue par sortie',badgesRequired:"Badges d’officier requis",starValueRequired:"Valeur d’étoile requise",
+  forecastOrv:'ORV prévu / Badge',forecastSrv:'SRV prévu / Étoile exclusive',estimatedOrv:'ORV estimés pour les Badges',estimatedSrv:'SRV estimés pour les Étoiles',
+  saveProgress:'Enregistrer',resetProgress:'Réinitialiser',saveOfficer:"Enregistrer cet officier",resetOfficer:"Réinitialiser cet officier"
+ },
+ de:{
+  languageTitle:'🌐 Sprache',languageHelp:'Wählen Sie die Sprache der App-Oberfläche. Offiziersnamen und Spieldaten werden nicht übersetzt.',languageLabel:'App-Sprache',languageSaved:'Die Sprachauswahl wird automatisch auf diesem Gerät gespeichert.',
+  navHome:'🏠 Start',navOfficer:'🎖 Offizier',navStars:'⭐ Sterne',navDevelop:'📈 Entwicklung',navXP:'📚 XP',navPlanner:'🗓 Planer',navDatabase:'📋 Datenbank',navReleases:'📅 Veröffentlichungen',navSettings:'⚙ Einstellungen',navHelp:'❓ Hilfe',
+  smartDashboard:'🎯 Smart-Dashboard',development:'Entwicklung',stars:'Sterne',xp:'XP',canMax:'Kann ich diesen Offizier maximieren?',nextPlan:'Nächster Ausbauplan',upcomingRelease:'Nächste Veröffentlichung',
+  futureForecast:'🔮 Prognose zukünftiger Offizierskosten',futureRelease:'Zukünftige Offiziersveröffentlichung',growth:'Prognostizierter Anstieg je Veröffentlichung',badgesRequired:'Benötigte Offiziersabzeichen',starValueRequired:'Benötigter Sternwert',
+  forecastOrv:'Prognose ORV / Abzeichen',forecastSrv:'Prognose SRV / Exklusivstern',estimatedOrv:'Geschätzte ORV für Abzeichen',estimatedSrv:'Geschätzte SRV für Sterne',
+  saveProgress:'Fortschritt speichern',resetProgress:'Fortschritt zurücksetzen',saveOfficer:'Diesen Offizier speichern',resetOfficer:'Diesen Offizier zurücksetzen'
+ },
+ es:{
+  languageTitle:'🌐 Idioma',languageHelp:'Elige el idioma de la interfaz. Los nombres de oficiales y los datos del juego no se traducen.',languageLabel:'Idioma de la aplicación',languageSaved:'La selección de idioma se guarda automáticamente en este dispositivo.',
+  navHome:'🏠 Inicio',navOfficer:'🎖 Oficial',navStars:'⭐ Estrellas',navDevelop:'📈 Desarrollo',navXP:'📚 XP',navPlanner:'🗓 Planificador',navDatabase:'📋 Base de datos',navReleases:'📅 Lanzamientos',navSettings:'⚙ Ajustes',navHelp:'❓ Ayuda',
+  smartDashboard:'🎯 Panel inteligente',development:'Desarrollo',stars:'Estrellas',xp:'XP',canMax:'¿Puedo maximizar este oficial?',nextPlan:'Próximo plan de mejora',upcomingRelease:'Próximo lanzamiento',
+  futureForecast:'🔮 Previsión de coste de futuros oficiales',futureRelease:'Futuro lanzamiento de oficial',growth:'Aumento previsto por lanzamiento',badgesRequired:'Insignias de oficial necesarias',starValueRequired:'Valor de estrellas necesario',
+  forecastOrv:'ORV previsto / Insignia',forecastSrv:'SRV previsto / Estrella exclusiva',estimatedOrv:'ORV estimado para insignias',estimatedSrv:'SRV estimado para estrellas',
+  saveProgress:'Guardar progreso',resetProgress:'Restablecer progreso',saveOfficer:'Guardar este oficial',resetOfficer:'Restablecer este oficial'
+ },
+ it:{
+  languageTitle:'🌐 Lingua',languageHelp:"Scegli la lingua dell’interfaccia. I nomi degli ufficiali e i dati di gioco non vengono tradotti.",languageLabel:"Lingua dell’app",languageSaved:'La lingua scelta viene salvata automaticamente su questo dispositivo.',
+  navHome:'🏠 Home',navOfficer:'🎖 Ufficiale',navStars:'⭐ Stelle',navDevelop:'📈 Sviluppo',navXP:'📚 XP',navPlanner:'🗓 Pianificatore',navDatabase:'📋 Database',navReleases:'📅 Uscite',navSettings:'⚙ Impostazioni',navHelp:'❓ Aiuto',
+  smartDashboard:'🎯 Dashboard intelligente',development:'Sviluppo',stars:'Stelle',xp:'XP',canMax:'Posso massimizzare questo ufficiale?',nextPlan:'Prossimo piano di sviluppo',upcomingRelease:'Prossima uscita',
+  futureForecast:'🔮 Previsione costo futuri ufficiali',futureRelease:'Futura uscita ufficiale',growth:'Aumento previsto per uscita',badgesRequired:'Distintivi ufficiale richiesti',starValueRequired:'Valore Stelle richiesto',
+  forecastOrv:'ORV previsto / Distintivo',forecastSrv:'SRV previsto / Stella esclusiva',estimatedOrv:'ORV stimati per i Distintivi',estimatedSrv:'SRV stimati per le Stelle',
+  saveProgress:'Salva progresso',resetProgress:'Reimposta progresso',saveOfficer:'Salva questo ufficiale',resetOfficer:'Reimposta questo ufficiale'
+ }
+};
+const I18N_EN=I18N.en;
+function tr(key){const lang=localStorage.getItem('kow_language_v437')||'en';return I18N[lang]?.[key]??I18N_EN[key]??key}
+function applyLanguage(lang){
+ if(!I18N[lang])lang='en';
+ localStorage.setItem('kow_language_v437',lang);
+ document.documentElement.lang=lang;
+ document.querySelectorAll('[data-i18n]').forEach(el=>{
+   const val=tr(el.dataset.i18n);if(val!==undefined)el.textContent=val;
+ });
+ if($('appLanguage'))$('appLanguage').value=lang;
+}
+function initialiseI18nMarkers(){
+ const exact=[
+  ['#smartDashboardCard h2','smartDashboard'],
+  ['#smartDashboardCard .result-box b','development']
+ ];
+ const h2s=[...document.querySelectorAll('h2')];
+ h2s.forEach(el=>{
+   const t=el.textContent.trim();
+   if(t.includes('Future Officer Cost Forecast'))el.dataset.i18n='futureForecast';
+ });
+ const labels=[...document.querySelectorAll('label')];
+ const map={
+  'Future Officer release':'futureRelease',
+  'Forecast increase per Officer release':'growth',
+  'Officer Badges required':'badgesRequired',
+  'Officer Star value required':'starValueRequired'
+ };
+ labels.forEach(el=>{const k=map[el.textContent.trim()];if(k)el.dataset.i18n=k});
+ const resultBold=[...document.querySelectorAll('#futureOfficerForecastCard .result-box b')];
+ const keys=['forecastOrv','forecastSrv','estimatedOrv','estimatedSrv'];
+ resultBold.forEach((el,i)=>{if(keys[i])el.dataset.i18n=keys[i]});
+ const sd=$('#smartDashboardCard');
+ if(sd){
+   const h=sd.querySelector('h2');if(h)h.dataset.i18n='smartDashboard';
+   const bs=[...sd.querySelectorAll('.result-box b')];
+   const ks=['development','stars','xp','canMax','nextPlan','upcomingRelease'];
+   bs.forEach((el,i)=>{if(ks[i])el.dataset.i18n=ks[i]});
+ }
+ if($('saveProgress'))$('saveProgress').dataset.i18n='saveProgress';
+ if($('resetProgress'))$('resetProgress').dataset.i18n='resetProgress';
+ if($('saveOfficerProfile'))$('saveOfficerProfile').dataset.i18n='saveOfficer';
+ if($('resetOfficerProfile'))$('resetOfficerProfile').dataset.i18n='resetOfficer';
+}
 async function init(){
  await loadOfficers();renderOfficerFilters();renderOfficerOptions();
  ['officerSearch','officerSeasonFilter','officerRoleFilter'].forEach(id=>{
@@ -1432,6 +1533,12 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  });
  updateFutureOfficerForecast();
 
+
+ initialiseI18nMarkers();
+ const savedLanguage=localStorage.getItem('kow_language_v437')||'en';
+ if($('appLanguage'))$('appLanguage').addEventListener('change',e=>applyLanguage(e.target.value));
+ applyLanguage(savedLanguage);
+
  const savedName=localStorage.getItem('kow_app_name_v4');if(savedName){$('appName').value=savedName;$('appTitle').textContent=savedName;document.title=savedName}
  const savedPortrait=localStorage.getItem('kow_bg_portrait_v401');
  const savedLandscape=localStorage.getItem('kow_bg_landscape_v401');
@@ -1444,7 +1551,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.6';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.7';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();

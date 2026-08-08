@@ -1,6 +1,16 @@
 # Changelog
 
-## v4.3.6 TEST
+## v4.3.7 TEST
+- Added Language selector to Settings.
+- Initial languages: English, French, German, Spanish and Italian.
+- Language selection is saved automatically on the device.
+- Added translation framework with English fallback for missing translation keys.
+- Initial translation coverage includes navigation, Smart Dashboard, Future Officer Forecast and key save/reset controls.
+- Officer names and game/database values remain unchanged.
+- Calculations and saved Officer/resource data are unaffected by language selection.
+- v4.3.6 remains LIVE while multilingual support is tested.
+
+## v4.3.6 LIVE
 - Added Future Officer Cost Forecast to Releases.
 - Forecast is based on Officer release sequence, not Officer role pricing.
 - Uses latest known S7 Tank Destroyer benchmark: 600 ORV per Badge / 300 SRV per Exclusive Star.
@@ -9,7 +19,7 @@
 - User can alter forecast growth rate, Badge requirement and Star value requirement.
 - Calculates projected ORV per Badge, SRV per Exclusive Star, total ORV for Badges and total SRV for Stars.
 - Estimates are clearly labelled forecasts until confirmed game costs are published.
-- v4.3.5 remains LIVE while this version is tested.
+- Approved TEST build promoted to LIVE.
 
 ## v4.3.5 LIVE
 - Fixed Officer switching so shared resource inventories remain populated.
