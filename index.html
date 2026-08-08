@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.3.19</title>
+<title>KoW Companion v4.3.20</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -130,11 +130,11 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </style>
 </head>
 <body><div id="testBanner" style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:7px 10px;letter-spacing:.5px"></div>
-<div class="test-banner">TEST VERSION — v4.3.19 — NOT LIVE</div>
+<div class="test-banner">TEST VERSION — v4.3.20 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
-    <p>Officer Companion v4.3.19</p>
+    <p>Officer Companion v4.3.20</p>
   </div>
   <div class="creator-credit">Created by FireStorm (371)</div>
 </header>
@@ -442,7 +442,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
     <option value="en">English</option>
     <option value="fr">Français</option>
     <option value="de">Deutsch</option>
-    <option value="es">Español</option>
+    
     <option value="it">Italiano</option>
   </select>
   <div class="notice" data-i18n="languageSaved">Your language choice is saved automatically on this device.</div>
@@ -462,7 +462,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <button id="resetAppearance" class="primary">Reset Appearance & Backgrounds</button>
       <h3>App Updates</h3>
       <div class="notice">
-        <div><b>Installed version:</b> <span id="installedVersion">v4.3.19</span></div>
+        <div><b>Installed version:</b> <span id="installedVersion">v4.3.20</span></div>
         <div id="updateStatus">Tap Check for Updates to compare with the latest GitHub Pages version.</div>
       </div>
       <div class="two">
@@ -470,7 +470,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
         <button id="refreshLatest" class="primary">Refresh Latest Version</button>
       </div>
       <h3>About</h3>
-      <p class="notice"><b>KoW Companion v4.3.19 LIVE</b><br>Created by FireStorm (371)</p>
+      <p class="notice"><b>KoW Companion v4.3.20 LIVE</b><br>Created by FireStorm (371)</p>
       <h3>Help & Instructions</h3>
       <p class="notice">Open the in-app User Guide for the recommended setup order, explanations of every tab, saving, database publishing, vouchers, badges and Original Officer restrictions.</p>
       <button id="openUserGuide" class="primary">📖 User Guide</button>
@@ -498,8 +498,8 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
   <button data-view="help">📖<span>Help</span></button>
 </nav>
 
-<script src="lang/en.js?v=4.3.19"></script>
-<script src="lang/it.js?v=4.3.19"></script>
+<script src="lang/en.js?v=4.3.20"></script>
+<script src="lang/it.js?v=4.3.20"></script>
 <script type="module">
 const DEFAULT_OFFICERS=[{"name": "S7 Roisin", "role": "Tank", "season": "S7", "orv": 600, "srv": 300, "notes": ""}, {"name": "S7 Barbara", "role": "Tank", "season": "S7", "orv": 600, "srv": 300, "notes": ""}, {"name": "S7 Romana", "season": "S7", "orv": 500, "srv": 250, "notes": ""}, {"name": "S7 Liora", "season": "S7", "orv": 500, "srv": 250, "notes": ""}, {"name": "S7 Stella", "role": "Tank", "season": "S7", "orv": 416, "srv": 208, "notes": ""}, {"name": "S7 Klara", "role": "Tank", "season": "S7", "orv": 416, "srv": 208, "notes": ""}, {"name": "S7 Code", "role": "Tank", "season": "S7", "orv": 346, "srv": 173, "notes": ""}, {"name": "S7 Kamila", "role": "Tank", "season": "S7", "orv": 346, "srv": 173, "notes": ""}, {"name": "S6 Regina", "role": "Tank", "season": "S6", "orv": 289, "srv": 144, "notes": ""}, {"name": "S6 Veronica", "role": "Tank", "season": "S6", "orv": 289, "srv": 144, "notes": ""}, {"name": "S6 Silverhand", "season": "S6", "orv": 240, "srv": 120, "notes": ""}, {"name": "S6 Red Queen", "season": "S6", "orv": 240, "srv": 120, "notes": ""}, {"name": "S6 Samantha", "season": "S6", "orv": 200, "srv": 100, "notes": ""}, {"name": "S6 Saoirse", "season": "S6", "orv": 200, "srv": 100, "notes": ""}, {"name": "S6 Emily", "season": "S6", "orv": 167, "srv": 84, "notes": ""}, {"name": "S6 Zoya", "season": "S6", "orv": 167, "srv": 84, "notes": ""}];
 const STAR_CUM=[0,500,1500,8000,33000,98000];
@@ -1133,7 +1133,7 @@ async function restoreFullBackup(file){
  const payload=JSON.parse(await file.text());
  if(!payload||!payload.localStorage)throw new Error('Invalid KoW Companion backup file.');
  Object.entries(payload.localStorage).forEach(([k,v])=>localStorage.setItem(k,v));
- alert('Backup restored. The app will reload now.');location.reload();
+ alert('Backup restored. The app will reload now.');location.replace(location.pathname+'?refresh='+Date.now());
 }
 
 let multiPlanOfficers=[];
@@ -1373,11 +1373,14 @@ const I18N={
  en:window.KOW_I18N_EN||{},
  it:window.KOW_I18N_IT||{},
  fr:window.KOW_I18N_FR||{},
- de:window.KOW_I18N_DE||{},
- es:window.KOW_I18N_ES||{}
+ de:window.KOW_I18N_DE||{}
 };
+const SUPPORTED_LANGUAGES=['en','it','fr','de'];
 
-function currentLang(){return localStorage.getItem(LANGUAGE_KEY)||localStorage.getItem('kow_language_v439')||'en'}
+function currentLang(){
+  const raw=(localStorage.getItem('kow_language')||'en').toLowerCase();
+  return SUPPORTED_LANGUAGES.includes(raw)?raw:'en';
+}
 function tText(text){
  const lang=currentLang();
  return I18N[lang]?.[text] ?? I18N.en[text] ?? text;
@@ -1421,12 +1424,6 @@ function translateOptions(){
     'January — S8 Infantry':'Januar — S8 Infanterie',
     'April — S8 Tanks':'April — S8 Panzer',
     'July — S8 Tank Destroyers':'Juli — S8 Jagdpanzer'
-   },
-   es:{
-    'October — S8 Rally / Garrison':'Octubre — S8 Rally / Guarnición',
-    'January — S8 Infantry':'Enero — S8 Infantería',
-    'April — S8 Tanks':'Abril — S8 Tanques',
-    'July — S8 Tank Destroyers':'Julio — S8 Cazacarros'
    }
  };
  document.querySelectorAll('option').forEach(o=>{
@@ -1468,7 +1465,7 @@ function restoreEnglishUi(){
 }
 
 function resetLanguageToEnglish(){
-  localStorage.removeItem('kow_language');
+  localStorage.setItem('kow_language','en');
   ['kow_language_v437','kow_language_v438','kow_language_v439','kow_language_v4310','kow_language_v4311']
     .forEach(k=>localStorage.removeItem(k));
   localStorage.setItem('kow_language','en');
@@ -1481,52 +1478,53 @@ function resetLanguageToEnglish(){
 function renderHelpLanguage(lang){
   const box=document.getElementById('helpLanguageBody');
   if(!box)return;
-  const map={
-    en:window.KOW_HELP_HTML_EN,
-    it:window.KOW_HELP_HTML_IT,
-    fr:window.KOW_HELP_HTML_FR,
-    de:window.KOW_HELP_HTML_DE,
-    es:window.KOW_HELP_HTML_ES
+  const helpMap={
+    en:window.KOW_HELP_HTML_EN||'',
+    it:window.KOW_HELP_HTML_IT||'',
+    fr:window.KOW_HELP_HTML_FR||'',
+    de:window.KOW_HELP_HTML_DE||''
   };
-  const html=map[lang] || map.en || '';
-  box.innerHTML=html || '<div class="notice">Help language file is loading. Refresh the page once if this message remains.</div>';
+  const requested=SUPPORTED_LANGUAGES.includes(lang)?lang:'en';
+  const html=helpMap[requested] || helpMap.en;
+  box.innerHTML=html || '<div class="notice"><b>Help unavailable.</b> Refresh the page to reload the language resources.</div>';
 }
 
 function applyLanguage(lang){
-  if(!I18N[lang])lang='en';
-  captureEnglishUiSnapshot();
-
-  // Always restore the pristine English DOM before applying a language.
-  // This makes Italian -> English and language-to-language switching reversible.
+  lang=SUPPORTED_LANGUAGES.includes(lang)?lang:'en';
   restoreEnglishUi();
-  renderHelpLanguage(lang);
-
   localStorage.setItem('kow_language',lang);
-  document.documentElement.lang=lang;
-  const selector=document.getElementById('appLanguage');
-  if(selector)selector.value=lang;
+  const select=document.getElementById('appLanguage');
+  if(select)select.value=lang;
 
-  if(lang==='en'){
-    if(typeof itObserver!=='undefined' && itObserver){itObserver.disconnect();itObserver=null;}
-    return;
+  if(lang!=='en'){
+    const dict=I18N[lang]||{};
+    document.querySelectorAll('body *').forEach(el=>{
+      if(['SCRIPT','STYLE','TEXTAREA'].includes(el.tagName))return;
+      for(const node of el.childNodes){
+        if(node.nodeType!==Node.TEXT_NODE)continue;
+        const raw=node.nodeValue;
+        const trimmed=raw.trim();
+        if(!trimmed)continue;
+        const translated=dict[trimmed];
+        if(translated){
+          const lead=raw.match(/^\s*/)[0], trail=raw.match(/\s*$/)[0];
+          node.nodeValue=lead+translated+trail;
+        }
+      }
+      ['placeholder','title','aria-label'].forEach(attr=>{
+        if(el.hasAttribute&&el.hasAttribute(attr)){
+          const v=el.getAttribute(attr);
+          if(dict[v])el.setAttribute(attr,dict[v]);
+        }
+      });
+    });
   }
 
-  // Apply the existing dictionary/whole-page translation system from clean English source text.
-  if(typeof translateNodeText==='function')translateNodeText(document.body);
-  if(typeof translateOptions==='function')translateOptions();
-
-  // Recalculate dynamic content, then translate it after it has rendered.
-  if(typeof updateFutureOfficerForecast==='function')updateFutureOfficerForecast();
-  if(typeof updateSmartDashboard==='function')updateSmartDashboard();
-
-  if(lang==='it'){
-    if(typeof startItalianObserver==='function')setTimeout(startItalianObserver,0);
-    if(typeof translateItalianDom==='function'){
-      setTimeout(()=>translateItalianDom(document.body),20);
-      setTimeout(()=>translateItalianDom(document.body),100);
-      setTimeout(()=>forceItalianResiduals(),140);
-    }
-  }
+  renderHelpLanguage(lang);
+  
+  // Dynamic renderers can recreate English strings, so run the existing translator once more.
+  if(lang!=='en' && typeof translateItalianDom==='function' && lang==='it')try{translateItalianDom(document.body);}catch(e){}
+  renderHelpLanguage(lang);
 }
 
 
@@ -1914,7 +1912,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.19';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.20';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
@@ -1946,7 +1944,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
 
  loadProgress();
 
- // v4.3.19 feature wiring
+ // v4.3.20 feature wiring
  populateCompareOfficers();
  const compareSelect=$('compareOfficerSelect');
  if(compareSelect){
