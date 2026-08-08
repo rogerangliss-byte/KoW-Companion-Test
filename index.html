@@ -1189,14 +1189,14 @@ function calculateMultiPlanner(){
    const fromUniversal=Math.min(needed-allocated,universal);
    allocated+=fromUniversal; universal-=fromUniversal;
    totalAllocated+=allocated;
-   const status=allocated>=needed?(currentLang()==='it'?'Completamente coperto':'Fully Funded'):allocated>0?(currentLang()==='it'?'Parzialmente coperto':'Partially Funded'):(currentLang()==='it'?'Mancanza':'Shortfall');
+   const status=allocated>=needed?tText('Fully Funded'):allocated>0?tText('Partially Funded'):tText('Shortfall');
    if(allocated>=needed)fully++; else if(allocated>0)partial++; else unfunded++;
    const tr=rows[pos]; if(tr){
      tr.querySelector('[data-multi-allocated]').textContent=fmt(allocated)+' / '+fmt(needed);
      tr.querySelector('[data-multi-status]').textContent=status;
    }
  });
- $('multiPlannerSummary').innerHTML=currentLang()==='it'?`<b>Risultato piano:</b> ${fully} completamente coperti · ${partial} parzialmente coperti · ${unfunded} mancanti<br><span class="muted">${fmt(totalAllocated)} di ${fmt(totalNeed)} distintivi richiesti coperti. Risorse condivise rimanenti: ${fmt(orv)} ORV · ${fmt(universal)} Distintivi Universali.</span>`:`<b>Plan result:</b> ${fully} fully funded · ${partial} partially funded · ${unfunded} shortfall<br><span class="muted">${fmt(totalAllocated)} of ${fmt(totalNeed)} required badges covered. Remaining shared resources: ${fmt(orv)} ORV · ${fmt(universal)} Universal Badges.</span>`;
+ $('multiPlannerSummary').innerHTML=`<b>${tText('Plan result:')}</b> ${fully} ${tText('fully funded')} · ${partial} ${tText('partially funded')} · ${unfunded} ${tText('shortfall')}<br><span class="muted">${fmt(totalAllocated)} ${tText('of')} ${fmt(totalNeed)} ${tText('required badges covered. Remaining shared resources:')} ${fmt(orv)} ORV · ${fmt(universal)} ${tText('Universal Badges')}.</span>`;
 }
 function getMultiPlans(){try{return JSON.parse(localStorage.getItem('kow_multi_plans_v430')||'{}')}catch{return {}}}
 function refreshMultiSavedPlans(selectName=''){
@@ -1948,6 +1948,16 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
 
  loadProgress();
 
+ // v4.3.23 translation hardening: translate UI text recreated by dynamic renderers.
+ let kowI18nBusy=false;
+ const kowI18nObserver=new MutationObserver(()=>{
+   const lang=currentLang();
+   if(lang==='en'||kowI18nBusy)return;
+   kowI18nBusy=true;
+   try{translateNodeText(document.body);translateOptions();}catch(e){}
+   kowI18nBusy=false;
+ });
+ kowI18nObserver.observe(document.body,{childList:true,subtree:true,characterData:true});
  // v4.3.22 feature wiring
  populateCompareOfficers();
  const compareSelect=$('compareOfficerSelect');
