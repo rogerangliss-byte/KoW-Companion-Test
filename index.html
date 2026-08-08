@@ -130,11 +130,11 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </style>
 </head>
 <body><div id="testBanner" style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:7px 10px;letter-spacing:.5px"></div>
-<div class="test-banner">TEST VERSION — v4.3.9 — NOT LIVE</div>
+<div class="test-banner">TEST VERSION — v4.3.10 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
-    <p>Officer Companion v4.3.9</p>
+    <p>Officer Companion v4.3.10</p>
   </div>
   <div class="creator-credit">Created by FireStorm (371)</div>
 </header>
@@ -1026,7 +1026,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='4.3.9';
+const APP_VERSION='4.3.10';
 
 function parseVersion(v){
  return String(v||'').replace(/^v/i,'').split('.').map(n=>parseInt(n,10)||0);
@@ -1466,7 +1466,8 @@ I18N.de={...I18N.en,...{
 I18N.es={...I18N.en,...{
 "Language":"Idioma","App language":"Idioma de la aplicación","Home":"Inicio","Officer":"Oficial","Stars":"Estrellas","Develop":"Desarrollo","Planner":"Planificador","Releases":"Lanzamientos","Settings":"Ajustes","Help":"Ayuda","Smart Dashboard":"Panel inteligente","Development":"Desarrollo","Future Officer Cost Forecast":"Previsión de coste de futuros oficiales","Officer Experience":"Experiencia del oficial","Officer Development":"Desarrollo del oficial","Star Planner":"Planificador de estrellas","Officer XP":"XP del oficial","Database Manager":"Gestor de base de datos","Help & Instructions":"Ayuda e instrucciones"}};
 
-function currentLang(){return localStorage.getItem('kow_language_v439')||'en'}
+const LANGUAGE_KEY='kow_language';
+function currentLang(){return localStorage.getItem(LANGUAGE_KEY)||localStorage.getItem('kow_language_v439')||'en'}
 function tText(text){
  const lang=currentLang();
  return I18N[lang]?.[text] ?? I18N.en[text] ?? text;
@@ -1509,7 +1510,8 @@ function translateOptions(){
 }
 function applyLanguage(lang){
  if(!I18N[lang])lang='en';
- localStorage.setItem('kow_language_v439',lang);
+ localStorage.setItem(LANGUAGE_KEY,lang);
+ localStorage.removeItem('kow_language_v439');
  document.documentElement.lang=lang;
  if($('appLanguage'))$('appLanguage').value=lang;
  translateNodeText(document.body);
@@ -1745,7 +1747,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  updateFutureOfficerForecast();
 
 
- const savedLanguage=localStorage.getItem('kow_language_v439')||'en';
+ const savedLanguage=currentLang();
  if($('appLanguage'))$('appLanguage').addEventListener('change',e=>applyLanguage(e.target.value));
  applyLanguage(savedLanguage);
 
@@ -1761,7 +1763,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.9';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.10';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
