@@ -1,5 +1,16 @@
 # Changelog
 
+## v4.3.2 TEST
+- Fixed Smart Dashboard population.
+- Dashboard now reads the existing saved Officer/resource state instead of requiring separate Home inputs.
+- Development reads held badges, shared badge resources and ORV conversion for the active Officer.
+- Stars and XP use the app's calculated requirement/remaining values.
+- Can I Max This Officer? now reflects Development + Stars + XP.
+- Next Upgrade Plan reads the selected/saved Multi-Officer plan.
+- Upcoming Release is populated automatically from the recurring annual release cycle.
+- Added automatic dashboard refresh after restored saved data and user changes.
+- v4.3.0 remains the Live baseline until this test build is approved.
+
 ## v4.3.1 TEST
 - Added Smart Dashboard to Home.
 - Added READY TO MAX / PARTIALLY READY / RESOURCES REQUIRED status.
