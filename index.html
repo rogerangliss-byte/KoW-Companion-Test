@@ -130,11 +130,11 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </style>
 </head>
 <body><div id="testBanner" style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:7px 10px;letter-spacing:.5px"></div>
-<div class="test-banner">TEST VERSION — v4.3.11 — NOT LIVE</div>
+<div class="test-banner">TEST VERSION — v4.3.12 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
-    <p>Officer Companion v4.3.11</p>
+    <p>Officer Companion v4.3.12</p>
   </div>
   <div class="creator-credit">Created by FireStorm (371)</div>
 </header>
@@ -1026,7 +1026,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='4.3.11';
+const APP_VERSION='4.3.12';
 
 function parseVersion(v){
  return String(v||'').replace(/^v/i,'').split('.').map(n=>parseInt(n,10)||0);
@@ -1586,6 +1586,60 @@ function applyLanguage(lang){
 
 
 const IT_EXACT={
+"Smart Dashboard":"Dashboard intelligente",
+"READY TO MAX":"PRONTO PER IL MASSIMO",
+"Development":"Sviluppo",
+"Fully funded":"Completamente coperto",
+"Can I max this Officer?":"Posso massimizzare questo ufficiale?",
+"YES":"SÌ",
+"Next development plan":"Prossimo piano di sviluppo",
+"Current Upgrades":"Potenziamenti attuali",
+"Next release":"Prossima uscita",
+"Active Officer":"Ufficiale attivo",
+"Officer Progress Profile":"Profilo progresso ufficiale",
+"Saved":"Salvato",
+"Officer Upgrade Summary":"Riepilogo potenziamento ufficiale",
+"Select an Officer and enter resources to see the current upgrade position.":"Seleziona un ufficiale e inserisci le risorse per vedere la situazione attuale del potenziamento.",
+"Each Selection Chest can be used as either 1 Universal Legendary Badge or 600 Officer Readiness Vouchers. The ORV value follows the highest ORV-per-badge cost in the latest published season.":"Ogni Forziere di selezione può essere usato come 1 Distintivo Leggendario Universale oppure 600 Buoni preparazione ufficiale. Il valore ORV segue il costo ORV per distintivo più alto dell'ultima stagione pubblicata.",
+"XP required for selected levels":"XP richiesti per i livelli selezionati",
+"Recurring Release Calendar":"Calendario ricorrente delle uscite",
+"KoW releases follow this recurring August → July annual cycle. The current month is highlighted automatically.":"Le uscite di KoW seguono questo ciclo annuale ricorrente da agosto a luglio. Il mese corrente viene evidenziato automaticamente.",
+"August":"Agosto",
+"September":"Settembre",
+"October":"Ottobre",
+"November":"Novembre",
+"December":"Dicembre",
+"January":"Gennaio",
+"February":"Febbraio",
+"March":"Marzo",
+"April":"Aprile",
+"May":"Maggio",
+"June":"Giugno",
+"July":"Luglio",
+"CURRENT":"CORRENTE",
+"New Dogs":"Nuovi cani",
+"Current Upgrade":"Potenziamento attuale",
+"Use held resources":"Usa risorse possedute",
+"Select saved plan":"Seleziona piano salvato",
+"Optimise automatically":"Ottimizza automaticamente",
+"Plan result":"Risultato piano",
+"fully funded":"completamente coperti",
+"partially funded":"parzialmente coperti",
+"shortfall":"mancanza",
+"required badges covered":"distintivi richiesti coperti",
+"Remaining shared resources":"Risorse condivise rimanenti",
+"Universal Badges":"Distintivi Universali",
+"Priority":"Priorità",
+"Officer":"Ufficiale",
+"Badges needed":"Distintivi necessari",
+"Allocated":"Allocati",
+"Status":"Stato",
+"Order":"Ordine",
+"Save Progress":"Salva progresso",
+"Database":"Database",
+"Settings, Backup & Restore":"Impostazioni, backup e ripristino",
+"Terminology":"Terminologia",
+"Use":"Usa",
 "Language":"Lingua",
 "Choose the language used by the app interface. Officer names and game data are not translated.":"Scegli la lingua utilizzata dall’interfaccia dell’app. I nomi degli ufficiali e i dati di gioco non vengono tradotti.",
 "App language":"Lingua dell’app",
@@ -1753,6 +1807,48 @@ function translateItalianText(text){
 }
 
 let itTranslating=false;
+
+const IT_PHRASES=[
+  ['READY TO MAX','PRONTO PER IL MASSIMO'],
+  ['Fully funded','Completamente coperto'],
+  ['fully funded','completamente coperti'],
+  ['partially funded','parzialmente coperti'],
+  ['Current Upgrades','Potenziamenti attuali'],
+  ['Next:','Successivo:'],
+  ['Next release','Prossima uscita'],
+  ['Current Upgrade','Potenziamento attuale'],
+  ['required badges covered','distintivi richiesti coperti'],
+  ['Remaining shared resources','Risorse condivise rimanenti'],
+  ['Universal Badges','Distintivi Universali'],
+  ['can be maxed with the resources currently entered in the app.','può essere massimizzato con le risorse attualmente inserite nell’app.'],
+  ['Each Selection Chest can be used as either','Ogni Forziere di selezione può essere usato come'],
+  ['Officer Readiness Vouchers','Buoni preparazione ufficiale'],
+  ['The ORV value follows the highest ORV-per-badge cost in the latest published season.','Il valore ORV segue il costo ORV per distintivo più alto dell’ultima stagione pubblicata.'],
+  ['Use held resources','Usa risorse possedute'],
+  ['Select saved plan','Seleziona piano salvato'],
+  ['Optimise automatically','Ottimizza automaticamente'],
+  ['Plan result:','Risultato piano:'],
+  ['shortfall','mancanza'],
+  ['Recurring Release Calendar','Calendario ricorrente delle uscite'],
+  ['KoW releases follow this recurring August → July annual cycle. The current month is highlighted automatically.','Le uscite di KoW seguono questo ciclo annuale ricorrente da agosto a luglio. Il mese corrente viene evidenziato automaticamente.'],
+  ['August','Agosto'],['September','Settembre'],['October','Ottobre'],['November','Novembre'],['December','Dicembre'],
+  ['January','Gennaio'],['February','Febbraio'],['March','Marzo'],['April','Aprile'],['May','Maggio'],['June','Giugno'],['July','Luglio'],
+  ['CURRENT','CORRENTE'],['New Dogs','Nuovi cani'],
+  ['Guns: Field','Armi: Campo'],['Jets: Fighter','Jet: Caccia'],
+  ['Officers: Rally / Garrison','Ufficiali: Rally / Guarnigione'],
+  ['New Ships','Nuove navi']
+];
+function applyItalianPhrases(root=document.body){
+  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+  const nodes=[]; while(walker.nextNode())nodes.push(walker.currentNode);
+  nodes.forEach(n=>{
+    if(!n.parentElement||['SCRIPT','STYLE','TEXTAREA'].includes(n.parentElement.tagName))return;
+    let v=n.nodeValue;
+    IT_PHRASES.forEach(([a,b])=>{ if(v.includes(a))v=v.split(a).join(b); });
+    n.nodeValue=v;
+  });
+}
+
 function translateItalianDom(root=document.body){
  if(currentLang()!=='it'||itTranslating)return;
  itTranslating=true;
@@ -1778,6 +1874,8 @@ function translateItalianDom(root=document.body){
      if(after!==before)o.textContent=after;
    });
  }finally{itTranslating=false}
+
+  applyItalianPhrases(root);
 }
 
 let itObserver=null;
@@ -1867,7 +1965,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.11';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.12';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
