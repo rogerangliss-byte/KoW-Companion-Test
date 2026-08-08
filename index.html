@@ -130,11 +130,11 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </style>
 </head>
 <body><div id="testBanner" style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:7px 10px;letter-spacing:.5px"></div>
-<div class="test-banner">TEST VERSION — v4.3.10 — NOT LIVE</div>
+<div class="test-banner">TEST VERSION — v4.3.11 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
-    <p>Officer Companion v4.3.10</p>
+    <p>Officer Companion v4.3.11</p>
   </div>
   <div class="creator-credit">Created by FireStorm (371)</div>
 </header>
@@ -1026,7 +1026,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='4.3.10';
+const APP_VERSION='4.3.11';
 
 function parseVersion(v){
  return String(v||'').replace(/^v/i,'').split('.').map(n=>parseInt(n,10)||0);
@@ -1508,21 +1508,117 @@ function translateOptions(){
    o.textContent=releaseTranslations[lang]?.[base] ?? tText(base);
  });
 }
+
+const KOW_I18N_SKIP_TAGS=new Set(['SCRIPT','STYLE','TEXTAREA']);
+let KOW_ENGLISH_SNAPSHOT=null;
+
+function captureEnglishUiSnapshot(){
+  if(KOW_ENGLISH_SNAPSHOT)return;
+  const textNodes=[];
+  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+  while(walker.nextNode()){
+    const n=walker.currentNode, p=n.parentElement;
+    if(!p||KOW_I18N_SKIP_TAGS.has(p.tagName))continue;
+    textNodes.push([n,n.nodeValue]);
+  }
+  const attrs=[];
+  document.querySelectorAll('[placeholder],[title],[aria-label]').forEach(el=>{
+    ['placeholder','title','aria-label'].forEach(a=>{
+      if(el.hasAttribute(a))attrs.push([el,a,el.getAttribute(a)]);
+    });
+  });
+  const options=[...document.querySelectorAll('option')].map(o=>[o,o.textContent]);
+  KOW_ENGLISH_SNAPSHOT={textNodes,attrs,options};
+}
+
+function restoreEnglishUi(){
+  if(!KOW_ENGLISH_SNAPSHOT)return;
+  KOW_ENGLISH_SNAPSHOT.textNodes.forEach(([n,v])=>{if(n&&n.isConnected)n.nodeValue=v});
+  KOW_ENGLISH_SNAPSHOT.attrs.forEach(([el,a,v])=>{if(el&&el.isConnected)el.setAttribute(a,v)});
+  KOW_ENGLISH_SNAPSHOT.options.forEach(([o,v])=>{if(o&&o.isConnected)o.textContent=v});
+  document.documentElement.lang='en';
+}
+
+function resetLanguageToEnglish(){
+  localStorage.removeItem('kow_language');
+  ['kow_language_v437','kow_language_v438','kow_language_v439','kow_language_v4310','kow_language_v4311']
+    .forEach(k=>localStorage.removeItem(k));
+  localStorage.setItem('kow_language','en');
+  restoreEnglishUi();
+  const sel=document.getElementById('appLanguage');
+  if(sel)sel.value='en';
+}
+
 function applyLanguage(lang){
- if(!I18N[lang])lang='en';
- localStorage.setItem(LANGUAGE_KEY,lang);
- localStorage.removeItem('kow_language_v439');
- document.documentElement.lang=lang;
- if($('appLanguage'))$('appLanguage').value=lang;
- translateNodeText(document.body);
- translateOptions();
- // Dynamic cards/messages are recalculated so they can be translated on the current screen.
- if(typeof updateFutureOfficerForecast==='function')updateFutureOfficerForecast();
- if(typeof updateSmartDashboard==='function')updateSmartDashboard();
+  if(!I18N[lang])lang='en';
+  captureEnglishUiSnapshot();
+
+  // Always restore the pristine English DOM before applying a language.
+  // This makes Italian -> English and language-to-language switching reversible.
+  restoreEnglishUi();
+
+  localStorage.setItem('kow_language',lang);
+  document.documentElement.lang=lang;
+  const selector=document.getElementById('appLanguage');
+  if(selector)selector.value=lang;
+
+  if(lang==='en'){
+    if(typeof itObserver!=='undefined' && itObserver){itObserver.disconnect();itObserver=null;}
+    return;
+  }
+
+  // Apply the existing dictionary/whole-page translation system from clean English source text.
+  if(typeof translateNodeText==='function')translateNodeText(document.body);
+  if(typeof translateOptions==='function')translateOptions();
+
+  // Recalculate dynamic content, then translate it after it has rendered.
+  if(typeof updateFutureOfficerForecast==='function')updateFutureOfficerForecast();
+  if(typeof updateSmartDashboard==='function')updateSmartDashboard();
+
+  if(lang==='it'){
+    if(typeof startItalianObserver==='function')setTimeout(startItalianObserver,0);
+    if(typeof translateItalianDom==='function'){
+      setTimeout(()=>translateItalianDom(document.body),20);
+      setTimeout(()=>translateItalianDom(document.body),100);
+    }
+  }
 }
 
 
 const IT_EXACT={
+"Language":"Lingua",
+"Choose the language used by the app interface. Officer names and game data are not translated.":"Scegli la lingua utilizzata dall’interfaccia dell’app. I nomi degli ufficiali e i dati di gioco non vengono tradotti.",
+"App language":"Lingua dell’app",
+"Your language choice is saved automatically on this device.":"La lingua scelta viene salvata automaticamente su questo dispositivo.",
+"Training Level":"Livello addestramento",
+"Use Selection Chests as":"Usa i Forzieri di selezione come",
+"Universal Legendary Badges":"Distintivi Leggendari Universali",
+"Badges used":"Distintivi usati",
+"ORV generated from Selection Chests":"ORV generati dai Forzieri di selezione",
+"Officer Progress Profile":"Profilo progresso ufficiale",
+"Saved":"Salvato",
+"Officer Upgrade Summary":"Riepilogo potenziamento ufficiale",
+"Smart Dashboard":"Dashboard intelligente",
+"Active Officer":"Ufficiale attivo",
+"Stars":"Stelle",
+"Development":"Sviluppo",
+"Held":"Posseduto",
+"Required":"Richiesto",
+"Officer XP":"XP ufficiale",
+"Choose File":"Scegli file",
+"No file chosen":"Nessun file selezionato",
+"Reset Appearance & Backgrounds":"Ripristina aspetto e sfondi",
+"Current Upgrades":"Potenziamenti attuali",
+"Resource":"Risorsa",
+"Shortfall":"Mancanza",
+"Legendary Stars":"Stelle Leggendarie",
+"Officer Badges":"Distintivi ufficiale",
+"Officer Readiness Vouchers":"Buoni preparazione ufficiale",
+"Exclusive Stars":"Stelle esclusive",
+"Star Readiness Vouchers":"Buoni preparazione stella",
+"Fully funded":"Completamente coperto",
+"READY TO MAX":"PRONTO PER IL MASSIMO",
+"RESOURCES REQUIRED":"RISORSE NECESSARIE",
 "Smart Dashboard":"Dashboard intelligente",
 "READY TO MAX":"PRONTO PER IL MASSIMO",
 "PARTIALLY READY":"PARZIALMENTE PRONTO",
@@ -1749,7 +1845,15 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
 
  const savedLanguage=currentLang();
  if($('appLanguage'))$('appLanguage').addEventListener('change',e=>applyLanguage(e.target.value));
+ captureEnglishUiSnapshot();
  applyLanguage(savedLanguage);
+
+ const resetLangButtons=[...document.querySelectorAll('button')].filter(b=>{
+   const t=(b.textContent||'').trim().toLowerCase();
+   return t.includes('reset appearance') || t.includes('reset app');
+ });
+ resetLangButtons.forEach(b=>b.addEventListener('click',()=>setTimeout(resetLanguageToEnglish,0)));
+
 
  const savedName=localStorage.getItem('kow_app_name_v4');if(savedName){$('appName').value=savedName;$('appTitle').textContent=savedName;document.title=savedName}
  const savedPortrait=localStorage.getItem('kow_bg_portrait_v401');
@@ -1763,7 +1867,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.10';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.11';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();

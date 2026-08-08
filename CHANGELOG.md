@@ -1,5 +1,16 @@
 # Changelog
 
+## v4.3.11 TEST
+- Fixed Italian -> English switching by restoring a pristine English UI before every language change.
+- Language preference now uses a stable version-independent `kow_language` setting.
+- Existing older language settings are migrated on startup.
+- Selecting English immediately restores the complete interface to English.
+- Reset Appearance / Reset App restores English as the default and clears old language-version keys.
+- Expanded Italian coverage for remaining reported labels and status strings.
+- Dynamic Dashboard/Forecast content is recalculated and translated after language changes.
+- Officer names and game/database values remain unchanged.
+- TEST only until English <-> Italian switching and full Italian coverage are approved.
+
 ## v4.3.9 TEST
 - Completed a much deeper Italian translation pass.
 - Added translation of dynamic JavaScript-generated status/result text, not just static page labels.
