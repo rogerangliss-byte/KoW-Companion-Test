@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.3.0</title>
+<title>KoW Companion v4.3.1</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -128,17 +128,35 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 .result-box{padding:12px;border:1px solid var(--line);border-radius:10px;background:rgba(0,0,0,.28);line-height:1.55}
 </style>
 </head>
-<body><div id="testBanner" style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:7px 10px;letter-spacing:.5px">TEST VERSION — v4.3.0 — NOT LIVE</div>
+<body><div id="testBanner" style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:7px 10px;letter-spacing:.5px">TEST VERSION — v4.3.1 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
-    <p>Officer Companion v4.3.0</p>
+    <p>Officer Companion v4.3.1</p>
   </div>
   <div class="creator-credit">Created by FireStorm (371)</div>
 </header>
 
 <main class="app">
   <section id="dashboard" class="view active">
+<article class="card" id="smartDashboardCard">
+  <h2>🎯 Smart Dashboard</h2>
+  <div id="readinessStatus" class="result-box"><b>Readiness:</b> Select an Officer and enter your resources.</div>
+  <div class="two">
+    <div class="result-box"><b>Development</b><br><span id="dashDevelopment">—</span></div>
+    <div class="result-box"><b>Stars</b><br><span id="dashStars">—</span></div>
+  </div>
+  <div class="two">
+    <div class="result-box"><b>XP</b><br><span id="dashXP">—</span></div>
+    <div class="result-box"><b>Can I Max This Officer?</b><br><span id="dashCanMax">—</span></div>
+  </div>
+  <div class="two">
+    <div class="result-box"><b>Next Upgrade Plan</b><br><span id="dashNextPlan">No saved plan selected.</span></div>
+    <div class="result-box"><b>Upcoming Release</b><br><span id="dashRelease">—</span></div>
+  </div>
+  <div id="dashWarning" class="notice" style="margin-top:10px">Enter resources to see planning guidance.</div>
+</article>
+
     <div class="grid">
       <article class="card wide">
         <span class="eyebrow">ACTIVE OFFICER</span>
@@ -289,7 +307,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
     </article>
 
     <article class="card" id="multiPlannerCard">
-      <h2>👥 Multi-Officer Upgrade Planner — TEST</h2>
+      <h2>👥 Multi-Officer Upgrade Planner</h2>
       <p class="muted">Build a priority list and preview how shared badge resources could be allocated. This planner does not spend or alter your normal saved resources.</p>
 
       <div class="two">
@@ -370,7 +388,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <p>The optimiser is <b>preview only</b>. It does not automatically spend, allocate or change your saved resources.</p>
 
       <h3>5a. Multi-Officer Upgrade Planner</h3>
-      <p>The TEST Multi-Officer Planner lets you create a priority list of several Officers, set the Officer Badges still needed for each, and preview how shared ORV, Universal Legendary Badges and Legendary Officer Badge Selection Chests could cover the plan.</p>
+      <p>The Multi-Officer Planner lets you create a priority list of several Officers, set the Officer Badges still needed for each, and preview how shared ORV, Universal Legendary Badges and Legendary Officer Badge Selection Chests could cover the plan.</p>
       <p>Use <b>Use current held resources</b> to copy the resources currently entered in Development. Plans are preview-only and do not spend or alter the normal calculator data. Named plans can be saved locally in the browser and loaded again later.</p>
 
       <h3>6. Save Progress</h3>
@@ -418,7 +436,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <button id="resetAppearance" class="primary">Reset Appearance & Backgrounds</button>
       <h3>App Updates</h3>
       <div class="notice">
-        <div><b>Installed version:</b> <span id="installedVersion">v4.3.0</span></div>
+        <div><b>Installed version:</b> <span id="installedVersion">v4.3.1</span></div>
         <div id="updateStatus">Tap Check for Updates to compare with the latest GitHub Pages version.</div>
       </div>
       <div class="two">
@@ -426,7 +444,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
         <button id="refreshLatest" class="primary">Refresh Latest Version</button>
       </div>
       <h3>About</h3>
-      <p class="notice"><b>KoW Companion v4.3.0 LIVE</b><br>Created by FireStorm (371)</p>
+      <p class="notice"><b>KoW Companion v4.3.1 LIVE</b><br>Created by FireStorm (371)</p>
       <h3>Help & Instructions</h3>
       <p class="notice">Open the in-app User Guide for the recommended setup order, explanations of every tab, saving, database publishing, vouchers, badges and Original Officer restrictions.</p>
       <button id="openUserGuide" class="primary">📖 User Guide</button>
@@ -975,6 +993,68 @@ function deleteMultiPlan(){
  const name=$('multiSavedPlans').value;if(!name)return;const plans=getMultiPlans();delete plans[name];localStorage.setItem('kow_multi_plans_v430',JSON.stringify(plans));refreshMultiSavedPlans();alert('Saved plan deleted.');
 }
 
+
+function updateSmartDashboard(){
+  if(!$('readinessStatus')) return;
+  const officer = officers[currentOfficerIndex] || officers[0];
+  const badgeNeed = Math.max(0, +(document.getElementById('badgeRequired')?.textContent||'1600').replace(/,/g,'') || 1600);
+  const heldBadges = Math.max(0,+($('universalBadgeHeld')?.value||0)) + Math.max(0,+($('badgeInv')?.value||0));
+  const orv = Math.max(0,+($('orvHeld')?.value||0));
+  const eligible = officer && officer.readinessEligible!==false && String(officer.season||'').toLowerCase()!=='original' && +officer.orv>0;
+  const orvBadges = eligible ? Math.floor(orv/(+officer.orv)) : 0;
+  const devCovered = Math.min(badgeNeed, heldBadges + orvBadges);
+
+  const starRemaining = Math.max(0, +(document.getElementById('starRemaining')?.textContent||'98000').replace(/,/g,'') || 0);
+  const xpNeeded = Math.max(0, +(document.getElementById('xpNeeded')?.textContent||'0').replace(/,/g,'') || 0);
+  const xpHeld = Math.max(0, +(document.getElementById('xpHeld')?.textContent||'0').replace(/,/g,'') || 0);
+
+  $('dashDevelopment').textContent = `${fmt(devCovered)} / ${fmt(badgeNeed)} badge requirement covered`;
+  $('dashStars').textContent = starRemaining<=0 ? 'Target funded' : `${fmt(starRemaining)} Star value still required`;
+  $('dashXP').textContent = xpNeeded<=xpHeld ? 'Target funded' : `${fmt(Math.max(0,xpNeeded-xpHeld))} XP still required`;
+
+  const devOK=devCovered>=badgeNeed, starOK=starRemaining<=0, xpOK=xpHeld>=xpNeeded;
+  const allOK=devOK&&starOK&&xpOK;
+  $('dashCanMax').innerHTML = allOK ? '<b>YES</b>' : '<b>NO</b>';
+  let missing=[];
+  if(!devOK) missing.push('Development');
+  if(!starOK) missing.push('Stars');
+  if(!xpOK) missing.push('XP');
+  $('readinessStatus').innerHTML = allOK
+    ? '<b>🟢 READY TO MAX</b>'
+    : (devCovered>0 || starRemaining<98000 || xpHeld>0)
+      ? `<b>🟠 PARTIALLY READY</b><br><span class="muted">Limiting area${missing.length>1?'s':''}: ${missing.join(', ')}</span>`
+      : `<b>🔴 RESOURCES REQUIRED</b><br><span class="muted">${missing.join(', ')}</span>`;
+
+  const plans=getMultiPlans ? getMultiPlans() : {};
+  const names=Object.keys(plans);
+  if(names.length){
+    const p=plans[names[0]], first=p.officers&&p.officers[0];
+    if(first){
+      const po=officers[first.officerIndex];
+      $('dashNextPlan').textContent = `${p.name}: ${po?po.name:'Officer'} — ${fmt(first.badgesNeeded||0)} badges planned`;
+    } else $('dashNextPlan').textContent=`${p.name}: no Officers added`;
+  } else $('dashNextPlan').textContent='No saved upgrade plans yet.';
+
+  const schedule=[
+    ['August','New Dogs'],['September','Guns: Field · Jets: Fighter'],
+    ['October','Officers: Rally / Garrison'],['November','New Ships'],
+    ['December','Guns: Rally / Garrison · Jets: Bomber'],['January','Officers: Infantry'],
+    ['February','No scheduled release'],['March','Guns: Field · Jets: Fighter'],
+    ['April','Officers: Tanks'],['May','New Ships'],
+    ['June','Guns: Rally / Garrison · Jets: Bomber'],['July','Officers: Tank Destroyers']
+  ];
+  const now=new Date(), m=now.getMonth();
+  const augIndex=(m+4)%12;
+  const current=schedule[augIndex];
+  const next=schedule[(augIndex+1)%12];
+  $('dashRelease').textContent=`${current[0]}: ${current[1]} · Next: ${next[0]} — ${next[1]}`;
+
+  $('dashWarning').textContent = !devOK
+    ? `Priority: ${fmt(Math.max(0,badgeNeed-devCovered))} more Officer Badges are needed for ${officer?officer.name:'the selected Officer'}.`
+    : (!starOK ? 'Development is covered; Stars are currently the next limiting resource.'
+    : (!xpOK ? 'Development and Stars are covered; XP is currently the limiting resource.'
+    : 'All tracked requirements are covered for the selected target.'));
+}
 async function init(){
  await loadOfficers();renderOfficerFilters();renderOfficerOptions();
  ['officerSearch','officerSeasonFilter','officerRoleFilter'].forEach(id=>{
@@ -1023,7 +1103,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.0';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.1';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
@@ -1055,7 +1135,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
 
  loadProgress();
 
- // v4.3.0 feature wiring
+ // v4.3.1 feature wiring
  populateCompareOfficers();
  const compareSelect=$('compareOfficerSelect');
  if(compareSelect){
@@ -1092,6 +1172,10 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
 }
 init();
 
+
+document.addEventListener('input',()=>setTimeout(updateSmartDashboard,0));
+document.addEventListener('change',()=>setTimeout(updateSmartDashboard,0));
+document.addEventListener('click',()=>setTimeout(updateSmartDashboard,0));
 </script>
 </body>
 </html>
