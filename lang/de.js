@@ -160,7 +160,13 @@ window.KOW_I18N_DE = {
   "Select an Officer and enter resources to see the current upgrade position.": "Wähle einen Offizier und gib Ressourcen ein, um den aktuellen Ausbaufortschritt zu sehen.",
   "Enter resources and select an Officer to see the optimiser preview.": "Gib Ressourcen ein und wähle einen Offizier, um die Optimierer-Vorschau zu sehen.",
   "Settings, Backup & Restore": "Einstellungen, Sicherung & Wiederherstellung",
-  "About / User Guide": "Info / Benutzerhandbuch"
+  "About / User Guide": "Info / Benutzerhandbuch",
+  "PARTIALLY READY": "TEILWEISE BEREIT",
+  "Fully funded": "Vollständig gedeckt",
+  "Still required": "Noch erforderlich",
+  "Priority: XP": "Priorität: XP",
+  "Priority: Development": "Priorität: Entwicklung",
+  "Priority: Stars": "Priorität: Sterne"
 };
 
 window.KOW_HELP_HTML_DE = '<div class="notice"><b>Empfohlener Ablauf:</b> Offizier → Sterne → Entwicklung → XP → Planer bearbeiten und anschließend <b>Fortschritt speichern</b>. Nutze <b>Sicherung & Wiederherstellung</b> in den Einstellungen vor größeren Änderungen oder für eine übertragbare Kopie lokal gespeicherter App-Daten.</div>\n<h3>1. Offizier</h3>\n<p>Nutze die Filter <b>Suche</b>, <b>Saison</b> und <b>Offizierstyp / Rolle</b>, um die Liste einzugrenzen. Wähle den gewünschten Offizier. Ein passendes Porträt wird automatisch angezeigt, wenn die Datei im Ordner <b>officer-portraits</b> vorhanden ist.</p>\n<p>Der gewählte Offizier bestimmt die Kosten eines Offiziersabzeichens in <b>Offiziersbereitschaftsgutscheinen (ORV)</b> und die Kosten eines Exklusivsterns in <b>Sternbereitschaftsgutscheinen (SRV)</b>.</p>\n<p>Die <b>Zusammenfassung Offiziersausbau</b> zeigt verbleibende Abzeichen, Sterne und XP.</p>\n<p><b>Original-Offiziere:</b> ORV und SRV können für Original-Offiziere nicht verwendet werden.</p>\n<h3>2. Sterne</h3>\n<p>Lege aktuelles und gewünschtes Sternlevel fest. Gib Legendäre Sterne I, II und III sowie gehaltene <b>SRV</b> ein. Die App berechnet gehaltenen Sternwert, mögliche Exklusivsterne und den verbleibenden Bedarf.</p>\n<h3>3. Entwicklung</h3>\n<p>Gib Freischaltstatus, abgeschlossene Fähigkeitspunkte und Trainingslevel ein. Danach Offiziersabzeichen, Universelle legendäre Abzeichen, Auswahltruhen und gehaltene <b>ORV</b>.</p>\n<p>Jedes <b>Universelle legendäre Abzeichen</b> zählt als <b>1 Offiziersabzeichen</b> für einen legendären Offizier.</p>\n<p>Jede <b>Auswahltruhe für legendäre Offiziersabzeichen</b> kann entweder als 1 Universelles legendäres Abzeichen oder als ORV-Wert der neuesten Saison verwendet werden. Eine Truhe kann nicht doppelt zählen. Mit der aktuellen S7-Datenbank gilt <b>600 ORV pro Truhe</b>.</p>\n<h3>4. XP</h3>\n<p>Gib aktuelles und Ziellevel sowie die Anzahl der XP-Bücher jeder Wertstufe ein. Die App berechnet vorhandene, benötigte und fehlende XP.</p>\n<h3>5. Planer & Ressourcenoptimierer</h3>\n<p>Nutze den Planer nach Eingabe von Sternen, Entwicklung und XP. Wähle ein Ziel, um Bedarf, vorhandene Ressourcen und Fehlmengen anzuzeigen.</p>\n<p>Der <b>Ressourcenoptimierer</b> vergleicht zwei Offiziere anhand ihrer ORV-Kosten pro Offiziersabzeichen.</p>\n<p><b>Interpretation:</b> Wenn beide Offiziere ORV verwenden können, sollten ORV bevorzugt beim günstigeren Offizier und gemeinsame Universalressourcen beim teureren Offizier eingesetzt werden.</p>\n<p>Der Optimierer ist <b>nur eine Vorschau</b> und gibt keine Ressourcen automatisch aus.</p>\n<h3>5a. Mehr-Offizier-Ausbauplaner</h3>\n<p>Erstelle eine Prioritätenliste mehrerer Offiziere und sieh, wie gemeinsame ORV, Universalabzeichen und Auswahltruhen den Plan abdecken können.</p>\n<p>Mit <b>Aktuell gehaltene Ressourcen verwenden</b> werden die aktuellen Ressourcen kopiert. Pläne sind nur Vorschauen und können lokal gespeichert und später wieder geladen werden.</p>\n<h3>6. Fortschritt speichern</h3>\n<p>Nutze <b>Fortschritt speichern</b> nach Änderungen. Der Fortschritt wird lokal im Browser dieses Geräts gespeichert und nicht für andere Benutzer veröffentlicht.</p>\n<h3>7. Datenbank</h3>\n<p>Die Datenbankverwaltung steuert die Offiziers-Hauptliste. Dort kannst du Offiziere hinzufügen oder bearbeiten und die Datenbank exportieren. <b>CSV exportieren</b> ist getrennt von Fortschrittsspeicherung und App-Sicherung.</p>\n<p>Um neue oder bearbeitete Offiziere für alle zu veröffentlichen, aktualisiere <b>officers.json</b> und <b>officers.csv</b> im GitHub-Repository.</p>\n<h3>8. Einstellungen, Sicherung & Wiederherstellung</h3>\n<p>Einstellungen enthält App-Name, Hoch-/Querformat-Hintergründe, Update-Steuerung und <b>Sicherung & Wiederherstellung</b>.</p>\n<p><b>App-Sicherung exportieren</b> erstellt eine lokale JSON-Sicherung. <b>App-Sicherung wiederherstellen</b> lädt eine zuvor exportierte JSON-Datei.</p>\n<p><b>Nach Updates suchen</b> vergleicht installierte und veröffentlichte Version. <b>Neueste Version aktualisieren</b> aktualisiert den App-Cache, ohne gespeicherten Fortschritt absichtlich zu löschen.</p>\n<h3>Terminologie</h3>\n<p><b>ORV</b> = Offiziersbereitschaftsgutschein<br><b>SRV</b> = Sternbereitschaftsgutschein<br><b>Universelles legendäres Abzeichen</b> = 1 Offiziersabzeichen für einen legendären Offizier<br><b>Exklusivstern</b> = 110 Offiziers-Sternwert</p>';
@@ -199,4 +205,33 @@ Object.assign(window.KOW_I18N_DE, {
   'Officer': 'Offizier',
   'Displayed': 'Angezeigt',
   'Saved': 'Gespeichert'
+});
+
+// v4.3.26 German dynamic/status translation completion
+Object.assign(window.KOW_I18N_DE, {
+  "RESOURCES REQUIRED":"RESSOURCEN ERFORDERLICH",
+  "Still required:":"Noch erforderlich:",
+  "Saved plan deleted.":"Gespeicherter Plan gelöscht.",
+  "Restore failed:":"Wiederherstellung fehlgeschlagen:",
+  "No backup created yet.":"Noch keine Sicherung erstellt.",
+  "Open the in-app User Guide for the recommended setup order, explanations of every tab, saving, database publishing, vouchers, badges and Original Officer restrictions.":"Öffne das Benutzerhandbuch in der App für die empfohlene Einrichtungsreihenfolge, Erklärungen zu allen Tabs, Speichern, Datenbankveröffentlichung, Gutscheinen, Abzeichen und Einschränkungen für Original-Offiziere.",
+  "Export all locally saved KoW Companion browser data, or restore a previous JSON backup.":"Exportiere alle lokal gespeicherten KoW-Companion-Browserdaten oder stelle eine frühere JSON-Sicherung wieder her.",
+  "Each Selection Chest can be used as either 1 Universal Legendary Badge or 600 Officer Readiness Vouchers. The ORV value follows the highest ORV-per-badge cost in the latest published season.":"Jede Auswahltruhe kann entweder als 1 Universelles legendäres Abzeichen oder als 600 Offiziersbereitschaftsgutscheine verwendet werden. Der ORV-Wert entspricht den höchsten ORV-Kosten pro Abzeichen der neuesten veröffentlichten Saison.",
+  "Saved ":"Gespeichert ",
+  "Not saved yet":"Noch nicht gespeichert",
+  "Can I Max This Officer?":"Kann ich diesen Offizier maximieren?",
+  "NO":"NEIN",
+  "YES":"JA",
+  "Current upgrade items":"Aktuelle Ausbauten",
+  "Next:":"Als Nächstes:",
+  "Priority: XP":"Priorität: XP",
+  "more XP is required.":"weitere XP erforderlich.",
+  "Forecast only — replace with confirmed costs when released.":"Nur Prognose — nach Veröffentlichung durch bestätigte Kosten ersetzen.",
+  "Planning estimate using ":"Planungsschätzung mit ",
+  " growth per Officer release from the latest known 600 ORV / 300 SRV release. For ":" Zuwachs je Offiziersveröffentlichung ausgehend von der letzten bekannten Veröffentlichung mit 600 ORV / 300 SRV. Für ",
+  " badges and ":" Abzeichen und ",
+  " Star value (":" Sternwert (",
+  " Exclusive Stars), plan for approximately ":" Exklusivsterne) sind ungefähr ",
+  " ORV and ":" ORV und ",
+  " SRV. Forecast only — replace with confirmed costs when released.":" SRV einzuplanen. Nur Prognose — nach Veröffentlichung durch bestätigte Kosten ersetzen."
 });
