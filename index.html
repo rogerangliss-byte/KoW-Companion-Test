@@ -130,11 +130,11 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </style>
 </head>
 <body><div id="testBanner" style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:7px 10px;letter-spacing:.5px"></div>
-<div class="test-banner">TEST VERSION — v4.3.7 — NOT LIVE</div>
+<div class="test-banner">TEST VERSION — v4.3.8 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
-    <p>Officer Companion v4.3.7</p>
+    <p>Officer Companion v4.3.8</p>
   </div>
   <div class="creator-credit">Created by FireStorm (371)</div>
 </header>
@@ -1023,7 +1023,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='4.3.7';
+const APP_VERSION='4.3.8';
 
 function parseVersion(v){
  return String(v||'').replace(/^v/i,'').split('.').map(n=>parseInt(n,10)||0);
@@ -1397,95 +1397,125 @@ function updateFutureOfficerForecast(){
    3:'April — S8 Tanks',
    4:'July — S8 Tank Destroyers'
  };
- $('forecastNote').innerHTML=`<b>${labels[steps]}</b><br>Planning estimate using ${($('forecastGrowth').value||20)}% growth per Officer release from the latest known 600 ORV / 300 SRV release. For ${fmt(badges)} badges and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
+ {
+ const lang=currentLang();
+ const rel=lang==='it'?({1:'Ottobre — S8 Rally / Guarnigione',2:'Gennaio — S8 Fanteria',3:'Aprile — S8 Carri armati',4:'Luglio — S8 Cacciacarri'}[steps]):labels[steps];
+ if(lang==='it'){
+   $('forecastNote').innerHTML=`<b>${rel}</b><br>Stima di pianificazione con crescita del ${($('forecastGrowth').value||20)}% per ogni uscita ufficiale, partendo dall’ultimo costo noto di 600 ORV / 300 SRV. Per ${fmt(badges)} distintivi e ${fmt(starValue)} valore Stelle (${fmt(exclusiveStars)} Stelle esclusive), pianifica circa <b>${fmt(totalOrv)} ORV</b> e <b>${fmt(totalSrv)} SRV</b>. Solo previsione — sostituire con i costi confermati quando saranno pubblicati.`;
+ }else{
+   $('forecastNote').innerHTML=`<b>${rel}</b><br>Planning estimate using ${($('forecastGrowth').value||20)}% growth per Officer release from the latest known 600 ORV / 300 SRV release. For ${fmt(badges)} badges and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
+ }
+}
 }
 
+
 const I18N={
- en:{
-  languageTitle:'🌐 Language',languageHelp:'Choose the language used by the app interface. Officer names and game data are not translated.',languageLabel:'App language',languageSaved:'Your language choice is saved automatically on this device.',
-  navHome:'🏠 Home',navOfficer:'🎖 Officer',navStars:'⭐ Stars',navDevelop:'📈 Develop',navXP:'📚 XP',navPlanner:'🗓 Planner',navDatabase:'📋 Database',navReleases:'📅 Releases',navSettings:'⚙ Settings',navHelp:'❓ Help',
-  smartDashboard:'🎯 Smart Dashboard',development:'Development',stars:'Stars',xp:'XP',canMax:'Can I Max This Officer?',nextPlan:'Next Upgrade Plan',upcomingRelease:'Upcoming Release',
-  futureForecast:'🔮 Future Officer Cost Forecast',futureRelease:'Future Officer release',growth:'Forecast increase per Officer release',badgesRequired:'Officer Badges required',starValueRequired:'Officer Star value required',
-  forecastOrv:'Forecast ORV / Badge',forecastSrv:'Forecast SRV / Exclusive Star',estimatedOrv:'Estimated ORV to fund Badges',estimatedSrv:'Estimated SRV to fund Stars',
-  saveProgress:'Save Progress',resetProgress:'Reset Progress',saveOfficer:'Save This Officer',resetOfficer:'Reset This Officer'
- },
- fr:{
-  languageTitle:'🌐 Langue',languageHelp:"Choisissez la langue utilisée par l’interface. Les noms des officiers et les données du jeu ne sont pas traduits.",languageLabel:"Langue de l’application",languageSaved:'Votre choix de langue est enregistré automatiquement sur cet appareil.',
-  navHome:'🏠 Accueil',navOfficer:'🎖 Officier',navStars:'⭐ Étoiles',navDevelop:'📈 Développement',navXP:'📚 XP',navPlanner:'🗓 Planificateur',navDatabase:'📋 Base de données',navReleases:'📅 Sorties',navSettings:'⚙ Paramètres',navHelp:'❓ Aide',
-  smartDashboard:'🎯 Tableau de bord',development:'Développement',stars:'Étoiles',xp:'XP',canMax:"Puis-je maximiser cet officier ?",nextPlan:'Prochain plan d’amélioration',upcomingRelease:'Prochaine sortie',
-  futureForecast:'🔮 Prévision du coût des futurs officiers',futureRelease:"Future sortie d’officier",growth:'Hausse prévue par sortie',badgesRequired:"Badges d’officier requis",starValueRequired:"Valeur d’étoile requise",
-  forecastOrv:'ORV prévu / Badge',forecastSrv:'SRV prévu / Étoile exclusive',estimatedOrv:'ORV estimés pour les Badges',estimatedSrv:'SRV estimés pour les Étoiles',
-  saveProgress:'Enregistrer',resetProgress:'Réinitialiser',saveOfficer:"Enregistrer cet officier",resetOfficer:"Réinitialiser cet officier"
- },
- de:{
-  languageTitle:'🌐 Sprache',languageHelp:'Wählen Sie die Sprache der App-Oberfläche. Offiziersnamen und Spieldaten werden nicht übersetzt.',languageLabel:'App-Sprache',languageSaved:'Die Sprachauswahl wird automatisch auf diesem Gerät gespeichert.',
-  navHome:'🏠 Start',navOfficer:'🎖 Offizier',navStars:'⭐ Sterne',navDevelop:'📈 Entwicklung',navXP:'📚 XP',navPlanner:'🗓 Planer',navDatabase:'📋 Datenbank',navReleases:'📅 Veröffentlichungen',navSettings:'⚙ Einstellungen',navHelp:'❓ Hilfe',
-  smartDashboard:'🎯 Smart-Dashboard',development:'Entwicklung',stars:'Sterne',xp:'XP',canMax:'Kann ich diesen Offizier maximieren?',nextPlan:'Nächster Ausbauplan',upcomingRelease:'Nächste Veröffentlichung',
-  futureForecast:'🔮 Prognose zukünftiger Offizierskosten',futureRelease:'Zukünftige Offiziersveröffentlichung',growth:'Prognostizierter Anstieg je Veröffentlichung',badgesRequired:'Benötigte Offiziersabzeichen',starValueRequired:'Benötigter Sternwert',
-  forecastOrv:'Prognose ORV / Abzeichen',forecastSrv:'Prognose SRV / Exklusivstern',estimatedOrv:'Geschätzte ORV für Abzeichen',estimatedSrv:'Geschätzte SRV für Sterne',
-  saveProgress:'Fortschritt speichern',resetProgress:'Fortschritt zurücksetzen',saveOfficer:'Diesen Offizier speichern',resetOfficer:'Diesen Offizier zurücksetzen'
- },
- es:{
-  languageTitle:'🌐 Idioma',languageHelp:'Elige el idioma de la interfaz. Los nombres de oficiales y los datos del juego no se traducen.',languageLabel:'Idioma de la aplicación',languageSaved:'La selección de idioma se guarda automáticamente en este dispositivo.',
-  navHome:'🏠 Inicio',navOfficer:'🎖 Oficial',navStars:'⭐ Estrellas',navDevelop:'📈 Desarrollo',navXP:'📚 XP',navPlanner:'🗓 Planificador',navDatabase:'📋 Base de datos',navReleases:'📅 Lanzamientos',navSettings:'⚙ Ajustes',navHelp:'❓ Ayuda',
-  smartDashboard:'🎯 Panel inteligente',development:'Desarrollo',stars:'Estrellas',xp:'XP',canMax:'¿Puedo maximizar este oficial?',nextPlan:'Próximo plan de mejora',upcomingRelease:'Próximo lanzamiento',
-  futureForecast:'🔮 Previsión de coste de futuros oficiales',futureRelease:'Futuro lanzamiento de oficial',growth:'Aumento previsto por lanzamiento',badgesRequired:'Insignias de oficial necesarias',starValueRequired:'Valor de estrellas necesario',
-  forecastOrv:'ORV previsto / Insignia',forecastSrv:'SRV previsto / Estrella exclusiva',estimatedOrv:'ORV estimado para insignias',estimatedSrv:'SRV estimado para estrellas',
-  saveProgress:'Guardar progreso',resetProgress:'Restablecer progreso',saveOfficer:'Guardar este oficial',resetOfficer:'Restablecer este oficial'
- },
- it:{
-  languageTitle:'🌐 Lingua',languageHelp:"Scegli la lingua dell’interfaccia. I nomi degli ufficiali e i dati di gioco non vengono tradotti.",languageLabel:"Lingua dell’app",languageSaved:'La lingua scelta viene salvata automaticamente su questo dispositivo.',
-  navHome:'🏠 Home',navOfficer:'🎖 Ufficiale',navStars:'⭐ Stelle',navDevelop:'📈 Sviluppo',navXP:'📚 XP',navPlanner:'🗓 Pianificatore',navDatabase:'📋 Database',navReleases:'📅 Uscite',navSettings:'⚙ Impostazioni',navHelp:'❓ Aiuto',
-  smartDashboard:'🎯 Dashboard intelligente',development:'Sviluppo',stars:'Stelle',xp:'XP',canMax:'Posso massimizzare questo ufficiale?',nextPlan:'Prossimo piano di sviluppo',upcomingRelease:'Prossima uscita',
-  futureForecast:'🔮 Previsione costo futuri ufficiali',futureRelease:'Futura uscita ufficiale',growth:'Aumento previsto per uscita',badgesRequired:'Distintivi ufficiale richiesti',starValueRequired:'Valore Stelle richiesto',
-  forecastOrv:'ORV previsto / Distintivo',forecastSrv:'SRV previsto / Stella esclusiva',estimatedOrv:'ORV stimati per i Distintivi',estimatedSrv:'SRV stimati per le Stelle',
-  saveProgress:'Salva progresso',resetProgress:'Reimposta progresso',saveOfficer:'Salva questo ufficiale',resetOfficer:'Reimposta questo ufficiale'
- }
+en:{
+"Language":"Language","Choose the language used by the app interface. Officer names and game data are not translated.":"Choose the language used by the app interface. Officer names and game data are not translated.","App language":"App language","Your language choice is saved automatically on this device.":"Your language choice is saved automatically on this device.",
+"Home":"Home","Officer":"Officer","Stars":"Stars","Develop":"Develop","XP":"XP","Planner":"Planner","Database":"Database","Releases":"Releases","Settings":"Settings","Help":"Help",
+"Smart Dashboard":"Smart Dashboard","Development":"Development","Can I Max This Officer?":"Can I Max This Officer?","Next Upgrade Plan":"Next Upgrade Plan","Upcoming Release":"Upcoming Release",
+"Future Officer Cost Forecast":"Future Officer Cost Forecast","Forecast future Officer costs from the established Officer-release sequence. The model uses the latest known S7 Tank Destroyer release (600 ORV / 300 SRV) and compounds approximately 20% for each future Officer release.":"Forecast future Officer costs from the established Officer-release sequence. The model uses the latest known S7 Tank Destroyer release (600 ORV / 300 SRV) and compounds approximately 20% for each future Officer release.",
+"Future Officer release":"Future Officer release","Forecast increase per Officer release":"Forecast increase per Officer release","Officer Badges required":"Officer Badges required","Officer Star value required":"Officer Star value required","Forecast ORV / Badge":"Forecast ORV / Badge","Forecast SRV / Exclusive Star":"Forecast SRV / Exclusive Star","Estimated ORV to fund Badges":"Estimated ORV to fund Badges","Estimated SRV to fund Stars":"Estimated SRV to fund Stars","Forecast only — actual release costs should replace the estimate when published.":"Forecast only — actual release costs should replace the estimate when published.",
+"Recurring Release Calendar":"Recurring Release Calendar","Upcoming Releases":"Upcoming Releases","New Dogs":"New Dogs","Guns: Field · Jets: Fighter":"Guns: Field · Jets: Fighter","Officers: Rally / Garrison":"Officers: Rally / Garrison","New Ships":"New Ships","Guns: Rally / Garrison · Jets: Bomber":"Guns: Rally / Garrison · Jets: Bomber","Officers: Infantry":"Officers: Infantry","Officers: Tanks":"Officers: Tanks","Officers: Tank Destroyers":"Officers: Tank Destroyers","No scheduled release":"No scheduled release",
+"Officer Experience":"Officer Experience","Search Officer":"Search Officer","Type an Officer name":"Type an Officer name","Season":"Season","Role":"Role","All Seasons":"All Seasons","All Roles":"All Roles","Shown":"Shown","Officer Readiness Vouchers (ORV) per Officer Badge":"Officer Readiness Vouchers (ORV) per Officer Badge","Star Readiness Vouchers (SRV) per Exclusive Star":"Star Readiness Vouchers (SRV) per Exclusive Star",
+"Officer Progress Profile":"Officer Progress Profile","Each Officer keeps their own upgrade progress. Shared resource inventories stay populated when you switch Officers.":"Each Officer keeps their own upgrade progress. Shared resource inventories stay populated when you switch Officers.","Profile":"Profile","Saved status":"Saved status","Not saved yet":"Not saved yet","Save This Officer":"Save This Officer","Reset This Officer":"Reset This Officer","Changing Officer saves/loads Officer-specific progress only. Shared Stars, vouchers, Universal Badges, Selection Chests and XP Books remain unchanged.":"Changing Officer saves/loads Officer-specific progress only. Shared Stars, vouchers, Universal Badges, Selection Chests and XP Books remain unchanged.",
+"Officer Upgrade Summary":"Officer Upgrade Summary","Live summary for the selected Officer using the resources currently entered in the calculator.":"Live summary for the selected Officer using the resources currently entered in the calculator.",
+"Star Planner":"Star Planner","Current Star Level":"Current Star Level","Target Star Level":"Target Star Level","Legendary Star I (110)":"Legendary Star I (110)","Legendary Star II (420)":"Legendary Star II (420)","Legendary Star III (960)":"Legendary Star III (960)","Star Readiness Vouchers (SRV) Held":"Star Readiness Vouchers (SRV) Held","Exclusive Stars from held SRV":"Exclusive Stars from held SRV","Officer Stars from held SRV":"Officer Stars from held SRV","Star Readiness Vouchers (SRV) remaining":"Star Readiness Vouchers (SRV) remaining","Stars used":"Stars used","Stars held":"Stars held","Stars required":"Stars required",
+"Officer Development":"Officer Development","Officer unlocked (10 badges)":"Officer unlocked (10 badges)","Skills 1–16":"Skills 1–16","Training Level":"Training Level","Officer Badges Held":"Officer Badges Held","Universal Legendary Badges Held":"Universal Legendary Badges Held","Legendary Officer Badge Selection Chests Held":"Legendary Officer Badge Selection Chests Held","Officer Readiness Vouchers (ORV) Held":"Officer Readiness Vouchers (ORV) Held",
+"Officer XP":"Officer XP","Current Level":"Current Level","Target Level":"Target Level","XP held in books":"XP held in books","XP required":"XP required","XP shortfall":"XP shortfall",
+"Resource Optimiser — Preview":"Resource Optimiser — Preview","Preview of shared badge resources against the selected Officer. It does not spend or alter resources.":"Preview of shared badge resources against the selected Officer. It does not spend or alter resources.","Compare with Officer":"Compare with Officer","Comparison":"Comparison","Choose another Officer to compare badge efficiency.":"Choose another Officer to compare badge efficiency.","Suggested resource strategy:":"Suggested resource strategy:",
+"Multi-Officer Upgrade Planner":"Multi-Officer Upgrade Planner","Build a priority list and preview how shared badge resources could be allocated. This planner does not spend or alter your normal saved resources.":"Build a priority list and preview how shared badge resources could be allocated. This planner does not spend or alter your normal saved resources.","Plan name":"Plan name","Saved plan":"Saved plan","Shared ORV available":"Shared ORV available","Universal Legendary Badges available":"Universal Legendary Badges available","Legendary Officer Badge Selection Chests":"Legendary Officer Badge Selection Chests","Chest strategy":"Chest strategy","Use current held resources":"Use current held resources","+ Add Officer":"+ Add Officer","Save Plan":"Save Plan","Delete Saved Plan":"Delete Saved Plan","Priority":"Priority","Badges Needed":"Badges Needed","ORV / Badge":"ORV / Badge","Allocated":"Allocated","Status":"Status","Order":"Order","Fully Funded":"Fully Funded","Partially Funded":"Partially Funded","Shortfall":"Shortfall",
+"Database Manager":"Database Manager","Export CSV":"Export CSV","Import CSV":"Import CSV","Save Database":"Save Database",
+"App Name":"App Name","Responsive Backgrounds":"Responsive Backgrounds","The app automatically uses the Portrait background on portrait screens and the Landscape background on landscape/PC screens.":"The app automatically uses the Portrait background on portrait screens and the Landscape background on landscape/PC screens.","Portrait Background (Mobile / Tablet)":"Portrait Background (Mobile / Tablet)","Landscape Background (PC / Landscape)":"Landscape Background (PC / Landscape)","Active portrait background":"Active portrait background","Active landscape background":"Active landscape background","Built-in default portrait":"Built-in default portrait","Built-in default landscape":"Built-in default landscape","Reset Appearance & Backgrounds":"Reset Appearance & Backgrounds",
+"App Updates":"App Updates","Installed version:":"Installed version:","Check for Updates":"Check for Updates","Refresh Latest Version":"Refresh Latest Version",
+"Help & Instructions":"Help & Instructions","User Guide":"User Guide","Backup & Restore":"Backup & Restore","Export App Backup":"Export App Backup","Restore App Backup":"Restore App Backup",
+"Save Progress":"Save Progress","Reset Progress":"Reset Progress"
+},
+it:{
+"Language":"Lingua","Choose the language used by the app interface. Officer names and game data are not translated.":"Scegli la lingua utilizzata dall’interfaccia dell’app. I nomi degli ufficiali e i dati di gioco non vengono tradotti.","App language":"Lingua dell’app","Your language choice is saved automatically on this device.":"La lingua scelta viene salvata automaticamente su questo dispositivo.",
+"Home":"Home","Officer":"Ufficiale","Stars":"Stelle","Develop":"Sviluppo","XP":"XP","Planner":"Pianificatore","Database":"Database","Releases":"Uscite","Settings":"Impostazioni","Help":"Aiuto",
+"Smart Dashboard":"Dashboard intelligente","Development":"Sviluppo","Can I Max This Officer?":"Posso massimizzare questo ufficiale?","Next Upgrade Plan":"Prossimo piano di sviluppo","Upcoming Release":"Prossima uscita",
+"Future Officer Cost Forecast":"Previsione costo futuri ufficiali","Forecast future Officer costs from the established Officer-release sequence. The model uses the latest known S7 Tank Destroyer release (600 ORV / 300 SRV) and compounds approximately 20% for each future Officer release.":"Prevede i costi dei futuri ufficiali in base alla sequenza di uscita stabilita. Il modello usa l’ultima uscita nota S7 Tank Destroyer (600 ORV / 300 SRV) e applica circa il 20% per ogni futura uscita.",
+"Future Officer release":"Futura uscita ufficiale","Forecast increase per Officer release":"Aumento previsto per uscita","Officer Badges required":"Distintivi ufficiale richiesti","Officer Star value required":"Valore Stelle richiesto","Forecast ORV / Badge":"ORV previsto / Distintivo","Forecast SRV / Exclusive Star":"SRV previsto / Stella esclusiva","Estimated ORV to fund Badges":"ORV stimati per i Distintivi","Estimated SRV to fund Stars":"SRV stimati per le Stelle","Forecast only — actual release costs should replace the estimate when published.":"Solo previsione — sostituire la stima con i costi effettivi quando saranno pubblicati.",
+"Recurring Release Calendar":"Calendario uscite ricorrenti","Upcoming Releases":"Prossime uscite","New Dogs":"Nuovi cani","Guns: Field · Jets: Fighter":"Armi: Campo · Jet: Caccia","Officers: Rally / Garrison":"Ufficiali: Rally / Guarnigione","New Ships":"Nuove navi","Guns: Rally / Garrison · Jets: Bomber":"Armi: Rally / Guarnigione · Jet: Bombardiere","Officers: Infantry":"Ufficiali: Fanteria","Officers: Tanks":"Ufficiali: Carri armati","Officers: Tank Destroyers":"Ufficiali: Cacciacarri","No scheduled release":"Nessuna uscita programmata",
+"Officer Experience":"Esperienza ufficiale","Search Officer":"Cerca ufficiale","Type an Officer name":"Digita il nome di un ufficiale","Season":"Stagione","Role":"Ruolo","All Seasons":"Tutte le stagioni","All Roles":"Tutti i ruoli","Shown":"Mostrati","Officer Readiness Vouchers (ORV) per Officer Badge":"Buoni preparazione ufficiale (ORV) per distintivo","Star Readiness Vouchers (SRV) per Exclusive Star":"Buoni preparazione stella (SRV) per Stella esclusiva",
+"Officer Progress Profile":"Profilo progresso ufficiale","Each Officer keeps their own upgrade progress. Shared resource inventories stay populated when you switch Officers.":"Ogni ufficiale conserva il proprio progresso. Le risorse condivise restano disponibili quando cambi ufficiale.","Profile":"Profilo","Saved status":"Stato salvataggio","Not saved yet":"Non ancora salvato","Save This Officer":"Salva questo ufficiale","Reset This Officer":"Reimposta questo ufficiale","Changing Officer saves/loads Officer-specific progress only. Shared Stars, vouchers, Universal Badges, Selection Chests and XP Books remain unchanged.":"Cambiare ufficiale salva e carica solo il progresso specifico. Stelle condivise, buoni, Distintivi universali, Forzieri di selezione e Libri XP restano invariati.",
+"Officer Upgrade Summary":"Riepilogo potenziamento ufficiale","Live summary for the selected Officer using the resources currently entered in the calculator.":"Riepilogo in tempo reale dell’ufficiale selezionato usando le risorse attualmente inserite.",
+"Star Planner":"Pianificatore Stelle","Current Star Level":"Livello Stelle attuale","Target Star Level":"Livello Stelle obiettivo","Legendary Star I (110)":"Stella Leggendaria I (110)","Legendary Star II (420)":"Stella Leggendaria II (420)","Legendary Star III (960)":"Stella Leggendaria III (960)","Star Readiness Vouchers (SRV) Held":"Buoni preparazione stella (SRV) posseduti","Exclusive Stars from held SRV":"Stelle esclusive dagli SRV posseduti","Officer Stars from held SRV":"Stelle ufficiale dagli SRV posseduti","Star Readiness Vouchers (SRV) remaining":"SRV rimanenti","Stars used":"Stelle usate","Stars held":"Stelle possedute","Stars required":"Stelle richieste",
+"Officer Development":"Sviluppo ufficiale","Officer unlocked (10 badges)":"Ufficiale sbloccato (10 distintivi)","Skills 1–16":"Abilità 1–16","Training Level":"Livello addestramento","Officer Badges Held":"Distintivi ufficiale posseduti","Universal Legendary Badges Held":"Distintivi Leggendari Universali posseduti","Legendary Officer Badge Selection Chests Held":"Forzieri selezione Distintivi Leggendari posseduti","Officer Readiness Vouchers (ORV) Held":"Buoni preparazione ufficiale (ORV) posseduti",
+"Officer XP":"XP ufficiale","Current Level":"Livello attuale","Target Level":"Livello obiettivo","XP held in books":"XP nei libri","XP required":"XP richiesti","XP shortfall":"XP mancanti",
+"Resource Optimiser — Preview":"Ottimizzatore risorse — Anteprima","Preview of shared badge resources against the selected Officer. It does not spend or alter resources.":"Anteprima delle risorse condivise per l’ufficiale selezionato. Non spende né modifica le risorse.","Compare with Officer":"Confronta con ufficiale","Comparison":"Confronto","Choose another Officer to compare badge efficiency.":"Scegli un altro ufficiale per confrontare l’efficienza dei distintivi.","Suggested resource strategy:":"Strategia risorse suggerita:",
+"Multi-Officer Upgrade Planner":"Pianificatore potenziamento multi-ufficiale","Build a priority list and preview how shared badge resources could be allocated. This planner does not spend or alter your normal saved resources.":"Crea un elenco di priorità e visualizza come potrebbero essere allocate le risorse condivise. Il pianificatore non spende né modifica le risorse salvate.","Plan name":"Nome piano","Saved plan":"Piano salvato","Shared ORV available":"ORV condivisi disponibili","Universal Legendary Badges available":"Distintivi Leggendari Universali disponibili","Legendary Officer Badge Selection Chests":"Forzieri selezione Distintivi Leggendari","Chest strategy":"Strategia forzieri","Use current held resources":"Usa risorse possedute","+ Add Officer":"+ Aggiungi ufficiale","Save Plan":"Salva piano","Delete Saved Plan":"Elimina piano salvato","Priority":"Priorità","Badges Needed":"Distintivi necessari","ORV / Badge":"ORV / Distintivo","Allocated":"Allocati","Status":"Stato","Order":"Ordine","Fully Funded":"Completamente finanziato","Partially Funded":"Parzialmente finanziato","Shortfall":"Mancanza",
+"Database Manager":"Gestione database","Export CSV":"Esporta CSV","Import CSV":"Importa CSV","Save Database":"Salva database",
+"App Name":"Nome app","Responsive Backgrounds":"Sfondi adattivi","The app automatically uses the Portrait background on portrait screens and the Landscape background on landscape/PC screens.":"L’app usa automaticamente lo sfondo verticale sugli schermi verticali e quello orizzontale su PC/schermi orizzontali.","Portrait Background (Mobile / Tablet)":"Sfondo verticale (Mobile / Tablet)","Landscape Background (PC / Landscape)":"Sfondo orizzontale (PC / Orizzontale)","Active portrait background":"Sfondo verticale attivo","Active landscape background":"Sfondo orizzontale attivo","Built-in default portrait":"Verticale predefinito","Built-in default landscape":"Orizzontale predefinito","Reset Appearance & Backgrounds":"Ripristina aspetto e sfondi",
+"App Updates":"Aggiornamenti app","Installed version:":"Versione installata:","Check for Updates":"Controlla aggiornamenti","Refresh Latest Version":"Aggiorna all’ultima versione",
+"Help & Instructions":"Aiuto e istruzioni","User Guide":"Guida utente","Backup & Restore":"Backup e ripristino","Export App Backup":"Esporta backup app","Restore App Backup":"Ripristina backup app",
+"Save Progress":"Salva progresso","Reset Progress":"Reimposta progresso"
+}
 };
-const I18N_EN=I18N.en;
-function tr(key){const lang=localStorage.getItem('kow_language_v437')||'en';return I18N[lang]?.[key]??I18N_EN[key]??key}
+
+// Fill French/German/Spanish from English so the framework stays stable; specific full translations
+// can be extended next without ever falling back to broken/missing UI.
+I18N.fr={...I18N.en,...{
+"Language":"Langue","App language":"Langue de l’application","Home":"Accueil","Officer":"Officier","Stars":"Étoiles","Develop":"Développement","Planner":"Planificateur","Releases":"Sorties","Settings":"Paramètres","Help":"Aide","Smart Dashboard":"Tableau de bord intelligent","Development":"Développement","Future Officer Cost Forecast":"Prévision du coût des futurs officiers","Officer Experience":"Expérience de l’officier","Officer Development":"Développement de l’officier","Star Planner":"Planificateur d’étoiles","Officer XP":"XP de l’officier","Database Manager":"Gestionnaire de base de données","Help & Instructions":"Aide et instructions"}};
+I18N.de={...I18N.en,...{
+"Language":"Sprache","App language":"App-Sprache","Home":"Start","Officer":"Offizier","Stars":"Sterne","Develop":"Entwicklung","Planner":"Planer","Releases":"Veröffentlichungen","Settings":"Einstellungen","Help":"Hilfe","Smart Dashboard":"Smart-Dashboard","Development":"Entwicklung","Future Officer Cost Forecast":"Prognose zukünftiger Offizierskosten","Officer Experience":"Offizierserfahrung","Officer Development":"Offiziersentwicklung","Star Planner":"Stern-Planer","Officer XP":"Offiziers-XP","Database Manager":"Datenbankverwaltung","Help & Instructions":"Hilfe & Anweisungen"}};
+I18N.es={...I18N.en,...{
+"Language":"Idioma","App language":"Idioma de la aplicación","Home":"Inicio","Officer":"Oficial","Stars":"Estrellas","Develop":"Desarrollo","Planner":"Planificador","Releases":"Lanzamientos","Settings":"Ajustes","Help":"Ayuda","Smart Dashboard":"Panel inteligente","Development":"Desarrollo","Future Officer Cost Forecast":"Previsión de coste de futuros oficiales","Officer Experience":"Experiencia del oficial","Officer Development":"Desarrollo del oficial","Star Planner":"Planificador de estrellas","Officer XP":"XP del oficial","Database Manager":"Gestor de base de datos","Help & Instructions":"Ayuda e instrucciones"}};
+
+function currentLang(){return localStorage.getItem('kow_language_v438')||'en'}
+function tText(text){
+ const lang=currentLang();
+ return I18N[lang]?.[text] ?? I18N.en[text] ?? text;
+}
+function translateNodeText(root=document.body){
+ const skipTags=new Set(['SCRIPT','STYLE','OPTION']);
+ const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+ const nodes=[];
+ while(walker.nextNode())nodes.push(walker.currentNode);
+ nodes.forEach(n=>{
+   const p=n.parentElement;if(!p||skipTags.has(p.tagName))return;
+   const raw=n.nodeValue;
+   const trimmed=raw.trim();
+   if(!trimmed)return;
+   const translated=tText(trimmed);
+   if(translated!==trimmed)n.nodeValue=raw.replace(trimmed,translated);
+ });
+ // placeholders
+ document.querySelectorAll('[placeholder]').forEach(el=>{
+   const ph=el.getAttribute('placeholder');
+   const tr=tText(ph); if(tr!==ph)el.setAttribute('placeholder',tr);
+ });
+}
+function translateOptions(){
+ const lang=currentLang();
+ const releaseTranslations={
+   it:{
+    'October — S8 Rally / Garrison':'Ottobre — S8 Rally / Guarnigione',
+    'January — S8 Infantry':'Gennaio — S8 Fanteria',
+    'April — S8 Tanks':'Aprile — S8 Carri armati',
+    'July — S8 Tank Destroyers':'Luglio — S8 Cacciacarri'
+   }
+ };
+ document.querySelectorAll('option').forEach(o=>{
+   if(o.closest('#appLanguage'))return;
+   if(!o.dataset.i18nOriginal)o.dataset.i18nOriginal=o.textContent;
+   const base=o.dataset.i18nOriginal;
+   o.textContent=releaseTranslations[lang]?.[base] ?? tText(base);
+ });
+}
 function applyLanguage(lang){
  if(!I18N[lang])lang='en';
- localStorage.setItem('kow_language_v437',lang);
+ localStorage.setItem('kow_language_v438',lang);
  document.documentElement.lang=lang;
- document.querySelectorAll('[data-i18n]').forEach(el=>{
-   const val=tr(el.dataset.i18n);if(val!==undefined)el.textContent=val;
- });
  if($('appLanguage'))$('appLanguage').value=lang;
+ translateNodeText(document.body);
+ translateOptions();
+ // Dynamic cards/messages are recalculated so they can be translated on the current screen.
+ if(typeof updateFutureOfficerForecast==='function')updateFutureOfficerForecast();
+ if(typeof updateSmartDashboard==='function')updateSmartDashboard();
 }
-function initialiseI18nMarkers(){
- const exact=[
-  ['#smartDashboardCard h2','smartDashboard'],
-  ['#smartDashboardCard .result-box b','development']
- ];
- const h2s=[...document.querySelectorAll('h2')];
- h2s.forEach(el=>{
-   const t=el.textContent.trim();
-   if(t.includes('Future Officer Cost Forecast'))el.dataset.i18n='futureForecast';
- });
- const labels=[...document.querySelectorAll('label')];
- const map={
-  'Future Officer release':'futureRelease',
-  'Forecast increase per Officer release':'growth',
-  'Officer Badges required':'badgesRequired',
-  'Officer Star value required':'starValueRequired'
- };
- labels.forEach(el=>{const k=map[el.textContent.trim()];if(k)el.dataset.i18n=k});
- const resultBold=[...document.querySelectorAll('#futureOfficerForecastCard .result-box b')];
- const keys=['forecastOrv','forecastSrv','estimatedOrv','estimatedSrv'];
- resultBold.forEach((el,i)=>{if(keys[i])el.dataset.i18n=keys[i]});
- const sd=$('#smartDashboardCard');
- if(sd){
-   const h=sd.querySelector('h2');if(h)h.dataset.i18n='smartDashboard';
-   const bs=[...sd.querySelectorAll('.result-box b')];
-   const ks=['development','stars','xp','canMax','nextPlan','upcomingRelease'];
-   bs.forEach((el,i)=>{if(ks[i])el.dataset.i18n=ks[i]});
- }
- if($('saveProgress'))$('saveProgress').dataset.i18n='saveProgress';
- if($('resetProgress'))$('resetProgress').dataset.i18n='resetProgress';
- if($('saveOfficerProfile'))$('saveOfficerProfile').dataset.i18n='saveOfficer';
- if($('resetOfficerProfile'))$('resetOfficerProfile').dataset.i18n='resetOfficer';
-}
+
 async function init(){
  await loadOfficers();renderOfficerFilters();renderOfficerOptions();
  ['officerSearch','officerSeasonFilter','officerRoleFilter'].forEach(id=>{
@@ -1534,8 +1564,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  updateFutureOfficerForecast();
 
 
- initialiseI18nMarkers();
- const savedLanguage=localStorage.getItem('kow_language_v437')||'en';
+ const savedLanguage=localStorage.getItem('kow_language_v438')||'en';
  if($('appLanguage'))$('appLanguage').addEventListener('change',e=>applyLanguage(e.target.value));
  applyLanguage(savedLanguage);
 
@@ -1551,7 +1580,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.7';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.8';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();

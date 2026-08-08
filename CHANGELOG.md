@@ -1,5 +1,14 @@
 # Changelog
 
+## v4.3.8 TEST
+- Expanded multilingual system so the selected language applies across the whole visible UI, not only selected headings/navigation.
+- Added broad Italian translation coverage for Settings, Releases, Forecast, Officer, Stars, Development, XP, Planner, Database, Help labels and controls.
+- Added translation handling for dynamic Future Officer Forecast output.
+- Added whole-page text/placeholder/option translation pass.
+- Officer names, game values and numeric calculations remain unchanged.
+- English remains the fallback for any text not yet translated.
+- v4.3.6 remains LIVE while full multilingual behaviour is tested.
+
 ## v4.3.7 TEST
 - Added Language selector to Settings.
 - Initial languages: English, French, German, Spanish and Italian.
