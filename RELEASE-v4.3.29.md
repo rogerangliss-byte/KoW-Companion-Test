@@ -23,3 +23,6 @@ TEST build: verify saved profiles with different development/star/XP positions b
 - Progress now reflects actual saved Officer progression only.
 - Added NOT STARTED status when an Officer is saved at 0 stars, level 1, with no development spent.
 - Compare Officer selection is sorted by Season, then Officer name.
+
+- Added ⭐ MAX Officer one-button action: 5★, Level 70, Unlocked, all Skills complete, Training 180, with immediate profile save.
+- MAX Officer does not spend or alter shared ORV/SRV/badge/star/XP inventory.
