@@ -157,6 +157,29 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
  .skill-strand-controls{grid-template-columns:repeat(5,minmax(54px,1fr))}
 }
 
+
+/* Strand grid: reached = gold, unreached = black */
+.strand-level-btn,.skill-strand-level,.strandLevel{
+ background:#090a0c !important;color:#f5f0e6 !important;border-color:#3a3d42 !important;
+}
+.strand-level-btn.reached,.skill-strand-level.reached,.strandLevel.reached,
+.strand-level-btn.selected,.skill-strand-level.selected,.strandLevel.selected{
+ background:#7a5a10 !important;color:#fff !important;border-color:#d6aa35 !important;
+}
+
+
+/* Correct strand cells: reached levels gold, unreached levels black */
+.skill-lvl{
+ background:#090a0c !important;
+ color:#f5f0e6 !important;
+ border-color:#3a3d42 !important;
+}
+.skill-lvl.reached,.skill-lvl.free,.skill-lvl.active{
+ background:#7a5a10 !important;
+ color:#fff !important;
+ border-color:#d6aa35 !important;
+}
+
 </style>
 </head>
 <body><div id="testBanner" style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:7px 10px;letter-spacing:.5px">TEST VERSION — v4.3.29 — NOT LIVE</div>
@@ -705,7 +728,7 @@ function renderSkillStrands(){
    for(let level=1;level<=5;level++){
      const b=document.createElement('button');
      b.type='button';
-     b.className='skill-lvl'+(level===1?' free':'')+(levels[strand]===level?' active':'');
+     b.className='skill-lvl'+(level===1?' free':'')+(level<=levels[strand]?' reached':'')+(levels[strand]===level?' active':'');
      b.textContent=level===1?'Lv1 ✓':`Lv${level}`;
      b.title=level===1?'Level 1 is free and already unlocked':`Set Strand ${strand+1} to Level ${level}`;
      b.onclick=()=>setSkillStrandLevel(strand,level);
