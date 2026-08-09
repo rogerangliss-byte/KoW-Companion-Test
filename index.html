@@ -2104,16 +2104,27 @@ window.addEventListener('load',()=>{setTimeout(updateSmartDashboard,100);setTime
 
 <script>
 function updateVersionIntegrity(){
-  const expected='v'+APP_VERSION;
+  const expected='v4.3.28';
   const el=document.getElementById('versionIntegrity');
   if(!el)return;
+
+  const installed=(document.getElementById('installedVersion')?.textContent||'').trim();
   const bodyText=document.body.innerText||'';
-  const stale=/v4\.3\.27\b/.test(bodyText);
-  el.innerHTML=stale
-    ? '<b>Build integrity: MISMATCH</b><br>Expected '+expected+'.'
-    : '<b>Build integrity: OK</b><br>Multilingual build is synchronised at '+expected+'.';
+  const stale=/\bv4\.3\.27\b/i.test(bodyText);
+  const installedOK=!installed || installed===expected;
+
+  if(!stale && installedOK){
+    el.innerHTML='<b>Build integrity: OK</b><br>Multilingual build is synchronised at '+expected+'.';
+  }else{
+    el.innerHTML='<b>Build integrity: MISMATCH</b><br>Expected '+expected+
+      (installed ? '; Installed version shows '+installed+'.' : '.');
+  }
 }
-document.addEventListener('DOMContentLoaded',updateVersionIntegrity);
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',updateVersionIntegrity);
+}else{
+  updateVersionIntegrity();
+}
 </script>
 </body>
 </html>
