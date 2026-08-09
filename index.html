@@ -138,6 +138,18 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 .progress-meter>span{display:block;height:100%;background:var(--gold2);border-radius:999px}
 .status-ready{font-weight:800;color:#79d98c}.status-progress{font-weight:700;color:var(--gold2)}
 @media(max-width:760px){#savedOfficerProgressTable{min-width:980px}}
+
+.skill-strands{display:grid;gap:8px}
+.skill-strand-row{display:grid;grid-template-columns:140px repeat(5,minmax(0,1fr));gap:8px;align-items:stretch}
+.skill-strand-label{display:flex;align-items:center;font-weight:700;color:var(--gold2)}
+.skill-lvl{min-height:42px}
+.skill-lvl.free{opacity:.9}
+.skill-lvl.active{background:#7a5a10;border-color:#d6aa35;color:#fff}
+@media(max-width:760px){
+ .skill-strand-row{grid-template-columns:110px repeat(5,minmax(56px,1fr));overflow-x:auto}
+ .skill-lvl{font-size:12px;padding:8px 5px}
+}
+
 </style>
 </head>
 <body><div id="testBanner" style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:7px 10px;letter-spacing:.5px">TEST VERSION — v4.3.29 — NOT LIVE</div>
@@ -311,7 +323,8 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
     <article class="card">
       <h2>🏅 Officer Development</h2>
       <label class="check"><input id="unlocked" type="checkbox"> Officer unlocked (10 badges)</label>
-      <label>Skills 1–16</label><div id="skillGrid" class="skills"></div>
+      <label>Skill Strands — each starts at Level 1</label><div id="skillGrid" class="skill-strands"></div>
+      <div class="notice">Level 1 is free on all four strands. Each additional skill level uses the next cost in the existing sequence: 10, 10, 15, 15, 30, 30, 40, 40, 45, 45, 50, 50, 75, 75, 80, 80 — regardless of which strand you increase.</div>
       <label>Training Level: <b id="trainingLabel">0</b> / 180</label>
       <div style="display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center">
         <input id="training" type="range" min="0" max="180" value="0">
@@ -468,7 +481,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <p>Use <b>Use current held resources</b> to copy the resources currently entered in Development. Plans are preview-only and do not spend or alter the normal calculator data. Named plans can be saved locally in the browser and loaded again later.</p>
 
       <h3>6. Save Progress</h3>
-      <p><b>MAX Officer:</b> use the ⭐ MAX Officer button to set the selected Officer to 5 Stars, Level 70, Unlocked, all 16 Skills complete and Training Level 180. The Officer profile is saved immediately. Shared inventory is not spent or changed.</p>
+      <p><b>MAX Officer:</b> use the ⭐ MAX Officer button to set the selected Officer to 5 Stars, Level 70, Unlocked, all 4 Skill Strands at Level 5 and Training Level 180. The Officer profile is saved immediately. Shared inventory is not spent or changed.</p>
       <p>Use <b>Save Progress</b> after entering or changing calculator information. Progress is stored locally in the browser on the current device. Save Progress does not publish your personal data to other users.</p>
 
       <h3>7. Database</h3>
@@ -606,6 +619,60 @@ const XP_DENOMS=[50,100,500,1000,5000,10000,20000,50000];
 const MAX_STAR=98000,MAX_BADGES=1600,MAX_XP=199646700;
 let officers=[],skills=Array(16).fill(false);
 const $=id=>document.getElementById(id);
+
+function getSkillStrandLevels(){
+ const levels=[];
+ for(let strand=0;strand<4;strand++){
+   let paid=0;
+   for(let step=0;step<4;step++){
+     if(skills[strand*4+step]) paid++;
+     else break;
+   }
+   levels.push(1+paid);
+ }
+ return levels;
+}
+function setSkillStrandLevel(strand,level){
+ level=Math.max(1,Math.min(5,Number(level)||1));
+ for(let step=0;step<4;step++){
+   skills[strand*4+step]=step < (level-1);
+ }
+ renderSkillStrands();
+ calculate();
+}
+function totalPaidSkillUpgrades(){
+ return getSkillStrandLevels().reduce((sum,lvl)=>sum+(lvl-1),0);
+}
+function skillBadgesSpent(){
+ const n=totalPaidSkillUpgrades();
+ return SKILL_COSTS.slice(0,n).reduce((a,b)=>a+b,0);
+}
+function renderSkillStrands(){
+ const g=$('skillGrid'); if(!g)return;
+ g.innerHTML='';
+ const levels=getSkillStrandLevels();
+ for(let strand=0;strand<4;strand++){
+   const row=document.createElement('div');
+   row.className='skill-strand-row';
+
+   const label=document.createElement('div');
+   label.className='skill-strand-label';
+   label.textContent=`Strand ${strand+1}`;
+   row.appendChild(label);
+
+   for(let level=1;level<=5;level++){
+     const b=document.createElement('button');
+     b.type='button';
+     b.className='skill-lvl'+(level===1?' free':'')+(levels[strand]===level?' active':'');
+     b.textContent=level===1?'Lv1 ✓':`Lv${level}`;
+     b.title=level===1?'Level 1 is free and already unlocked':`Set Strand ${strand+1} to Level ${level}`;
+     b.onclick=()=>setSkillStrandLevel(strand,level);
+     row.appendChild(b);
+   }
+   g.appendChild(row);
+ }
+}
+
 function applyResponsivePageBackground(){
  const portrait=localStorage.getItem('kow_bg_portrait_v401');
  const landscape=localStorage.getItem('kow_bg_landscape_v401');
@@ -848,7 +915,7 @@ function calculate(){
  $('selectionChestOrvGenerated').textContent=fmt(selectionChestOrv);
  $('universalBadgesAvailable').textContent=fmt(universalBadgesAvailable);
 
- const badgesUsed=($('unlocked').checked?10:0)+skills.reduce((s,on,i)=>s+(on?SKILL_COSTS[i]:0),0)+ +$('training').value*5;
+ const badgesUsed=($('unlocked').checked?10:0)+skillBadgesSpent()+ +$('training').value*5;
  const badgesFromOrv=readinessEligible&&o.orv>0?Math.floor(orvHeld/o.orv):0;
  const orvRemainder=o.orv>0?orvHeld-badgesFromOrv*o.orv:orvHeld;
  const badgeTotal=badgesUsed+badgesHeld+universalBadgesAvailable+badgesFromOrv;
@@ -957,7 +1024,7 @@ function applyOfficerProgress(d){
  $('currentLevel').value=d.currentLevel??1;
  $('targetLevel').value=d.targetLevel??70;
  $('goalSelect').value=d.goal??'max';
- document.querySelectorAll('.skill').forEach((b,i)=>b.classList.toggle('active',!!skills[i]));
+ renderSkillStrands();
 }
 
 // Shared inventory/resources. These must NOT clear when switching Officer.
@@ -1023,14 +1090,14 @@ function maxSelectedOfficerProfile(){
  if(!o)return;
 
  const label=`${o.season||''} ${o.name||''}`.trim();
- if(!confirm(`Set ${label} to fully MAXED?\n\nThis will set:\n• 5 Stars\n• Level 70\n• Unlocked\n• All 16 Skills complete\n• Training Level 180\n\nShared ORV, SRV, badges, stars and XP inventory will not be spent or changed.`))return;
+ if(!confirm(`Set ${label} to fully MAXED?\n\nThis will set:\n• 5 Stars\n• Level 70\n• Unlocked\n• All 4 Skill Strands at Level 5\n• Training Level 180\n\nShared ORV, SRV, badges, stars and XP inventory will not be spent or changed.`))return;
 
  $('currentStar').value=5;
  $('targetStar').value=5;
  $('unlocked').checked=true;
 
  skills=Array(16).fill(true);
- document.querySelectorAll('.skill').forEach((b,i)=>b.classList.toggle('active',!!skills[i]));
+ renderSkillStrands();
 
  $('training').value=180;
  if($('trainingExact'))$('trainingExact').value=180;
@@ -1547,7 +1614,7 @@ async function init(){
  updateOfficerExperience();loadOfficerProfile($('officerSelect').value);populateCompareOfficers();buildUpgradeSummary();
 });
  [0,1,2,3,4,5].forEach(v=>{$('currentStar').add(new Option(v+'★',v));$('targetStar').add(new Option(v+'★',v))});$('targetStar').value=5;
- SKILL_COSTS.forEach((c,i)=>{const b=document.createElement('button');b.className='skill';b.textContent=`${i+1} · ${c}`;b.onclick=()=>{skills[i]=!skills[i];b.classList.toggle('active',skills[i]);calculate()};$('skillGrid').appendChild(b)});
+ renderSkillStrands();
  XP_DENOMS.forEach(v=>{const d=document.createElement('div');d.className='xp-item';d.innerHTML=`<label>${v.toLocaleString()} XP</label><input id="xp${v}" type="number" min="0" step="1" inputmode="numeric" value="0">`;$('xpBooks').appendChild(d)});
  document.querySelectorAll('input,select').forEach(e=>e.addEventListener('input',calculate));
  const RELEASES=[
@@ -1701,7 +1768,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  ['universalBadgeHeld','legendaryBadgeChestHeld','legendaryBadgeChestMode'].forEach(id=>{
   const el=$(id);if(el)el.addEventListener(id==='legendaryBadgeChestMode'?'change':'input',calculate);
  });
- document.querySelectorAll('.skill').forEach((b,i)=>b.classList.toggle('active',!!skills[i]));renderDb();calculate();populateCompareOfficers();buildUpgradeSummary();
+ renderSkillStrands();renderDb();calculate();populateCompareOfficers();buildUpgradeSummary();
  window.addEventListener('resize',applyResponsivePageBackground);
  if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'));
 }
@@ -1737,7 +1804,14 @@ function savedOfficerProgressData(){
    const season=o?.season || '';
 
    const skillFlags=Array.isArray(p.skills)?p.skills:[];
-   const skillSpent=skillFlags.reduce((sum,on,i)=>sum+(on?(SKILL_COSTS[i]||0):0),0);
+   let paidSkillUpgrades=0;
+   for(let strand=0;strand<4;strand++){
+     for(let step=0;step<4;step++){
+       if(skillFlags[strand*4+step]) paidSkillUpgrades++;
+       else break;
+     }
+   }
+   const skillSpent=SKILL_COSTS.slice(0,paidSkillUpgrades).reduce((a,b)=>a+b,0);
    const badgesUsed=(p.unlocked?10:0)+skillSpent+(Number(p.training)||0)*5;
    const badgeShort=Math.max(0,MAX_BADGES-badgesUsed);
    const dev=savedPct(badgesUsed,MAX_BADGES);
@@ -1897,12 +1971,36 @@ document.addEventListener('DOMContentLoaded',()=>{
 (function(){
  const q=id=>document.getElementById(id);
  function buildQuickSkills(){
-   const box=q('quickSkills'); if(!box||box.children.length)return;
-   for(let i=0;i<16;i++){
-     const lab=document.createElement('label');
-     lab.style.cssText='border:1px solid #5b4715;border-radius:8px;padding:8px;text-align:center';
-     lab.innerHTML='<input class="quickSkill" type="checkbox"> Skill '+(i+1);
-     box.appendChild(lab);
+   const box=q('quickSkills'); if(!box)return;
+   box.innerHTML='';
+   box.style.display='grid';
+   box.style.gap='8px';
+
+   const levels=getSkillStrandLevels();
+   for(let strand=0;strand<4;strand++){
+     const row=document.createElement('div');
+     row.className='skill-strand-row';
+     row.dataset.quickStrand=strand;
+
+     const label=document.createElement('div');
+     label.className='skill-strand-label';
+     label.textContent=`Strand ${strand+1}`;
+     row.appendChild(label);
+
+     for(let level=1;level<=5;level++){
+       const b=document.createElement('button');
+       b.type='button';
+       b.className='skill-lvl'+(level===1?' free':'')+(levels[strand]===level?' active':'');
+       b.dataset.quickLevel=level;
+       b.textContent=level===1?'Lv1 ✓':`Lv${level}`;
+       b.onclick=()=>{
+         row.dataset.selectedLevel=level;
+         [...row.querySelectorAll('.skill-lvl')].forEach((x,i)=>x.classList.toggle('active',i+1===level));
+       };
+       row.appendChild(b);
+     }
+     row.dataset.selectedLevel=levels[strand];
+     box.appendChild(row);
    }
  }
  function openQuickProgress(){
@@ -1915,7 +2013,7 @@ document.addEventListener('DOMContentLoaded',()=>{
    q('quickTraining').value=q('training')?.value??0;
    q('quickTrainingValue').textContent=q('quickTraining').value;
    if(q('quickTrainingExact'))q('quickTrainingExact').value=q('quickTraining').value;
-   document.querySelectorAll('.quickSkill').forEach((cb,i)=>cb.checked=!!skills[i]);
+   buildQuickSkills();
    q('quickProgressModal').style.display='block';
  }
  function closeQuickProgress(){q('quickProgressModal').style.display='none';}
@@ -1925,8 +2023,12 @@ document.addEventListener('DOMContentLoaded',()=>{
    q('currentLevel').value=q('quickOfficerLevel').value;
    q('targetLevel').value=Math.max(Number(q('targetLevel').value)||70,Number(q('quickOfficerLevel').value)||1);
    q('unlocked').checked=q('quickUnlocked').checked;
-   skills=[...document.querySelectorAll('.quickSkill')].map(cb=>cb.checked);
-   document.querySelectorAll('.skill').forEach((b,i)=>b.classList.toggle('active',!!skills[i]));
+   skills=Array(16).fill(false);
+   document.querySelectorAll('#quickSkills .skill-strand-row').forEach((row,strand)=>{
+     const level=Math.max(1,Math.min(5,Number(row.dataset.selectedLevel)||1));
+     for(let step=0;step<4;step++)skills[strand*4+step]=step<(level-1);
+   });
+   renderSkillStrands();
    q('training').value=q('quickTrainingExact')?q('quickTrainingExact').value:q('quickTraining').value;
    if(q('trainingExact'))q('trainingExact').value=q('training').value;
    if(q('trainingLabel'))q('trainingLabel').textContent=q('quickTraining').value;
@@ -1960,7 +2062,10 @@ document.addEventListener('DOMContentLoaded',()=>{
  q('quickProgressMax')?.addEventListener('click',()=>{
    q('quickStarLevel').value='5';q('quickOfficerLevel').value='70';q('quickUnlocked').checked=true;
    q('quickTraining').value='180';q('quickTrainingValue').textContent='180';if(q('quickTrainingExact'))q('quickTrainingExact').value='180';
-   document.querySelectorAll('.quickSkill').forEach(x=>x.checked=true);
+   document.querySelectorAll('#quickSkills .skill-strand-row').forEach(row=>{
+     row.dataset.selectedLevel='5';
+     [...row.querySelectorAll('.skill-lvl')].forEach((x,i)=>x.classList.toggle('active',i===4));
+   });
  });
  q('quickProgressModal')?.addEventListener('click',e=>{if(e.target===q('quickProgressModal'))closeQuickProgress();});
 })();;
@@ -1975,7 +2080,7 @@ document.addEventListener('DOMContentLoaded',()=>{
    <div><label>Current Officer Level</label><input id="quickOfficerLevel" type="number" min="1" max="70"></div>
   </div>
   <label><input id="quickUnlocked" type="checkbox"> Officer unlocked (10 badges)</label>
-  <h3>Skills 1–16</h3><div id="quickSkills" style="display:grid;grid-template-columns:repeat(4,minmax(90px,1fr));gap:8px"></div>
+  <h3>Skill Strands — each starts at Level 1</h3><div id="quickSkills" style="display:grid;grid-template-columns:repeat(4,minmax(90px,1fr));gap:8px"></div>
   <label style="display:block;margin-top:14px">Training Level: <b id="quickTrainingValue">0</b> / 180</label>
   <div style="display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center">
     <input id="quickTraining" type="range" min="0" max="180" value="0" style="width:100%">

@@ -33,3 +33,6 @@ TEST build: verify saved profiles with different development/star/XP positions b
 - Added Officer-tab Edit Officer Progress popup for star level, level, unlock, skills and training, with one-click MAX.
 
 - Added exact numeric Training Level input (0–180) alongside sliders in both Develop and Edit Officer Progress.
+
+- Reworked Officer skills as 4 independent Skill Strands, each starting at free Level 1 and individually selectable through Level 5.
+- Skill badge costs now follow the global upgrade sequence regardless of strand: the 1st paid level costs 10, 2nd 10, 3rd 15, 4th 15, etc. Existing total remains 690 badges for all 16 paid upgrades.
