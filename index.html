@@ -185,6 +185,25 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
   <h2>📊 Saved Officer Progress</h2>
   <p class="notice">A planning overview of Officers saved on this device. Progress is calculated from each saved Officer profile; shared resources remain preview-only and are not spent.</p>
   <div id="savedOfficerProgressSummary" class="result-box">Save Officer progress to build this dashboard.</div>
+  <button type="button" id="openOfficerProgressCompare" style="margin:12px 0">📊 Compare Officer Progress</button>
+  <div id="officerProgressComparePanel" class="result-box" style="display:none;margin-bottom:12px">
+    <h3 style="margin-top:0">Compare Officer Progress</h3>
+    <p class="muted">Choose any saved Officers to compare. This does not change or spend saved resources.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <button type="button" id="compareProgressSelectAll">Select All</button>
+      <button type="button" id="compareProgressClear">Clear All</button>
+      <button type="button" id="compareProgressRun">Compare Selected</button>
+      <button type="button" id="compareProgressClose">Close</button>
+    </div>
+    <div id="compareProgressChoices" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px"></div>
+    <div id="compareProgressRecommendation" class="notice" style="display:none;margin-top:12px"></div>
+    <div class="table-wrap" id="compareProgressResultsWrap" style="display:none;margin-top:12px">
+      <table>
+        <thead><tr><th>Officer</th><th>Overall</th><th>Development</th><th>Stars</th><th>XP</th><th>Badges Needed</th><th>Stars Needed</th><th>Levels Needed</th><th>Status</th></tr></thead>
+        <tbody id="compareProgressResults"></tbody>
+      </table>
+    </div>
+  </div>
   <div class="table-wrap">
     <table id="savedOfficerProgressTable">
       <thead><tr><th>Officer</th><th>Overall</th><th>Development</th><th>Stars</th><th>XP</th><th>Badge shortfall</th><th>Star shortfall</th><th>XP shortfall</th><th>Status</th></tr></thead>
@@ -1668,6 +1687,32 @@ function renderSavedOfficerProgress(){
  </tr>`).join('');
 }
 document.addEventListener('DOMContentLoaded',()=>setTimeout(renderSavedOfficerProgress,0));
+function renderProgressCompareChoices(){
+ const box=document.getElementById('compareProgressChoices'); if(!box)return;
+ const rows=savedOfficerProgressData();
+ box.innerHTML=rows.length?rows.map((r,i)=>`<label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #4a3a12;border-radius:8px"><input type="checkbox" class="progressComparePick" value="${i}"> <span>${esc(r.name)}</span></label>`).join(''):'No saved Officer profiles.';
+}
+function runProgressComparison(){
+ const all=savedOfficerProgressData();
+ const picks=[...document.querySelectorAll('.progressComparePick:checked')].map(x=>all[Number(x.value)]).filter(Boolean);
+ const wrap=document.getElementById('compareProgressResultsWrap'),body=document.getElementById('compareProgressResults'),rec=document.getElementById('compareProgressRecommendation');
+ if(picks.length<2){wrap.style.display='none';rec.style.display='block';rec.textContent='Select at least 2 saved Officers to compare.';return;}
+ picks.sort((a,b)=>b.overall-a.overall||a.name.localeCompare(b.name));
+ body.innerHTML=picks.map(r=>`<tr><td><b>${esc(r.name)}</b></td><td>${meter(r.overall)}</td><td>${meter(r.dev)}</td><td>${meter(r.stars)}</td><td>${meter(r.xp)}</td><td>${fmt(r.badgeShort)}</td><td>${fmt(r.starShort)}</td><td>${r.xpShort}</td><td class="${r.ready?'status-ready':'status-progress'}">${r.ready?'MAX READY':'IN PROGRESS'}</td></tr>`).join('');
+ const best=picks[0]; rec.style.display='block';
+ rec.innerHTML=best.ready?`<b>${esc(best.name)}</b> is already MAX READY.`:`<b>Closest to MAX:</b> ${esc(best.name)} at ${best.overall}% overall progress. Remaining: ${fmt(best.badgeShort)} badges, ${fmt(best.starShort)} stars and ${best.xpShort} level${best.xpShort===1?'':'s'}.`;
+ wrap.style.display='block';
+}
+function setupProgressComparison(){
+ const open=document.getElementById('openOfficerProgressCompare'),panel=document.getElementById('officerProgressComparePanel'); if(!open||!panel)return;
+ open.onclick=()=>{panel.style.display='block';renderProgressCompareChoices();panel.scrollIntoView({behavior:'smooth',block:'nearest'});};
+ document.getElementById('compareProgressClose').onclick=()=>panel.style.display='none';
+ document.getElementById('compareProgressSelectAll').onclick=()=>document.querySelectorAll('.progressComparePick').forEach(x=>x.checked=true);
+ document.getElementById('compareProgressClear').onclick=()=>{document.querySelectorAll('.progressComparePick').forEach(x=>x.checked=false);document.getElementById('compareProgressResultsWrap').style.display='none';document.getElementById('compareProgressRecommendation').style.display='none';};
+ document.getElementById('compareProgressRun').onclick=runProgressComparison;
+}
+document.addEventListener('DOMContentLoaded',setupProgressComparison);
+
 </script>
 </body>
 </html>
