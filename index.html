@@ -190,6 +190,12 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
     <h2>📊 Officer Progress</h2>
     <p class="notice">Saved Officers are compared by their actual saved development progress. Held shared resources do not increase an Officer's progress percentage.</p>
     <div id="savedOfficerProgressSummary" class="result-box">Save Officer progress to build this dashboard.</div>
+    <div id="progressStatusFilters" class="notice" style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-top:12px">
+      <b>Show:</b>
+      <label><input type="checkbox" class="progressStatusFilter" value="maxed" checked> MAXED</label>
+      <label><input type="checkbox" class="progressStatusFilter" value="progress" checked> IN PROGRESS</label>
+      <label><input type="checkbox" class="progressStatusFilter" value="notStarted" checked> NOT STARTED</label>
+    </div>
     <div class="table-wrap" style="margin-top:12px">
       <table id="savedOfficerProgressTable">
         <thead><tr><th>Officer</th><th>Overall progress</th><th>Development</th><th>Stars</th><th>XP</th><th>Badge shortfall</th><th>Star shortfall</th><th>XP shortfall</th><th>Status</th></tr></thead>
@@ -1715,22 +1721,32 @@ function savedOfficerProgressData(){
    };
  }).sort((a,b)=>Number(b.maxed)-Number(a.maxed)||b.overall-a.overall||a.name.localeCompare(b.name));
 }
+function progressStatusAllowed(r){
+ const boxes=[...document.querySelectorAll('.progressStatusFilter')];
+ if(!boxes.length)return true;
+ const selected=new Set(boxes.filter(x=>x.checked).map(x=>x.value));
+ if(r.maxed)return selected.has('maxed');
+ if(r.notStarted)return selected.has('notStarted');
+ return selected.has('progress');
+}
 function renderSavedOfficerProgress(){
  const body=document.getElementById('savedOfficerProgressRows');
  const summary=document.getElementById('savedOfficerProgressSummary');
  if(!body||!summary)return;
- const rows=savedOfficerProgressData();
- if(!rows.length){
+ const allRows=savedOfficerProgressData();
+ if(!allRows.length){
    body.innerHTML='';
    summary.textContent='No saved Officer profiles yet. Use Save Officer Progress to add Officers to this overview.';
    return;
  }
- const ready=rows.filter(x=>x.maxed);
- const closest=rows[0];
- summary.innerHTML=`<b>${rows.length} saved Officer${rows.length===1?'':'s'}</b> · `+
+ const rows=allRows.filter(progressStatusAllowed);
+ const ready=allRows.filter(x=>x.maxed);
+ const closest=allRows[0];
+ summary.innerHTML=`<b>${allRows.length} saved Officer${allRows.length===1?'':'s'}</b> · `+
    `<b>${ready.length} MAXED</b> · `+
-   `<b>Highest progress:</b> ${esc(closest.name)} (${closest.overall}%)`;
- body.innerHTML=rows.map(r=>`<tr>
+   `<b>Highest progress:</b> ${esc(closest.name)} (${closest.overall}%)`+
+   (rows.length!==allRows.length?` · <b>Showing ${rows.length}</b>`:'');
+ body.innerHTML=rows.length?rows.map(r=>`<tr>
    <td><b>${esc(r.name)}</b></td>
    <td>${meter(r.overall)}</td>
    <td>${meter(r.dev)}</td>
@@ -1740,7 +1756,7 @@ function renderSavedOfficerProgress(){
    <td>${fmt(r.starShort)}</td>
    <td>${fmt(r.xpShort)}</td>
    <td class="${r.maxed?'status-ready':r.notStarted?'':'status-progress'}">${r.status}</td>
- </tr>`).join('');
+ </tr>`).join(''):`<tr><td colspan="9" class="muted">No saved Officers match the selected status filters.</td></tr>`;
 }
 document.addEventListener('DOMContentLoaded',()=>setTimeout(renderSavedOfficerProgress,0));
 function renderProgressCompareChoices(){
@@ -1751,7 +1767,7 @@ function renderProgressCompareChoices(){
    const m=v.match(/^s(\d+)$/);
    return m?Number(m[1]):999;
  };
- const rows=savedOfficerProgressData().slice().sort((a,b)=>
+ const rows=savedOfficerProgressData().filter(progressStatusAllowed).slice().sort((a,b)=>
    seasonRank(a.season)-seasonRank(b.season) ||
    String(a.name).localeCompare(String(b.name))
  );
@@ -1813,6 +1829,16 @@ function setupProgressComparison(){
  if(run)run.onclick=runProgressComparison;
 }
 document.addEventListener('DOMContentLoaded',setupProgressComparison);
+document.addEventListener('DOMContentLoaded',()=>{
+ document.querySelectorAll('.progressStatusFilter').forEach(x=>x.addEventListener('change',()=>{
+   renderSavedOfficerProgress();
+   renderProgressCompareChoices();
+   const wrap=document.getElementById('compareProgressResultsWrap');
+   const rec=document.getElementById('compareProgressRecommendation');
+   if(wrap)wrap.style.display='none';
+   if(rec)rec.style.display='none';
+ }));
+});
 
 </script>
 </body>
