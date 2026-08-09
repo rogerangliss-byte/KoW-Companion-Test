@@ -271,6 +271,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       </div>
       <div class="toolbar">
         <button id="saveOfficerProfile" class="primary">Save This Officer</button>
+<button id="quickProgressBtn" class="primary" type="button">✏️ Edit Officer Progress</button>
 <button id="maxOfficerProfile" class="primary" type="button" style="margin-top:8px">⭐ MAX Officer</button>
         <button id="resetOfficerProfile">Reset This Officer</button>
       </div>
@@ -1860,6 +1861,54 @@ document.addEventListener('DOMContentLoaded',()=>{
  }));
 });
 
+
+(function(){
+ const $=id=>document.getElementById(id);
+ function evt(el,type='input'){if(el)el.dispatchEvent(new Event(type,{bubbles:true}));}
+ function skillEls(){return [...document.querySelectorAll('[data-skill-index]')].slice(0,16);}
+ function build(){const b=$('quickSkills');if(!b||b.children.length)return;for(let i=0;i<16;i++){let l=document.createElement('label');l.style.cssText='border:1px solid #5b4715;border-radius:8px;padding:8px;text-align:center';l.innerHTML='<input class="quickSkill" type="checkbox"> Skill '+(i+1);b.appendChild(l);}}
+ function openQuick(){
+  build(); const sel=$('officerSelect'); $('quickProgressOfficer').textContent=sel?.options[sel.selectedIndex]?.textContent||'Selected Officer';
+  if($('currentStarLevel'))$('quickStarLevel').value=$('currentStarLevel').value;
+  if($('currentLevel'))$('quickOfficerLevel').value=$('currentLevel').value;
+  if($('officerUnlocked'))$('quickUnlocked').checked=$('officerUnlocked').checked;
+  if($('trainingLevel')){$('quickTraining').value=$('trainingLevel').value;$('quickTrainingValue').textContent=$('trainingLevel').value;}
+  const a=skillEls();document.querySelectorAll('.quickSkill').forEach((c,i)=>{let e=a[i];c.checked=!!(e&&(e.checked||e.classList.contains('active')||e.getAttribute('aria-pressed')==='true'));});
+  $('quickProgressModal').style.display='block';
+ }
+ function closeQuick(){$('quickProgressModal').style.display='none';}
+ function applyQuick(){
+  let e=$('currentStarLevel');if(e){e.value=$('quickStarLevel').value;evt(e,'change');}
+  e=$('currentLevel');if(e){e.value=$('quickOfficerLevel').value;evt(e);}
+  e=$('officerUnlocked');if(e){e.checked=$('quickUnlocked').checked;evt(e,'change');}
+  e=$('trainingLevel');if(e){e.value=$('quickTraining').value;evt(e);}
+  const a=skillEls();document.querySelectorAll('.quickSkill').forEach((c,i)=>{let x=a[i];if(!x)return;let on=!!(x.checked||x.classList.contains('active')||x.getAttribute('aria-pressed')==='true');if(on!==c.checked)x.click();});
+  $('saveOfficerProfile')?.click(); closeQuick();
+ }
+ $('quickProgressBtn')?.addEventListener('click',openQuick);
+ $('quickProgressClose')?.addEventListener('click',closeQuick);$('quickProgressCancel')?.addEventListener('click',closeQuick);
+ $('quickTraining')?.addEventListener('input',()=>$('quickTrainingValue').textContent=$('quickTraining').value);
+ $('quickProgressSave')?.addEventListener('click',applyQuick);
+ $('quickProgressMax')?.addEventListener('click',()=>{$('quickStarLevel').value='5';$('quickOfficerLevel').value='70';$('quickUnlocked').checked=true;$('quickTraining').value='180';$('quickTrainingValue').textContent='180';document.querySelectorAll('.quickSkill').forEach(x=>x.checked=true);});
+ $('quickProgressModal')?.addEventListener('click',e=>{if(e.target===$('quickProgressModal'))closeQuick();});
+})();
 </script>
+
+<div id="quickProgressModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.8);padding:18px;overflow:auto">
+ <article class="card" style="max-width:760px;margin:3vh auto">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h2>✏️ Edit Officer Progress</h2><button id="quickProgressClose" type="button">✕</button></div>
+  <div id="quickProgressOfficer" class="notice"></div>
+  <div class="two">
+   <div><label>Current Star Level</label><select id="quickStarLevel"><option value="0">0★</option><option value="1">1★</option><option value="2">2★</option><option value="3">3★</option><option value="4">4★</option><option value="5">5★</option></select></div>
+   <div><label>Current Officer Level</label><input id="quickOfficerLevel" type="number" min="1" max="70"></div>
+  </div>
+  <label><input id="quickUnlocked" type="checkbox"> Officer unlocked (10 badges)</label>
+  <h3>Skills 1–16</h3><div id="quickSkills" style="display:grid;grid-template-columns:repeat(4,minmax(90px,1fr));gap:8px"></div>
+  <label style="display:block;margin-top:14px">Training Level: <b id="quickTrainingValue">0</b> / 180</label>
+  <input id="quickTraining" type="range" min="0" max="180" value="0" style="width:100%">
+  <div class="toolbar" style="margin-top:16px"><button id="quickProgressSave" class="primary" type="button">💾 Save Progress</button><button id="quickProgressMax" class="primary" type="button">⭐ MAX Officer</button><button id="quickProgressCancel" type="button">Cancel</button></div>
+  <div class="notice">Officer-specific progress only. Shared resources remain on Stars, Develop and XP.</div>
+ </article>
+</div>
 </body>
 </html>

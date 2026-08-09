@@ -29,3 +29,5 @@ TEST build: verify saved profiles with different development/star/XP positions b
 
 - Officer Progress filters and Compare Officer Progress filters are now independent.
 - Compare has its own MAXED / IN PROGRESS / NOT STARTED toggles, so comparison choices are unaffected by the main Progress table filter.
+
+- Added Officer-tab Edit Officer Progress popup for star level, level, unlock, skills and training, with one-click MAX.
