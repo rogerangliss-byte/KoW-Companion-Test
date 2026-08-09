@@ -207,6 +207,12 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
   <article class="card">
     <h2>🔎 Compare Officer Progress</h2>
     <p class="notice">Choose any saved Officers to compare their actual saved progress. Shared inventory is not counted as completed progress.</p>
+    <div id="compareStatusFilters" class="notice" style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+      <b>Compare:</b>
+      <label><input type="checkbox" class="compareStatusFilter" value="maxed" checked> MAXED</label>
+      <label><input type="checkbox" class="compareStatusFilter" value="progress" checked> IN PROGRESS</label>
+      <label><input type="checkbox" class="compareStatusFilter" value="notStarted" checked> NOT STARTED</label>
+    </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
       <button type="button" id="compareProgressSelectAll">Select All</button>
       <button type="button" id="compareProgressClear">Clear All</button>
@@ -1763,6 +1769,14 @@ function renderSavedOfficerProgress(){
  </tr>`).join(''):`<tr><td colspan="9" class="muted">No saved Officers match the selected status filters.</td></tr>`;
 }
 document.addEventListener('DOMContentLoaded',()=>setTimeout(renderSavedOfficerProgress,0));
+function compareStatusAllowed(r){
+ const boxes=[...document.querySelectorAll('.compareStatusFilter')];
+ if(!boxes.length)return true;
+ const selected=new Set(boxes.filter(x=>x.checked).map(x=>x.value));
+ if(r.maxed)return selected.has('maxed');
+ if(r.notStarted)return selected.has('notStarted');
+ return selected.has('progress');
+}
 function renderProgressCompareChoices(){
  const box=document.getElementById('compareProgressChoices'); if(!box)return;
  const seasonRank=s=>{
@@ -1771,7 +1785,7 @@ function renderProgressCompareChoices(){
    const m=v.match(/^s(\d+)$/);
    return m?Number(m[1]):999;
  };
- const rows=savedOfficerProgressData().filter(progressStatusAllowed).slice().sort((a,b)=>
+ const rows=savedOfficerProgressData().filter(compareStatusAllowed).slice().sort((a,b)=>
    seasonRank(a.season)-seasonRank(b.season) ||
    String(a.name).localeCompare(String(b.name))
  );
@@ -1836,6 +1850,8 @@ document.addEventListener('DOMContentLoaded',setupProgressComparison);
 document.addEventListener('DOMContentLoaded',()=>{
  document.querySelectorAll('.progressStatusFilter').forEach(x=>x.addEventListener('change',()=>{
    renderSavedOfficerProgress();
+ }));
+ document.querySelectorAll('.compareStatusFilter').forEach(x=>x.addEventListener('change',()=>{
    renderProgressCompareChoices();
    const wrap=document.getElementById('compareProgressResultsWrap');
    const rec=document.getElementById('compareProgressRecommendation');

@@ -1,4 +1,4 @@
-# KoW Companion v4.3.0 — LIVE 
+# KoW Companion v4.3.0 — LIVE
 
 Approved Live release of KoW Companion.
 

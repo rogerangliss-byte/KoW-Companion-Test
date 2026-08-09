@@ -26,3 +26,6 @@ TEST build: verify saved profiles with different development/star/XP positions b
 
 - Added ⭐ MAX Officer one-button action: 5★, Level 70, Unlocked, all Skills complete, Training 180, with immediate profile save.
 - MAX Officer does not spend or alter shared ORV/SRV/badge/star/XP inventory.
+
+- Officer Progress filters and Compare Officer Progress filters are now independent.
+- Compare has its own MAXED / IN PROGRESS / NOT STARTED toggles, so comparison choices are unaffected by the main Progress table filter.
