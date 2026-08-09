@@ -1775,7 +1775,7 @@ function renderProgressCompareChoices(){
    seasonRank(a.season)-seasonRank(b.season) ||
    String(a.name).localeCompare(String(b.name))
  );
- box.innerHTML=rows.length?rows.map((r,i)=>`<label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #4a3a12;border-radius:8px"><input type="checkbox" class="progressComparePick" value="${i}"> <span>${esc(r.season?`${r.season} ${r.name}`:r.name)}</span></label>`).join(''):'No saved Officer profiles.';
+ box.innerHTML=rows.length?rows.map((r,i)=>`<label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #4a3a12;border-radius:8px"><input type="checkbox" class="progressComparePick" value="${i}"> <span>${esc(r.name)}</span></label>`).join(''):'No saved Officer profiles.';
  box.dataset.compareRows=JSON.stringify(rows);
 }
 function runProgressComparison(){
@@ -1801,7 +1801,7 @@ function runProgressComparison(){
  picks.sort((a,b)=>Number(b.maxed)-Number(a.maxed)||b.overall-a.overall||a.name.localeCompare(b.name));
 
  body.innerHTML=picks.map(r=>`<tr>
-   <td><b>${esc(r.season?`${r.season} ${r.name}`:r.name)}</b></td>
+   <td><b>${esc(r.name)}</b></td>
    <td>${meter(r.overall)}</td>
    <td>${meter(r.dev)}</td>
    <td>${meter(r.stars)}</td>
