@@ -1,4 +1,4 @@
-const CACHE='kow-v4.3.27-frfix2';
+const CACHE='kow-v4.2.13-fixed';
 const ASSETS=[
   './',
   './index.html',
@@ -8,11 +8,7 @@ const ASSETS=[
   './background-landscape.jpg',
   './officers.csv',
   './officers.json',
-  './USER-GUIDE.md',
-  './lang/en.js',
-  './lang/it.js',
-  './lang/fr.js',
-  './lang/de.js'
+  './USER-GUIDE.md'
 ];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));self.skipWaiting();});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});
