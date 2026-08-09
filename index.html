@@ -474,9 +474,9 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
         <button id="checkUpdates" class="primary">Check for Updates</button>
         <button id="refreshLatest" class="primary">Refresh Latest Version</button>
       </div>
-      <h3>About</h3>
-      <p class="notice"><b>KoW Companion v4.3.28</b><br>Created by FireStorm (371)</p>
-<h3>Version Integrity</h3><div id="versionIntegrity" class="notice">Checking build version consistency…</div>
+      <h3 data-i18n="About">About</h3>
+      <p class="notice"><b>KoW Companion v4.3.28</b><br><span data-i18n="Created by FireStorm (371)">Created by FireStorm (371)</span></p>
+<h3 data-i18n="Version Integrity">Version Integrity</h3><div id="versionIntegrity" class="notice" data-i18n="Checking build version consistency…">Checking build version consistency…</div>
       <h3>Help & Instructions</h3>
       <p class="notice">Open the in-app User Guide for the recommended setup order, explanations of every tab, saving, database publishing, vouchers, badges and Original Officer restrictions.</p>
       <button id="openUserGuide" class="primary">📖 User Guide</button>
@@ -2107,24 +2107,31 @@ function updateVersionIntegrity(){
   const expected='v4.3.28';
   const el=document.getElementById('versionIntegrity');
   if(!el)return;
-
+  const lang=(localStorage.getItem('kow_language')||'en').toLowerCase();
+  const strings={
+    en:{ok:'Build integrity: OK',sync:'Multilingual build is synchronised at v4.3.28.',bad:'Build integrity: MISMATCH',expected:'Expected v4.3.28.'},
+    it:{ok:'Integrità build: OK',sync:'La build multilingue è sincronizzata alla v4.3.28.',bad:'Integrità build: NON CORRISPONDENTE',expected:'Versione prevista: v4.3.28.'},
+    fr:{ok:'Intégrité de la build : OK',sync:'La version multilingue est synchronisée en v4.3.28.',bad:'Intégrité de la build : NON CONFORME',expected:'Version attendue : v4.3.28.'},
+    de:{ok:'Build-Integrität: OK',sync:'Der mehrsprachige Build ist auf v4.3.28 synchronisiert.',bad:'Build-Integrität: ABWEICHUNG',expected:'Erwartete Version: v4.3.28.'}
+  };
+  const s=strings[lang]||strings.en;
   const installed=(document.getElementById('installedVersion')?.textContent||'').trim();
   const bodyText=document.body.innerText||'';
   const stale=/\bv4\.3\.27\b/i.test(bodyText);
   const installedOK=!installed || installed===expected;
-
-  if(!stale && installedOK){
-    el.innerHTML='<b>Build integrity: OK</b><br>Multilingual build is synchronised at '+expected+'.';
-  }else{
-    el.innerHTML='<b>Build integrity: MISMATCH</b><br>Expected '+expected+
-      (installed ? '; Installed version shows '+installed+'.' : '.');
-  }
+  el.removeAttribute('data-i18n');
+  el.innerHTML=(!stale&&installedOK)
+    ? '<b>'+s.ok+'</b><br>'+s.sync
+    : '<b>'+s.bad+'</b><br>'+s.expected;
 }
 if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded',updateVersionIntegrity);
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(updateVersionIntegrity,0));
 }else{
-  updateVersionIntegrity();
+  setTimeout(updateVersionIntegrity,0);
 }
+document.addEventListener('change',e=>{
+  if(e.target&&e.target.id==='appLanguage')setTimeout(updateVersionIntegrity,10);
+});
 </script>
 </body>
 </html>
