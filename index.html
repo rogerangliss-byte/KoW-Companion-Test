@@ -58,7 +58,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 .primary,.toolbar button,.filebtn{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#5e4512;color:white;cursor:pointer}.primary{width:100%;margin-top:12px}
 .toolbar{display:grid;grid-template-columns:2fr 1fr repeat(5,auto);gap:8px;align-items:end}.filebtn input{display:none}
 .table-wrap{overflow:auto;margin-top:12px}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,.08);text-align:right}th:first-child,td:first-child{text-align:left}.db-table input{min-width:100px}.actions{display:flex;gap:6px}.actions button{padding:7px 9px}
-.bottom-nav{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);width:min(980px,calc(100% - 16px));display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;padding:8px;border:1px solid var(--line);border-radius:16px;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);z-index:20}
+.bottom-nav{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);width:min(980px,calc(100% - 16px));display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:4px;padding:8px;border:1px solid var(--line);border-radius:16px;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);z-index:20}
 .bottom-nav button{border:0;background:transparent;color:var(--muted);padding:7px 1px;border-radius:10px;min-width:0;white-space:nowrap;font-size:.9rem}.bottom-nav button.active{background:rgba(213,167,47,.17);color:var(--gold2)}.bottom-nav span{display:block;font-size:.62rem;margin-top:3px;white-space:nowrap}
 @media(max-width:760px){
 .grid,.two{grid-template-columns:1fr}
@@ -181,39 +181,42 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <article class="card wide"><h2>📘 Officer XP</h2><div class="stat"><span>Held</span><b id="dashXpHeld">0</b></div><div class="stat"><span>Required</span><b id="dashXpRequired">199,646,700</b></div></article>
     </div>
   
-<article class="card" id="officerProgressDashboard">
-  <h2>📊 Saved Officer Progress</h2>
-  <p class="notice">A planning overview of Officers saved on this device. Progress is calculated from each saved Officer profile; shared resources remain preview-only and are not spent.</p>
-  <div id="savedOfficerProgressSummary" class="result-box">Save Officer progress to build this dashboard.</div>
-  <button type="button" id="openOfficerProgressCompare" style="margin:12px 0">📊 Compare Officer Progress</button>
-  <div id="officerProgressComparePanel" class="result-box" style="display:none;margin-bottom:12px">
-    <h3 style="margin-top:0">Compare Officer Progress</h3>
-    <p class="muted">Choose any saved Officers to compare. This does not change or spend saved resources.</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+
+</section>
+
+  
+<section id="progress" class="view">
+  <article class="card">
+    <h2>📊 Officer Progress</h2>
+    <p class="notice">Saved Officers are compared using the same MAX-readiness resource logic as the Smart Dashboard. Shared resources are preview-only and are not spent.</p>
+    <div id="savedOfficerProgressSummary" class="result-box">Save Officer progress to build this dashboard.</div>
+    <div class="table-wrap" style="margin-top:12px">
+      <table id="savedOfficerProgressTable">
+        <thead><tr><th>Officer</th><th>Overall readiness</th><th>Development</th><th>Stars</th><th>XP</th><th>Badge shortfall</th><th>Star shortfall</th><th>XP shortfall</th><th>Status</th></tr></thead>
+        <tbody id="savedOfficerProgressRows"></tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="card">
+    <h2>🔎 Compare Officer Progress</h2>
+    <p class="notice">Choose any saved Officers to compare. The comparison uses current shared inventory plus each Officer's saved development position.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
       <button type="button" id="compareProgressSelectAll">Select All</button>
       <button type="button" id="compareProgressClear">Clear All</button>
-      <button type="button" id="compareProgressRun">Compare Selected</button>
-      <button type="button" id="compareProgressClose">Close</button>
+      <button type="button" id="compareProgressRun" class="primary" style="width:auto;margin-top:0">Compare Selected</button>
     </div>
     <div id="compareProgressChoices" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px"></div>
     <div id="compareProgressRecommendation" class="notice" style="display:none;margin-top:12px"></div>
     <div class="table-wrap" id="compareProgressResultsWrap" style="display:none;margin-top:12px">
       <table>
-        <thead><tr><th>Officer</th><th>Overall</th><th>Development</th><th>Stars</th><th>XP</th><th>Badges Needed</th><th>Stars Needed</th><th>Levels Needed</th><th>Status</th></tr></thead>
+        <thead><tr><th>Officer</th><th>Overall readiness</th><th>Development</th><th>Stars</th><th>XP</th><th>Badges Needed</th><th>Stars Needed</th><th>XP Needed</th><th>Status</th></tr></thead>
         <tbody id="compareProgressResults"></tbody>
       </table>
     </div>
-  </div>
-  <div class="table-wrap">
-    <table id="savedOfficerProgressTable">
-      <thead><tr><th>Officer</th><th>Overall</th><th>Development</th><th>Stars</th><th>XP</th><th>Badge shortfall</th><th>Star shortfall</th><th>XP shortfall</th><th>Status</th></tr></thead>
-      <tbody id="savedOfficerProgressRows"></tbody>
-    </table>
-  </div>
-</article>
+  </article>
 </section>
-
-  <section id="officer" class="view">
+<section id="officer" class="view">
     <article class="card">
       <h2>👤 Officer Experience</h2>
 
@@ -565,6 +568,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 
 <nav class="bottom-nav">
   <button data-view="dashboard" class="active">🏠<span>Home</span></button>
+  <button data-view="progress">📊<span>Progress</span></button>
   <button data-view="officer">👤<span>Officer</span></button>
   <button data-view="stars">⭐<span>Stars</span></button>
   <button data-view="development">🏅<span>Develop</span></button>
@@ -1514,7 +1518,7 @@ function renderReleases(){
  $('releaseCalendar').innerHTML=html;
 }
 renderReleases();
-document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.bottom-nav button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.view).classList.add('active');if(b.dataset.view==='database')renderDb();if(b.dataset.view==='dashboard'){if(typeof updateSmartDashboard==='function')updateSmartDashboard();renderSavedOfficerProgress()}});
+document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.bottom-nav button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.view).classList.add('active');if(b.dataset.view==='database')renderDb();if(b.dataset.view==='dashboard'){if(typeof updateSmartDashboard==='function')updateSmartDashboard();}if(b.dataset.view==='progress'){renderSavedOfficerProgress();renderProgressCompareChoices();}});
  $('openUserGuide').onclick=()=>{document.querySelectorAll('.bottom-nav button').forEach(x=>x.classList.toggle('active',x.dataset.view==='help'));document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));$('help').classList.add('active');window.scrollTo({top:0,behavior:'smooth'});};
 
  $('saveProgress').onclick=saveProgress;
@@ -1635,29 +1639,56 @@ function savedPct(v,max){return Math.max(0,Math.min(100,max?Math.round((Number(v
 function meter(value){return `${value}%<div class="progress-meter"><span style="width:${value}%"></span></div>`;}
 function savedOfficerProgressData(){
  const profiles=(typeof getOfficerProfiles==='function'?getOfficerProfiles():{})||{};
+ const globals=(typeof getGlobalResources==='function'?getGlobalResources():{})||{};
+ const xpInventory=XP_DENOMS.reduce((sum,v)=>sum+(Number(globals.xp?.[v])||0)*v,0);
+ const legendaryStars=(Number(globals.ls1)||0)*110+(Number(globals.ls2)||0)*420+(Number(globals.ls3)||0)*960;
+ const universal=Number(globals.universalBadgeHeld)||0;
+ const chests=Number(globals.legendaryBadgeChestHeld)||0;
+ const chestMode=globals.legendaryBadgeChestMode||'badge';
+ const chestBadges=chestMode==='badge'?chests:0;
+ const chestOrv=chestMode==='orv'?chests*latestSeasonOrvCost():0;
+ const directOrv=Number(globals.orvHeld)||0;
+ const totalOrv=directOrv+chestOrv;
+ const srvHeld=Number(globals.srvHeld)||0;
+
+ function officerFromProfileKey(key){
+   const parts=String(key).split('|');
+   const season=(parts.shift()||'').trim();
+   const name=parts.join('|').trim();
+   return officers.find(o=>String(o.season||'').trim()===season && String(o.name||'').trim()===name)
+      || officers.find(o=>String(o.name||'').trim()===name)
+      || null;
+ }
+
  return Object.entries(profiles).map(([key,p])=>{
-   const idx=Number(String(key).replace(/\D/g,'')); const o=officers[idx]||{};
-   const unlock=p.unlocked?10:0;
-   const skills=Array.isArray(p.skills)?p.skills.reduce((a,x)=>a+(Number(x)||0),0):(Number(p.skills)||0);
-   const training=Number(p.training)||0;
-   const devUsed=Math.min(1600,unlock+skills+training);
-   const dev=savedPct(devUsed,1600);
+   const o=officerFromProfileKey(key);
+   const displayName=o?.name || String(key).split('|').pop() || key;
+   const readinessEligible=!!o && o.readinessEligible!==false && String(o.season||'').toLowerCase()!=='original';
 
-   const starLevel=Number(p.currentStar??p.starLevel??p.stars??0)||0;
-   const starThreshold=[0,500,1500,8000,33000,98000];
-   const starValue=starThreshold[Math.max(0,Math.min(5,starLevel))]||0;
-   const stars=savedPct(starValue,98000);
+   const currentStar=Math.max(0,Math.min(5,Number(p.currentStar)||0));
+   const starsUsed=STAR_CUM[currentStar]||0;
+   const exclusiveFromSrv=readinessEligible&&Number(o?.srv)>0?Math.floor(srvHeld/Number(o.srv)):0;
+   const starTotal=starsUsed+legendaryStars+(exclusiveFromSrv*110);
+   const starShort=Math.max(0,MAX_STAR-starTotal);
+   const stars=savedPct(starTotal,MAX_STAR);
 
-   const level=Number(p.currentLevel)||1;
-   const xp=savedPct(Math.max(0,level-1),69);
+   const skillFlags=Array.isArray(p.skills)?p.skills:[];
+   const skillSpent=skillFlags.reduce((sum,on,i)=>sum+(on?(SKILL_COSTS[i]||0):0),0);
+   const badgesUsed=(p.unlocked?10:0)+skillSpent+(Number(p.training)||0)*5;
+   const badgeHeld=Number(p.badgeHeld)||0;
+   const badgesFromOrv=readinessEligible&&Number(o?.orv)>0?Math.floor(totalOrv/Number(o.orv)):0;
+   const badgeTotal=badgesUsed+badgeHeld+universal+chestBadges+badgesFromOrv;
+   const badgeShort=Math.max(0,MAX_BADGES-badgeTotal);
+   const dev=savedPct(badgeTotal,MAX_BADGES);
+
+   const xpTotal=xpInventory;
+   const xpShort=Math.max(0,MAX_XP-xpTotal);
+   const xp=savedPct(xpTotal,MAX_XP);
 
    const overall=Math.round((dev+stars+xp)/3);
-   const badgeShort=Math.max(0,1600-devUsed);
-   const starShort=Math.max(0,98000-starValue);
-   const xpShort=Math.max(0,70-level);
    const ready=badgeShort===0&&starShort===0&&xpShort===0;
-   return {name:o.name||p.name||key,overall,dev,stars,xp,badgeShort,starShort,xpShort,ready};
- }).sort((a,b)=>b.overall-a.overall||a.name.localeCompare(b.name));
+   return {name:displayName,season:o?.season||'',overall,dev,stars,xp,badgeShort,starShort,xpShort,ready};
+ }).sort((a,b)=>Number(b.ready)-Number(a.ready)||b.overall-a.overall||a.name.localeCompare(b.name));
 }
 function renderSavedOfficerProgress(){
  const body=document.getElementById('savedOfficerProgressRows');
@@ -1682,7 +1713,7 @@ function renderSavedOfficerProgress(){
    <td>${meter(r.xp)}</td>
    <td>${fmt(r.badgeShort)}</td>
    <td>${fmt(r.starShort)}</td>
-   <td>${r.xpShort} level${r.xpShort===1?'':'s'}</td>
+   <td>${fmt(r.xpShort)}</td>
    <td class="${r.ready?'status-ready':'status-progress'}">${r.ready?'MAX READY':'IN PROGRESS'}</td>
  </tr>`).join('');
 }
@@ -1698,18 +1729,19 @@ function runProgressComparison(){
  const wrap=document.getElementById('compareProgressResultsWrap'),body=document.getElementById('compareProgressResults'),rec=document.getElementById('compareProgressRecommendation');
  if(picks.length<2){wrap.style.display='none';rec.style.display='block';rec.textContent='Select at least 2 saved Officers to compare.';return;}
  picks.sort((a,b)=>b.overall-a.overall||a.name.localeCompare(b.name));
- body.innerHTML=picks.map(r=>`<tr><td><b>${esc(r.name)}</b></td><td>${meter(r.overall)}</td><td>${meter(r.dev)}</td><td>${meter(r.stars)}</td><td>${meter(r.xp)}</td><td>${fmt(r.badgeShort)}</td><td>${fmt(r.starShort)}</td><td>${r.xpShort}</td><td class="${r.ready?'status-ready':'status-progress'}">${r.ready?'MAX READY':'IN PROGRESS'}</td></tr>`).join('');
+ body.innerHTML=picks.map(r=>`<tr><td><b>${esc(r.name)}</b></td><td>${meter(r.overall)}</td><td>${meter(r.dev)}</td><td>${meter(r.stars)}</td><td>${meter(r.xp)}</td><td>${fmt(r.badgeShort)}</td><td>${fmt(r.starShort)}</td><td>${fmt(r.xpShort)}</td><td class="${r.ready?'status-ready':'status-progress'}">${r.ready?'MAX READY':'IN PROGRESS'}</td></tr>`).join('');
  const best=picks[0]; rec.style.display='block';
- rec.innerHTML=best.ready?`<b>${esc(best.name)}</b> is already MAX READY.`:`<b>Closest to MAX:</b> ${esc(best.name)} at ${best.overall}% overall progress. Remaining: ${fmt(best.badgeShort)} badges, ${fmt(best.starShort)} stars and ${best.xpShort} level${best.xpShort===1?'':'s'}.`;
+ rec.innerHTML=best.ready?`<b>${esc(best.name)}</b> is already MAX READY.`:`<b>Closest to MAX:</b> ${esc(best.name)} at ${best.overall}% readiness. Remaining: ${fmt(best.badgeShort)} badges, ${fmt(best.starShort)} Officer Star value and ${fmt(best.xpShort)} XP.`;
  wrap.style.display='block';
 }
 function setupProgressComparison(){
- const open=document.getElementById('openOfficerProgressCompare'),panel=document.getElementById('officerProgressComparePanel'); if(!open||!panel)return;
- open.onclick=()=>{panel.style.display='block';renderProgressCompareChoices();panel.scrollIntoView({behavior:'smooth',block:'nearest'});};
- document.getElementById('compareProgressClose').onclick=()=>panel.style.display='none';
- document.getElementById('compareProgressSelectAll').onclick=()=>document.querySelectorAll('.progressComparePick').forEach(x=>x.checked=true);
- document.getElementById('compareProgressClear').onclick=()=>{document.querySelectorAll('.progressComparePick').forEach(x=>x.checked=false);document.getElementById('compareProgressResultsWrap').style.display='none';document.getElementById('compareProgressRecommendation').style.display='none';};
- document.getElementById('compareProgressRun').onclick=runProgressComparison;
+ renderProgressCompareChoices();
+ const all=document.getElementById('compareProgressSelectAll');
+ const clear=document.getElementById('compareProgressClear');
+ const run=document.getElementById('compareProgressRun');
+ if(all)all.onclick=()=>document.querySelectorAll('.progressComparePick').forEach(x=>x.checked=true);
+ if(clear)clear.onclick=()=>{document.querySelectorAll('.progressComparePick').forEach(x=>x.checked=false);document.getElementById('compareProgressResultsWrap').style.display='none';document.getElementById('compareProgressRecommendation').style.display='none';};
+ if(run)run.onclick=runProgressComparison;
 }
 document.addEventListener('DOMContentLoaded',setupProgressComparison);
 
