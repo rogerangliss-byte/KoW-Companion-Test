@@ -188,11 +188,11 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 <section id="progress" class="view">
   <article class="card">
     <h2>📊 Officer Progress</h2>
-    <p class="notice">Saved Officers are compared using the same MAX-readiness resource logic as the Smart Dashboard. Shared resources are preview-only and are not spent.</p>
+    <p class="notice">Saved Officers are compared by their actual saved development progress. Held shared resources do not increase an Officer's progress percentage.</p>
     <div id="savedOfficerProgressSummary" class="result-box">Save Officer progress to build this dashboard.</div>
     <div class="table-wrap" style="margin-top:12px">
       <table id="savedOfficerProgressTable">
-        <thead><tr><th>Officer</th><th>Overall readiness</th><th>Development</th><th>Stars</th><th>XP</th><th>Badge shortfall</th><th>Star shortfall</th><th>XP shortfall</th><th>Status</th></tr></thead>
+        <thead><tr><th>Officer</th><th>Overall progress</th><th>Development</th><th>Stars</th><th>XP</th><th>Badge shortfall</th><th>Star shortfall</th><th>XP shortfall</th><th>Status</th></tr></thead>
         <tbody id="savedOfficerProgressRows"></tbody>
       </table>
     </div>
@@ -200,7 +200,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 
   <article class="card">
     <h2>🔎 Compare Officer Progress</h2>
-    <p class="notice">Choose any saved Officers to compare. The comparison uses current shared inventory plus each Officer's saved development position.</p>
+    <p class="notice">Choose any saved Officers to compare their actual saved progress. Shared inventory is not counted as completed progress.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
       <button type="button" id="compareProgressSelectAll">Select All</button>
       <button type="button" id="compareProgressClear">Clear All</button>
@@ -210,7 +210,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
     <div id="compareProgressRecommendation" class="notice" style="display:none;margin-top:12px"></div>
     <div class="table-wrap" id="compareProgressResultsWrap" style="display:none;margin-top:12px">
       <table>
-        <thead><tr><th>Officer</th><th>Overall readiness</th><th>Development</th><th>Stars</th><th>XP</th><th>Badges Needed</th><th>Stars Needed</th><th>XP Needed</th><th>Status</th></tr></thead>
+        <thead><tr><th>Officer</th><th>Overall progress</th><th>Development</th><th>Stars</th><th>XP</th><th>Badges Needed</th><th>Stars Needed</th><th>XP Needed</th><th>Status</th></tr></thead>
         <tbody id="compareProgressResults"></tbody>
       </table>
     </div>
@@ -1639,17 +1639,6 @@ function savedPct(v,max){return Math.max(0,Math.min(100,max?Math.round((Number(v
 function meter(value){return `${value}%<div class="progress-meter"><span style="width:${value}%"></span></div>`;}
 function savedOfficerProgressData(){
  const profiles=(typeof getOfficerProfiles==='function'?getOfficerProfiles():{})||{};
- const globals=(typeof getGlobalResources==='function'?getGlobalResources():{})||{};
- const xpInventory=XP_DENOMS.reduce((sum,v)=>sum+(Number(globals.xp?.[v])||0)*v,0);
- const legendaryStars=(Number(globals.ls1)||0)*110+(Number(globals.ls2)||0)*420+(Number(globals.ls3)||0)*960;
- const universal=Number(globals.universalBadgeHeld)||0;
- const chests=Number(globals.legendaryBadgeChestHeld)||0;
- const chestMode=globals.legendaryBadgeChestMode||'badge';
- const chestBadges=chestMode==='badge'?chests:0;
- const chestOrv=chestMode==='orv'?chests*latestSeasonOrvCost():0;
- const directOrv=Number(globals.orvHeld)||0;
- const totalOrv=directOrv+chestOrv;
- const srvHeld=Number(globals.srvHeld)||0;
 
  function officerFromProfileKey(key){
    const parts=String(key).split('|');
@@ -1663,32 +1652,34 @@ function savedOfficerProgressData(){
  return Object.entries(profiles).map(([key,p])=>{
    const o=officerFromProfileKey(key);
    const displayName=o?.name || String(key).split('|').pop() || key;
-   const readinessEligible=!!o && o.readinessEligible!==false && String(o.season||'').toLowerCase()!=='original';
-
-   const currentStar=Math.max(0,Math.min(5,Number(p.currentStar)||0));
-   const starsUsed=STAR_CUM[currentStar]||0;
-   const exclusiveFromSrv=readinessEligible&&Number(o?.srv)>0?Math.floor(srvHeld/Number(o.srv)):0;
-   const starTotal=starsUsed+legendaryStars+(exclusiveFromSrv*110);
-   const starShort=Math.max(0,MAX_STAR-starTotal);
-   const stars=savedPct(starTotal,MAX_STAR);
+   const season=o?.season || '';
 
    const skillFlags=Array.isArray(p.skills)?p.skills:[];
    const skillSpent=skillFlags.reduce((sum,on,i)=>sum+(on?(SKILL_COSTS[i]||0):0),0);
    const badgesUsed=(p.unlocked?10:0)+skillSpent+(Number(p.training)||0)*5;
-   const badgeHeld=Number(p.badgeHeld)||0;
-   const badgesFromOrv=readinessEligible&&Number(o?.orv)>0?Math.floor(totalOrv/Number(o.orv)):0;
-   const badgeTotal=badgesUsed+badgeHeld+universal+chestBadges+badgesFromOrv;
-   const badgeShort=Math.max(0,MAX_BADGES-badgeTotal);
-   const dev=savedPct(badgeTotal,MAX_BADGES);
+   const badgeShort=Math.max(0,MAX_BADGES-badgesUsed);
+   const dev=savedPct(badgesUsed,MAX_BADGES);
 
-   const xpTotal=xpInventory;
-   const xpShort=Math.max(0,MAX_XP-xpTotal);
-   const xp=savedPct(xpTotal,MAX_XP);
+   const currentStar=Math.max(0,Math.min(5,Number(p.currentStar)||0));
+   const starValue=STAR_CUM[currentStar]||0;
+   const starShort=Math.max(0,MAX_STAR-starValue);
+   const stars=savedPct(starValue,MAX_STAR);
 
-   const overall=Math.round((dev+stars+xp)/3);
-   const ready=badgeShort===0&&starShort===0&&xpShort===0;
-   return {name:displayName,season:o?.season||'',overall,dev,stars,xp,badgeShort,starShort,xpShort,ready};
- }).sort((a,b)=>Number(b.ready)-Number(a.ready)||b.overall-a.overall||a.name.localeCompare(b.name));
+   const level=Math.max(1,Math.min(70,Number(p.currentLevel)||1));
+   const xpUsed=cumulativeXp(level);
+   const xpShort=Math.max(0,MAX_XP-xpUsed);
+   const xp=savedPct(xpUsed,MAX_XP);
+
+   const overall=Math.round(((dev+stars+xp)/3)*10)/10;
+   const maxed=badgeShort===0&&starShort===0&&xpShort===0;
+   const notStarted=badgesUsed===0&&currentStar===0&&level===1;
+   const status=maxed?'MAXED':notStarted?'NOT STARTED':'IN PROGRESS';
+
+   return {
+     name:displayName,season,overall,dev,stars,xp,
+     badgeShort,starShort,xpShort,maxed,notStarted,status
+   };
+ }).sort((a,b)=>Number(b.maxed)-Number(a.maxed)||b.overall-a.overall||a.name.localeCompare(b.name));
 }
 function renderSavedOfficerProgress(){
  const body=document.getElementById('savedOfficerProgressRows');
@@ -1700,10 +1691,10 @@ function renderSavedOfficerProgress(){
    summary.textContent='No saved Officer profiles yet. Use Save Officer Progress to add Officers to this overview.';
    return;
  }
- const ready=rows.filter(x=>x.ready);
+ const ready=rows.filter(x=>x.maxed);
  const closest=rows[0];
  summary.innerHTML=`<b>${rows.length} saved Officer${rows.length===1?'':'s'}</b> · `+
-   `<b>${ready.length} MAX-ready</b> · `+
+   `<b>${ready.length} MAXED</b> · `+
    `<b>Highest progress:</b> ${esc(closest.name)} (${closest.overall}%)`;
  body.innerHTML=rows.map(r=>`<tr>
    <td><b>${esc(r.name)}</b></td>
@@ -1714,24 +1705,68 @@ function renderSavedOfficerProgress(){
    <td>${fmt(r.badgeShort)}</td>
    <td>${fmt(r.starShort)}</td>
    <td>${fmt(r.xpShort)}</td>
-   <td class="${r.ready?'status-ready':'status-progress'}">${r.ready?'MAX READY':'IN PROGRESS'}</td>
+   <td class="${r.maxed?'status-ready':r.notStarted?'':'status-progress'}">${r.status}</td>
  </tr>`).join('');
 }
 document.addEventListener('DOMContentLoaded',()=>setTimeout(renderSavedOfficerProgress,0));
 function renderProgressCompareChoices(){
  const box=document.getElementById('compareProgressChoices'); if(!box)return;
- const rows=savedOfficerProgressData();
- box.innerHTML=rows.length?rows.map((r,i)=>`<label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #4a3a12;border-radius:8px"><input type="checkbox" class="progressComparePick" value="${i}"> <span>${esc(r.name)}</span></label>`).join(''):'No saved Officer profiles.';
+ const seasonRank=s=>{
+   const v=String(s||'').trim().toLowerCase();
+   if(v==='original')return 0;
+   const m=v.match(/^s(\d+)$/);
+   return m?Number(m[1]):999;
+ };
+ const rows=savedOfficerProgressData().slice().sort((a,b)=>
+   seasonRank(a.season)-seasonRank(b.season) ||
+   String(a.name).localeCompare(String(b.name))
+ );
+ box.innerHTML=rows.length?rows.map((r,i)=>`<label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #4a3a12;border-radius:8px"><input type="checkbox" class="progressComparePick" value="${i}"> <span>${esc(r.season?`${r.season} ${r.name}`:r.name)}</span></label>`).join(''):'No saved Officer profiles.';
+ box.dataset.compareRows=JSON.stringify(rows);
 }
 function runProgressComparison(){
- const all=savedOfficerProgressData();
- const picks=[...document.querySelectorAll('.progressComparePick:checked')].map(x=>all[Number(x.value)]).filter(Boolean);
- const wrap=document.getElementById('compareProgressResultsWrap'),body=document.getElementById('compareProgressResults'),rec=document.getElementById('compareProgressRecommendation');
- if(picks.length<2){wrap.style.display='none';rec.style.display='block';rec.textContent='Select at least 2 saved Officers to compare.';return;}
- picks.sort((a,b)=>b.overall-a.overall||a.name.localeCompare(b.name));
- body.innerHTML=picks.map(r=>`<tr><td><b>${esc(r.name)}</b></td><td>${meter(r.overall)}</td><td>${meter(r.dev)}</td><td>${meter(r.stars)}</td><td>${meter(r.xp)}</td><td>${fmt(r.badgeShort)}</td><td>${fmt(r.starShort)}</td><td>${fmt(r.xpShort)}</td><td class="${r.ready?'status-ready':'status-progress'}">${r.ready?'MAX READY':'IN PROGRESS'}</td></tr>`).join('');
- const best=picks[0]; rec.style.display='block';
- rec.innerHTML=best.ready?`<b>${esc(best.name)}</b> is already MAX READY.`:`<b>Closest to MAX:</b> ${esc(best.name)} at ${best.overall}% readiness. Remaining: ${fmt(best.badgeShort)} badges, ${fmt(best.starShort)} Officer Star value and ${fmt(best.xpShort)} XP.`;
+ const box=document.getElementById('compareProgressChoices');
+ let all=[];
+ try{all=JSON.parse(box?.dataset.compareRows||'[]')}catch{}
+ if(!all.length)all=savedOfficerProgressData();
+
+ const picks=[...document.querySelectorAll('.progressComparePick:checked')]
+   .map(x=>all[Number(x.value)]).filter(Boolean);
+
+ const wrap=document.getElementById('compareProgressResultsWrap'),
+       body=document.getElementById('compareProgressResults'),
+       rec=document.getElementById('compareProgressRecommendation');
+
+ if(picks.length<2){
+   wrap.style.display='none';
+   rec.style.display='block';
+   rec.textContent='Select at least 2 saved Officers to compare.';
+   return;
+ }
+
+ picks.sort((a,b)=>Number(b.maxed)-Number(a.maxed)||b.overall-a.overall||a.name.localeCompare(b.name));
+
+ body.innerHTML=picks.map(r=>`<tr>
+   <td><b>${esc(r.season?`${r.season} ${r.name}`:r.name)}</b></td>
+   <td>${meter(r.overall)}</td>
+   <td>${meter(r.dev)}</td>
+   <td>${meter(r.stars)}</td>
+   <td>${meter(r.xp)}</td>
+   <td>${fmt(r.badgeShort)}</td>
+   <td>${fmt(r.starShort)}</td>
+   <td>${fmt(r.xpShort)}</td>
+   <td class="${r.maxed?'status-ready':r.notStarted?'':'status-progress'}">${r.status}</td>
+ </tr>`).join('');
+
+ const best=picks[0];
+ rec.style.display='block';
+ if(best.maxed){
+   rec.innerHTML=`<b>${esc(best.season?`${best.season} ${best.name}`:best.name)}</b> is already MAXED.`;
+ }else if(picks.every(r=>r.notStarted)){
+   rec.innerHTML='<b>No selected Officer has been started yet.</b>';
+ }else{
+   rec.innerHTML=`<b>Highest actual progress:</b> ${esc(best.season?`${best.season} ${best.name}`:best.name)} at ${best.overall}%.`;
+ }
  wrap.style.display='block';
 }
 function setupProgressComparison(){
