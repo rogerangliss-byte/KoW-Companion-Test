@@ -330,7 +330,12 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
     <article class="card">
       <h2>🏅 Officer Development</h2>
       <label class="check"><input id="unlocked" type="checkbox"> Officer unlocked (10 badges)</label>
-      <label>Skill Strands — each starts at Level 1</label><div id="skillGrid" class="skill-strands"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+<label style="margin:0">Skill Strands — each starts at Level 1</label>
+<button id="skillCostInfoBtn" type="button" title="Skill cost information" aria-label="Skill cost information" style="width:30px;height:30px;border-radius:50%;padding:0;font-weight:800">i</button>
+</div>
+<div id="skillGrid" class="skill-strands"></div>
+<div id="nextSkillCostSummary" class="notice" style="margin-top:8px"></div>
       <div class="notice">Level 1 is free on all four strands. Each additional skill level uses the next cost in the existing sequence: 10, 10, 15, 15, 30, 30, 40, 40, 45, 45, 50, 50, 75, 75, 80, 80 — regardless of which strand you increase.</div>
       <label>Training Level: <b id="trainingLabel">0</b> / 180</label>
       <div style="display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center">
@@ -654,6 +659,33 @@ function skillBadgesSpent(){
  const n=totalPaidSkillUpgrades();
  return SKILL_COSTS.slice(0,n).reduce((a,b)=>a+b,0);
 }
+function nextSkillUpgradeCost(){
+ const n=totalPaidSkillUpgrades();
+ return n>=SKILL_COSTS.length?0:SKILL_COSTS[n];
+}
+function skillCostStatusText(){
+ const levels=getSkillStrandLevels(),n=totalPaidSkillUpgrades(),next=nextSkillUpgradeCost();
+ const total=SKILL_COSTS.reduce((a,b)=>a+b,0);
+ const spent=SKILL_COSTS.slice(0,n).reduce((a,b)=>a+b,0);
+ const remaining=Math.max(0,total-spent);
+ const state=levels.map((lvl,i)=>`Strand ${i+1}: Lv${lvl}`).join(' · ');
+ return n>=16
+   ? `${state} · Skills complete · ${spent}/${total} badges used · 0 remaining.`
+   : `${state} · Next cost: ${next} badges · ${spent}/${total} used · ${remaining} remaining.`;
+}
+function updateSkillCostSummaries(){
+ const a=$('nextSkillCostSummary');if(a)a.innerHTML=`<b>${skillCostStatusText()}</b>`;
+ const b=document.getElementById('quickNextSkillCostSummary');if(b)b.innerHTML=`<b>${skillCostStatusText()}</b>`;
+}
+function openSkillCostInfo(){
+ const used=totalPaidSkillUpgrades(),rows=document.getElementById('skillCostSequenceRows');
+ if(rows)rows.innerHTML=SKILL_COSTS.map((c,i)=>`<tr><td>${i+1}${i===used?' ← NEXT':''}</td><td>${c}</td></tr>`).join('');
+ const cur=document.getElementById('skillCostCurrent');if(cur)cur.innerHTML=`<b>${skillCostStatusText()}</b>`;
+ const levels=getSkillStrandLevels(),next=nextSkillUpgradeCost(),per=document.getElementById('skillCostPerStrand');
+ if(per)per.innerHTML=levels.map((lvl,i)=>lvl>=5?`<b>Strand ${i+1}:</b> Level 5 — MAX`:`<b>Strand ${i+1}:</b> Level ${lvl} → Level ${lvl+1} would currently cost ${next} badges`).join('<br>');
+ document.getElementById('skillCostInfoModal').style.display='block';
+}
+function closeSkillCostInfo(){document.getElementById('skillCostInfoModal').style.display='none';}
 function renderSkillStrands(){
  const g=$('skillGrid'); if(!g)return;
  g.innerHTML='';
@@ -682,6 +714,7 @@ function renderSkillStrands(){
    row.appendChild(controls);
    g.appendChild(row);
  }
+ updateSkillCostSummaries();
 }
 
 function applyResponsivePageBackground(){
@@ -2009,10 +2042,34 @@ document.addEventListener('DOMContentLoaded',()=>{
    }
    select.value=levels[strand];
    row.dataset.selectedLevel=levels[strand];
-   select.onchange=()=>{row.dataset.selectedLevel=select.value;};
+   select.onchange=()=>{
+ row.dataset.selectedLevel=select.value;
+ const paid=[...document.querySelectorAll('#quickSkills .quick-strand-select')].reduce((sum,x)=>sum+Math.max(0,(Number(x.value)||1)-1),0);
+ const next=paid>=16?0:SKILL_COSTS[paid];
+ const box=document.getElementById('quickNextSkillCostSummary');
+ if(box){
+ const total=SKILL_COSTS.reduce((a,b)=>a+b,0);
+ const spent=SKILL_COSTS.slice(0,paid).reduce((a,b)=>a+b,0);
+ const remaining=Math.max(0,total-spent);
+ box.innerHTML=paid>=16
+  ? `<b>Skills complete · ${spent}/${total} badges used · 0 remaining.</b>`
+  : `<b>Next cost: ${next} badges · ${spent}/${total} used · ${remaining} remaining.</b>`;
+}
+};
    row.appendChild(select);
    box.appendChild(row);
  }
+ const paid=levels.reduce((sum,lvl)=>sum+Math.max(0,lvl-1),0);
+ const next=paid>=16?0:SKILL_COSTS[paid];
+ const summary=document.getElementById('quickNextSkillCostSummary');
+ if(summary){
+ const total=SKILL_COSTS.reduce((a,b)=>a+b,0);
+ const spent=SKILL_COSTS.slice(0,paid).reduce((a,b)=>a+b,0);
+ const remaining=Math.max(0,total-spent);
+ summary.innerHTML=paid>=16
+  ? `<b>Skills complete · ${spent}/${total} badges used · 0 remaining.</b>`
+  : `<b>Next cost: ${next} badges · ${spent}/${total} used · ${remaining} remaining.</b>`;
+}
 }
  function openQuickProgress(){
    buildQuickSkills();
@@ -2052,6 +2109,10 @@ document.addEventListener('DOMContentLoaded',()=>{
    alert(`${o?`${o.season} ${o.name}`:'Officer'} progress saved.`);
  }
  q('quickProgressBtn')?.addEventListener('click',openQuickProgress);
+ q('skillCostInfoBtn')?.addEventListener('click',openSkillCostInfo);
+ q('quickSkillCostInfoBtn')?.addEventListener('click',openSkillCostInfo);
+ q('skillCostInfoClose')?.addEventListener('click',closeSkillCostInfo);
+ q('skillCostInfoModal')?.addEventListener('click',e=>{if(e.target===q('skillCostInfoModal'))closeSkillCostInfo();});
  q('quickProgressClose')?.addEventListener('click',closeQuickProgress);
  q('quickProgressCancel')?.addEventListener('click',closeQuickProgress);
  q('quickTraining')?.addEventListener('input',()=>{
@@ -2079,6 +2140,14 @@ document.addEventListener('DOMContentLoaded',()=>{
 })();;
 </script>
 
+<div id="skillCostInfoModal" style="display:none;position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.82);padding:18px;overflow:auto">
+<article class="card" style="max-width:720px;margin:5vh auto">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h2 style="margin:0">ℹ️ Skill Strand Costs</h2><button id="skillCostInfoClose" type="button">✕</button></div>
+<div id="skillCostCurrent" class="notice" style="margin:14px 0"></div>
+<p>Each strand starts at <b>Level 1 for free</b>. Every extra level on any strand uses the next cost in the shared sequence.</p>
+<div class="table-wrap"><table><thead><tr><th>Paid upgrade #</th><th>Badge cost</th></tr></thead><tbody id="skillCostSequenceRows"></tbody></table></div>
+<div id="skillCostPerStrand" class="notice" style="margin-top:14px"></div>
+</article></div>
 <div id="quickProgressModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.8);padding:18px;overflow:auto">
  <article class="card" style="max-width:820px;margin:3vh auto">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h2>✏️ Edit Officer Progress</h2><button id="quickProgressClose" type="button">✕</button></div>

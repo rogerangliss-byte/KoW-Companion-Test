@@ -36,3 +36,5 @@ TEST build: verify saved profiles with different development/star/XP positions b
 
 - Reworked Officer skills as 4 independent Skill Strands, each starting at free Level 1 and individually selectable through Level 5.
 - Skill badge costs now follow the global upgrade sequence regardless of strand: the 1st paid level costs 10, 2nd 10, 3rd 15, 4th 15, etc. Existing total remains 690 badges for all 16 paid upgrades.
+
+- Added Skill Cost info (i), showing the full 16-step badge-cost sequence and the current next upgrade cost.
