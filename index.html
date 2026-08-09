@@ -963,7 +963,7 @@ function saveGlobalResources(){
 }
 function updateProfileStatus(d){
  const o=currentOfficer(), n=$('profileOfficerName'), st=$('profileSavedStatus');
- if(n)n.textContent=o?`${o.season} ${o.name}`:'—';
+ if(n)n.textContent=o?(String(o.name).startsWith(String(o.season)+' ')?o.name:`${o.season} ${o.name}`):'—';
  if(st)st.textContent=d?.savedAt ? `Saved ${new Date(d.savedAt).toLocaleString()}` : 'Not saved yet';
 }
 function saveOfficerProfile(silent=false,index=null){
@@ -1863,35 +1863,59 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 
 (function(){
- const $=id=>document.getElementById(id);
- function evt(el,type='input'){if(el)el.dispatchEvent(new Event(type,{bubbles:true}));}
- function skillEls(){return [...document.querySelectorAll('[data-skill-index]')].slice(0,16);}
- function build(){const b=$('quickSkills');if(!b||b.children.length)return;for(let i=0;i<16;i++){let l=document.createElement('label');l.style.cssText='border:1px solid #5b4715;border-radius:8px;padding:8px;text-align:center';l.innerHTML='<input class="quickSkill" type="checkbox"> Skill '+(i+1);b.appendChild(l);}}
- function openQuick(){
-  build(); const sel=$('officerSelect'); $('quickProgressOfficer').textContent=sel?.options[sel.selectedIndex]?.textContent||'Selected Officer';
-  if($('currentStarLevel'))$('quickStarLevel').value=$('currentStarLevel').value;
-  if($('currentLevel'))$('quickOfficerLevel').value=$('currentLevel').value;
-  if($('officerUnlocked'))$('quickUnlocked').checked=$('officerUnlocked').checked;
-  if($('trainingLevel')){$('quickTraining').value=$('trainingLevel').value;$('quickTrainingValue').textContent=$('trainingLevel').value;}
-  const a=skillEls();document.querySelectorAll('.quickSkill').forEach((c,i)=>{let e=a[i];c.checked=!!(e&&(e.checked||e.classList.contains('active')||e.getAttribute('aria-pressed')==='true'));});
-  $('quickProgressModal').style.display='block';
+ const q=id=>document.getElementById(id);
+ function buildQuickSkills(){
+   const box=q('quickSkills'); if(!box||box.children.length)return;
+   for(let i=0;i<16;i++){
+     const lab=document.createElement('label');
+     lab.style.cssText='border:1px solid #5b4715;border-radius:8px;padding:8px;text-align:center';
+     lab.innerHTML='<input class="quickSkill" type="checkbox"> Skill '+(i+1);
+     box.appendChild(lab);
+   }
  }
- function closeQuick(){$('quickProgressModal').style.display='none';}
- function applyQuick(){
-  let e=$('currentStarLevel');if(e){e.value=$('quickStarLevel').value;evt(e,'change');}
-  e=$('currentLevel');if(e){e.value=$('quickOfficerLevel').value;evt(e);}
-  e=$('officerUnlocked');if(e){e.checked=$('quickUnlocked').checked;evt(e,'change');}
-  e=$('trainingLevel');if(e){e.value=$('quickTraining').value;evt(e);}
-  const a=skillEls();document.querySelectorAll('.quickSkill').forEach((c,i)=>{let x=a[i];if(!x)return;let on=!!(x.checked||x.classList.contains('active')||x.getAttribute('aria-pressed')==='true');if(on!==c.checked)x.click();});
-  $('saveOfficerProfile')?.click(); closeQuick();
+ function openQuickProgress(){
+   buildQuickSkills();
+   const o=typeof currentOfficer==='function'?currentOfficer():null;
+   q('quickProgressOfficer').textContent=o?`${o.season} ${o.name}`:'Selected Officer';
+   q('quickStarLevel').value=q('currentStar')?.value??0;
+   q('quickOfficerLevel').value=q('currentLevel')?.value??1;
+   q('quickUnlocked').checked=!!q('unlocked')?.checked;
+   q('quickTraining').value=q('training')?.value??0;
+   q('quickTrainingValue').textContent=q('quickTraining').value;
+   document.querySelectorAll('.quickSkill').forEach((cb,i)=>cb.checked=!!skills[i]);
+   q('quickProgressModal').style.display='block';
  }
- $('quickProgressBtn')?.addEventListener('click',openQuick);
- $('quickProgressClose')?.addEventListener('click',closeQuick);$('quickProgressCancel')?.addEventListener('click',closeQuick);
- $('quickTraining')?.addEventListener('input',()=>$('quickTrainingValue').textContent=$('quickTraining').value);
- $('quickProgressSave')?.addEventListener('click',applyQuick);
- $('quickProgressMax')?.addEventListener('click',()=>{$('quickStarLevel').value='5';$('quickOfficerLevel').value='70';$('quickUnlocked').checked=true;$('quickTraining').value='180';$('quickTrainingValue').textContent='180';document.querySelectorAll('.quickSkill').forEach(x=>x.checked=true);});
- $('quickProgressModal')?.addEventListener('click',e=>{if(e.target===$('quickProgressModal'))closeQuick();});
-})();
+ function closeQuickProgress(){q('quickProgressModal').style.display='none';}
+ function applyQuickProgress(){
+   q('currentStar').value=q('quickStarLevel').value;
+   q('targetStar').value=Math.max(Number(q('targetStar').value)||5,Number(q('quickStarLevel').value)||0);
+   q('currentLevel').value=q('quickOfficerLevel').value;
+   q('targetLevel').value=Math.max(Number(q('targetLevel').value)||70,Number(q('quickOfficerLevel').value)||1);
+   q('unlocked').checked=q('quickUnlocked').checked;
+   skills=[...document.querySelectorAll('.quickSkill')].map(cb=>cb.checked);
+   document.querySelectorAll('.skill').forEach((b,i)=>b.classList.toggle('active',!!skills[i]));
+   q('training').value=q('quickTraining').value;
+   if(q('trainingLabel'))q('trainingLabel').textContent=q('quickTraining').value;
+   calculate();
+   saveOfficerProfile(true);
+   if(typeof renderSavedOfficerProgress==='function')renderSavedOfficerProgress();
+   if(typeof renderProgressCompareChoices==='function')renderProgressCompareChoices();
+   closeQuickProgress();
+   const o=typeof currentOfficer==='function'?currentOfficer():null;
+   alert(`${o?`${o.season} ${o.name}`:'Officer'} progress saved.`);
+ }
+ q('quickProgressBtn')?.addEventListener('click',openQuickProgress);
+ q('quickProgressClose')?.addEventListener('click',closeQuickProgress);
+ q('quickProgressCancel')?.addEventListener('click',closeQuickProgress);
+ q('quickTraining')?.addEventListener('input',()=>q('quickTrainingValue').textContent=q('quickTraining').value);
+ q('quickProgressSave')?.addEventListener('click',applyQuickProgress);
+ q('quickProgressMax')?.addEventListener('click',()=>{
+   q('quickStarLevel').value='5';q('quickOfficerLevel').value='70';q('quickUnlocked').checked=true;
+   q('quickTraining').value='180';q('quickTrainingValue').textContent='180';
+   document.querySelectorAll('.quickSkill').forEach(x=>x.checked=true);
+ });
+ q('quickProgressModal')?.addEventListener('click',e=>{if(e.target===q('quickProgressModal'))closeQuickProgress();});
+})();;
 </script>
 
 <div id="quickProgressModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.8);padding:18px;overflow:auto">
