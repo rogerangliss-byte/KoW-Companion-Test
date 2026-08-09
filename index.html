@@ -313,7 +313,10 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <label class="check"><input id="unlocked" type="checkbox"> Officer unlocked (10 badges)</label>
       <label>Skills 1–16</label><div id="skillGrid" class="skills"></div>
       <label>Training Level: <b id="trainingLabel">0</b> / 180</label>
-      <input id="training" type="range" min="0" max="180" value="0">
+      <div style="display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center">
+        <input id="training" type="range" min="0" max="180" value="0">
+        <input id="trainingExact" type="number" min="0" max="180" step="1" inputmode="numeric" value="0" aria-label="Exact Training Level">
+      </div>
       <label>Officer Badges Held</label><input id="badgeHeld" type="number" min="0" step="1" inputmode="numeric" value="0">
       <label>Universal Legendary Badges Held</label><input id="universalBadgeHeld" type="number" min="0" step="1" inputmode="numeric" value="0">
       <label>Legendary Officer Badge Selection Chests Held</label><input id="legendaryBadgeChestHeld" type="number" min="0" step="1" inputmode="numeric" value="0">
@@ -788,6 +791,26 @@ $('currentLevel')?.addEventListener('input',()=>{
   $('unlocked').checked=true;
  }
 });
+
+function clampTrainingValue(v){
+ v=Math.round(Number(v)||0);
+ return Math.max(0,Math.min(180,v));
+}
+function syncMainTrainingFromSlider(){
+ const v=clampTrainingValue($('training').value);
+ $('training').value=v;
+ if($('trainingExact'))$('trainingExact').value=v;
+ if($('trainingLabel'))$('trainingLabel').textContent=v;
+}
+function syncMainTrainingFromExact(){
+ const v=clampTrainingValue($('trainingExact').value);
+ $('trainingExact').value=v;
+ $('training').value=v;
+ if($('trainingLabel'))$('trainingLabel').textContent=v;
+ calculate();
+}
+$('training')?.addEventListener('input',syncMainTrainingFromSlider);
+$('trainingExact')?.addEventListener('input',syncMainTrainingFromExact);
 function calculate(){
  const o=currentOfficer();
  if(!o)return;
@@ -928,6 +951,8 @@ function applyOfficerProgress(d){
  skills=Array.isArray(d.skills)?d.skills.slice(0,16):Array(16).fill(false);
  while(skills.length<16)skills.push(false);
  $('training').value=d.training??0;
+ if($('trainingExact'))$('trainingExact').value=d.training??0;
+ if($('trainingLabel'))$('trainingLabel').textContent=d.training??0;
  $('badgeHeld').value=d.badgeHeld??0;
  $('currentLevel').value=d.currentLevel??1;
  $('targetLevel').value=d.targetLevel??70;
@@ -1008,6 +1033,7 @@ function maxSelectedOfficerProfile(){
  document.querySelectorAll('.skill').forEach((b,i)=>b.classList.toggle('active',!!skills[i]));
 
  $('training').value=180;
+ if($('trainingExact'))$('trainingExact').value=180;
  if($('trainingLabel'))$('trainingLabel').textContent='180';
 
  $('currentLevel').value=70;
@@ -1888,6 +1914,7 @@ document.addEventListener('DOMContentLoaded',()=>{
    q('quickUnlocked').checked=!!q('unlocked')?.checked;
    q('quickTraining').value=q('training')?.value??0;
    q('quickTrainingValue').textContent=q('quickTraining').value;
+   if(q('quickTrainingExact'))q('quickTrainingExact').value=q('quickTraining').value;
    document.querySelectorAll('.quickSkill').forEach((cb,i)=>cb.checked=!!skills[i]);
    q('quickProgressModal').style.display='block';
  }
@@ -1900,7 +1927,8 @@ document.addEventListener('DOMContentLoaded',()=>{
    q('unlocked').checked=q('quickUnlocked').checked;
    skills=[...document.querySelectorAll('.quickSkill')].map(cb=>cb.checked);
    document.querySelectorAll('.skill').forEach((b,i)=>b.classList.toggle('active',!!skills[i]));
-   q('training').value=q('quickTraining').value;
+   q('training').value=q('quickTrainingExact')?q('quickTrainingExact').value:q('quickTraining').value;
+   if(q('trainingExact'))q('trainingExact').value=q('training').value;
    if(q('trainingLabel'))q('trainingLabel').textContent=q('quickTraining').value;
    calculate();
    saveOfficerProfile(true);
@@ -1913,14 +1941,25 @@ document.addEventListener('DOMContentLoaded',()=>{
  q('quickProgressBtn')?.addEventListener('click',openQuickProgress);
  q('quickProgressClose')?.addEventListener('click',closeQuickProgress);
  q('quickProgressCancel')?.addEventListener('click',closeQuickProgress);
- q('quickTraining')?.addEventListener('input',()=>q('quickTrainingValue').textContent=q('quickTraining').value);
+ q('quickTraining')?.addEventListener('input',()=>{
+   const v=Math.max(0,Math.min(180,Math.round(Number(q('quickTraining').value)||0)));
+   q('quickTraining').value=v;
+   q('quickTrainingValue').textContent=v;
+   if(q('quickTrainingExact'))q('quickTrainingExact').value=v;
+ });
+ q('quickTrainingExact')?.addEventListener('input',()=>{
+   const v=Math.max(0,Math.min(180,Math.round(Number(q('quickTrainingExact').value)||0)));
+   q('quickTrainingExact').value=v;
+   q('quickTraining').value=v;
+   q('quickTrainingValue').textContent=v;
+ });
  q('quickOfficerLevel')?.addEventListener('input',()=>{
    if((Number(q('quickOfficerLevel').value)||1)>1) q('quickUnlocked').checked=true;
  });
  q('quickProgressSave')?.addEventListener('click',applyQuickProgress);
  q('quickProgressMax')?.addEventListener('click',()=>{
    q('quickStarLevel').value='5';q('quickOfficerLevel').value='70';q('quickUnlocked').checked=true;
-   q('quickTraining').value='180';q('quickTrainingValue').textContent='180';
+   q('quickTraining').value='180';q('quickTrainingValue').textContent='180';if(q('quickTrainingExact'))q('quickTrainingExact').value='180';
    document.querySelectorAll('.quickSkill').forEach(x=>x.checked=true);
  });
  q('quickProgressModal')?.addEventListener('click',e=>{if(e.target===q('quickProgressModal'))closeQuickProgress();});
@@ -1938,7 +1977,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   <label><input id="quickUnlocked" type="checkbox"> Officer unlocked (10 badges)</label>
   <h3>Skills 1–16</h3><div id="quickSkills" style="display:grid;grid-template-columns:repeat(4,minmax(90px,1fr));gap:8px"></div>
   <label style="display:block;margin-top:14px">Training Level: <b id="quickTrainingValue">0</b> / 180</label>
-  <input id="quickTraining" type="range" min="0" max="180" value="0" style="width:100%">
+  <div style="display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center">
+    <input id="quickTraining" type="range" min="0" max="180" value="0" style="width:100%">
+    <input id="quickTrainingExact" type="number" min="0" max="180" step="1" inputmode="numeric" value="0" aria-label="Exact Training Level">
+  </div>
   <div class="toolbar" style="margin-top:16px"><button id="quickProgressSave" class="primary" type="button">💾 Save Progress</button><button id="quickProgressMax" class="primary" type="button">⭐ MAX Officer</button><button id="quickProgressCancel" type="button">Cancel</button></div>
   <div class="notice">Officer-specific progress only. Shared resources remain on Stars, Develop and XP.</div>
  </article>
