@@ -1612,7 +1612,7 @@ document.addEventListener('change',()=>setTimeout(updateSmartDashboard,0));
 document.addEventListener('click',()=>setTimeout(updateSmartDashboard,0));
 window.addEventListener('load',()=>{setTimeout(updateSmartDashboard,100);setTimeout(updateSmartDashboard,500);});
 
-function pct(v,max){return Math.max(0,Math.min(100,max?Math.round((Number(v)||0)/max*100):0));}
+function savedPct(v,max){return Math.max(0,Math.min(100,max?Math.round((Number(v)||0)/max*100):0));}
 function meter(value){return `${value}%<div class="progress-meter"><span style="width:${value}%"></span></div>`;}
 function savedOfficerProgressData(){
  const profiles=(typeof getOfficerProfiles==='function'?getOfficerProfiles():{})||{};
@@ -1622,15 +1622,15 @@ function savedOfficerProgressData(){
    const skills=Array.isArray(p.skills)?p.skills.reduce((a,x)=>a+(Number(x)||0),0):(Number(p.skills)||0);
    const training=Number(p.training)||0;
    const devUsed=Math.min(1600,unlock+skills+training);
-   const dev=pct(devUsed,1600);
+   const dev=savedPct(devUsed,1600);
 
    const starLevel=Number(p.currentStar??p.starLevel??p.stars??0)||0;
    const starThreshold=[0,500,1500,8000,33000,98000];
    const starValue=starThreshold[Math.max(0,Math.min(5,starLevel))]||0;
-   const stars=pct(starValue,98000);
+   const stars=savedPct(starValue,98000);
 
    const level=Number(p.currentLevel)||1;
-   const xp=pct(Math.max(0,level-1),69);
+   const xp=savedPct(Math.max(0,level-1),69);
 
    const overall=Math.round((dev+stars+xp)/3);
    const badgeShort=Math.max(0,1600-devUsed);
