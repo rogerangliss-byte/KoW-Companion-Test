@@ -782,6 +782,12 @@ function latestSeasonOrvCost(){
  return Math.max(...seasonal.filter(o=>o.seasonNum===latest).map(o=>Number(o.orv)||0));
 }
 
+
+$('currentLevel')?.addEventListener('input',()=>{
+ if((Number($('currentLevel').value)||1)>1 && !$('unlocked').checked){
+  $('unlocked').checked=true;
+ }
+});
 function calculate(){
  const o=currentOfficer();
  if(!o)return;
@@ -1908,6 +1914,9 @@ document.addEventListener('DOMContentLoaded',()=>{
  q('quickProgressClose')?.addEventListener('click',closeQuickProgress);
  q('quickProgressCancel')?.addEventListener('click',closeQuickProgress);
  q('quickTraining')?.addEventListener('input',()=>q('quickTrainingValue').textContent=q('quickTraining').value);
+ q('quickOfficerLevel')?.addEventListener('input',()=>{
+   if((Number(q('quickOfficerLevel').value)||1)>1) q('quickUnlocked').checked=true;
+ });
  q('quickProgressSave')?.addEventListener('click',applyQuickProgress);
  q('quickProgressMax')?.addEventListener('click',()=>{
    q('quickStarLevel').value='5';q('quickOfficerLevel').value='70';q('quickUnlocked').checked=true;
