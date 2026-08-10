@@ -1,0 +1,7 @@
+KoW Companion v4.3.35 Multilingual translation QA
+
+FR exact static coverage: 232/232
+
+DE exact static coverage: 232/232
+
+IT exact static coverage: 232/232

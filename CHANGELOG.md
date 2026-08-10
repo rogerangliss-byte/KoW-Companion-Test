@@ -6,7 +6,7 @@
 - Training costs now vary by rarity: 5 / 25 / 100 badges per point.
 - Skill Strand star-unlock logic remains identical for all rarities.
 
-## v4.3.33 LIVE
+## v4.3.35 LIVE
 - Progress tab now keeps the three status categories: MAXED, IN PROGRESS and NOT STARTED.
 - Within each category, Officers are sorted newest season first: S7, S6, S5, S4, S3, S2, Original.
 - Officers within the same season retain database order in the main Progress table.
@@ -52,3 +52,12 @@
 - Elite shows 100 badges/training point and 18,450 total to MAX.
 - Epic and Elite both use the confirmed 440-badge promotion sequence.
 - Removed the stray Elite TEST/provisional suffix from the promotion description.
+
+
+### v4.3.35 Multilingual TEST
+- Based on the final English v4.3.35 functional build.
+- French, German and Italian interface translation refreshed across all 11 menus.
+- Added translated Help/Instructions and translated guide/release-note files.
+- Added rarity-specific Legendary/Epic/Elite terminology, Stars, Universal Badges and confirmed development totals.
+- Added Progress menu translations and current v4.3.35 Officer/portrait data.
+- Language persists per device; English remains the reset/default language.
