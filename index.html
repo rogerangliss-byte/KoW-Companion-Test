@@ -44,6 +44,21 @@ body{
 body{min-height:100vh;overflow-x:hidden}
 .topbar{position:sticky;top:0;z-index:10;padding:18px;background:rgba(0,0,0,.82);border-bottom:1px solid var(--line);backdrop-filter:blur(10px)}
 .topbar h1{margin:0;color:var(--gold);font-size:1.4rem}.topbar p{margin:5px 0 0;color:var(--muted)}
+.test-banner{
+  position:sticky;
+  top:0;
+  z-index:11;
+  width:100%;
+  padding:8px 12px;
+  text-align:center;
+  background:#c40000;
+  color:#fff;
+  border-bottom:2px solid #ff6b6b;
+  font-weight:900;
+  letter-spacing:.12em;
+  box-shadow:0 3px 10px rgba(0,0,0,.45);
+}
+
 .app{position:relative;z-index:1;max-width:1000px;margin:auto;padding:14px 14px 100px;min-height:calc(100vh - 90px);background:transparent}.view{display:none}.view.active{display:block}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.wide{grid-column:1/-1}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 14px 36px rgba(0,0,0,.3);backdrop-filter:blur(10px)}
@@ -203,6 +218,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
   </div>
   <div class="creator-credit">Created by FireStorm (371)</div>
 </header>
+<div class="test-banner" role="status" aria-label="Test version">⚠ TEST VERSION — v4.3.35 — NOT LIVE ⚠</div>
 
 <main class="app">
   <section id="dashboard" class="view active">
