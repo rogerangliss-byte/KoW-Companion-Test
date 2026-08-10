@@ -1,4 +1,4 @@
-const CACHE='kow-v4.3.35-test-elite-trailing-test-removed';
+const CACHE='kow-v4.3.35-test-rarity-refresh-fix';
 const ASSETS=[
   './',
   './index.html',

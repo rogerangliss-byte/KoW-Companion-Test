@@ -44,3 +44,11 @@
 - Elite Skills 1–16: 10,10,15,15,20,20,25,25,30,30,35,35,40,40,45,45 = 440 badges.
 - Elite Training: 100 × 180 = 18,000 badges.
 - Elite MAX total corrected to 18,450 badges.
+
+
+### v4.3.35 TEST — Officer rarity refresh fix
+- Development now refreshes rarity-dependent text/calculations every time the selected Officer changes and whenever Develop is opened.
+- Epic shows 25 badges/training point and 4,950 total to MAX.
+- Elite shows 100 badges/training point and 18,450 total to MAX.
+- Epic and Elite both use the confirmed 440-badge promotion sequence.
+- Removed the stray Elite TEST/provisional suffix from the promotion description.
