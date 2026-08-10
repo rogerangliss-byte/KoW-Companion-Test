@@ -16,3 +16,5 @@ Approved Live release of KoW Companion.
 Upload these files to the root of the Live `KoW-Companion` repository.
 
 This package deliberately contains **no Officer portrait files**. Leave the existing `officer-portraits` folder untouched.
+
+- Corrected v4.3.34 Officer database migration so the 8 Epic and 2 Elite Officers are merged into existing 56-Officer browser databases without resetting saved progress. All Rarities now contains 66 Officers.

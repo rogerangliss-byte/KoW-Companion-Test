@@ -24,3 +24,5 @@
 - Individual Officer Badges Held now transfer correctly.
 - Officer-specific progress and shared resource inventories are retained.
 - Restore avoids stale KoW Companion local-storage values on the destination device.
+
+- Corrected v4.3.34 Officer database migration so the 8 Epic and 2 Elite Officers are merged into existing 56-Officer browser databases without resetting saved progress. All Rarities now contains 66 Officers.

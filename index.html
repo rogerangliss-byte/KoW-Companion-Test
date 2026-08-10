@@ -836,10 +836,22 @@ function normalizeOfficer(o){
 async function loadOfficers(){
  let published=clone(DEFAULT_OFFICERS).map(normalizeOfficer).filter(o=>o.name);
  try{
-   const response=await fetch('./officers.json?v=424',{cache:'no-store'});
+   const response=await fetch('./officers.json?v=4341',{cache:'no-store'});
    if(response.ok){
      const data=await response.json();
-     if(Array.isArray(data)&&data.length) published=data.map(normalizeOfficer).filter(o=>o.name);
+     if(Array.isArray(data)&&data.length){
+       // Merge the published file into the bundled database instead of replacing it.
+       // This keeps newly bundled Officers available when a browser/repository still has
+       // an older 56-Officer officers.json during an upgrade.
+       const fetched=data.map(normalizeOfficer).filter(o=>o.name);
+       const byName=new Map(published.map(o=>[o.name.toLowerCase(),o]));
+       fetched.forEach(o=>{
+         const key=o.name.toLowerCase();
+         const existing=byName.get(key);
+         if(existing) Object.assign(existing,o);
+         else { published.push(o); byName.set(key,o); }
+       });
+     }
    }
  }catch(e){}
 
