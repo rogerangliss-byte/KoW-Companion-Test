@@ -1,4 +1,4 @@
-## v4.3.32 TEST
+## v4.3.33 TEST
 - Progress tab now keeps the three status categories: MAXED, IN PROGRESS and NOT STARTED.
 - Within each category, Officers are sorted newest season first: S7, S6, S5, S4, S3, S2, Original.
 - Officers within the same season retain database order in the main Progress table.
