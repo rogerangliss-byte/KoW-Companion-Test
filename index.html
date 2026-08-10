@@ -2461,7 +2461,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(node.__kowEnglish===undefined) node.__kowEnglish=reverseToEnglish(trimmed);
     const base=node.__kowEnglish;
     const tr=dynamicTranslate(base,l);
-    node.nodeValue=raw.replace(trimmed,tr);
+    const next=raw.replace(trimmed,tr);
+    if(next!==raw) node.nodeValue=next;
   }
 
   function translateAttributes(root,l){
@@ -2509,19 +2510,40 @@ document.addEventListener('DOMContentLoaded',()=>{
     applyLanguage(lang);
   });
 
-  const obs=new MutationObserver(muts=>{
-    if(busy)return;
+  const OBS_CONFIG={subtree:true,childList:true,characterData:true};
+  let queued=false;
+  const pending=new Set();
+
+  function processPending(){
+    queued=false;
+    if(busy || pending.size===0)return;
     busy=true;
-    for(const m of muts){
-      if(m.type==='characterData')translateTextNode(m.target,lang);
-      else m.addedNodes.forEach(n=>{
+    obs.disconnect();
+    try{
+      for(const n of pending){
+        if(!n || !n.isConnected)continue;
         if(n.nodeType===Node.TEXT_NODE)translateTextNode(n,lang);
         else if(n.nodeType===Node.ELEMENT_NODE)walk(n,lang);
-      });
+      }
+      pending.clear();
+    } finally {
+      obs.observe(document.documentElement,OBS_CONFIG);
+      busy=false;
     }
-    busy=false;
+  }
+
+  const obs=new MutationObserver(muts=>{
+    if(busy)return;
+    for(const m of muts){
+      if(m.type==='characterData')pending.add(m.target);
+      else m.addedNodes.forEach(n=>pending.add(n));
+    }
+    if(!queued){
+      queued=true;
+      requestAnimationFrame(processPending);
+    }
   });
-  obs.observe(document.documentElement,{subtree:true,childList:true,characterData:true});
+  obs.observe(document.documentElement,OBS_CONFIG);
 })();
 </script>
 

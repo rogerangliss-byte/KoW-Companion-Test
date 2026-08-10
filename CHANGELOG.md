@@ -61,3 +61,10 @@
 - Added rarity-specific Legendary/Epic/Elite terminology, Stars, Universal Badges and confirmed development totals.
 - Added Progress menu translations and current v4.3.35 Officer/portrait data.
 - Language persists per device; English remains the reset/default language.
+
+### v4.3.35 Multilingual TEST — Responsive Fix
+- Fixed page freeze/unresponsive browser caused by recursive translation DOM observation.
+- Translation updates are now batched once per animation frame.
+- The observer disconnects while translated DOM changes are applied.
+- Unchanged text is no longer written back to the DOM.
+- Service-worker cache key changed to force the corrected TEST files to load.

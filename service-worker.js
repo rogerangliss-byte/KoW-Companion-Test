@@ -1,4 +1,4 @@
-const CACHE='kow-v4.3.35-multilingual-test-full-language-update';
+const CACHE='kow-v4.3.35-multilingual-test-responsive-fix-1';
 const ASSETS=['lang/it.js','lang/de.js','lang/fr.js','lang/en.js',
   './',
   './index.html',
