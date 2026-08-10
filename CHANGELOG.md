@@ -31,3 +31,9 @@
 
 
 - Rarity flow correction: Stars and Skill Promotion information now follow the selected Officer rarity. Epic/Elite hide Legendary SRV flow; Planner labels use the matching Star rarity; Skill Promotion totals/sequences are rarity-specific.
+
+
+### v4.3.35 TEST — Progress rarity consistency patch
+- Progress now uses each Officer's rarity-specific Promotion and Training requirements.
+- Fully MAXED profiles (5★, Level 70, unlocked, all skills Level 5, Training 180) report 100% / MAXED consistently.
+- Skill-cost summaries explicitly follow the currently selected Officer rarity.

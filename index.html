@@ -786,17 +786,17 @@ function setSkillStrandLevel(strand,level){
 function totalPaidSkillUpgrades(){
  return getSkillStrandLevels().reduce((sum,lvl)=>sum+(lvl-1),0);
 }
-function skillBadgesSpent(){
+function skillBadgesSpent(o=currentOfficer()){
  const n=totalPaidSkillUpgrades();
- const c=skillCostsForOfficer(); return c.slice(0,n).reduce((a,b)=>a+b,0);
+ const c=skillCostsForOfficer(o); return c.slice(0,n).reduce((a,b)=>a+b,0);
 }
-function nextSkillUpgradeCost(){
+function nextSkillUpgradeCost(o=currentOfficer()){
  const n=totalPaidSkillUpgrades();
- const c=skillCostsForOfficer(); return n>=c.length?0:c[n];
+ const c=skillCostsForOfficer(o); return n>=c.length?0:c[n];
 }
-function skillCostStatusText(){
- const levels=getSkillStrandLevels(),n=totalPaidSkillUpgrades(),next=nextSkillUpgradeCost();
- const c=skillCostsForOfficer();
+function skillCostStatusText(o=currentOfficer()){
+ const levels=getSkillStrandLevels(),n=totalPaidSkillUpgrades(),next=nextSkillUpgradeCost(o);
+ const c=skillCostsForOfficer(o);
  const total=c.reduce((a,b)=>a+b,0);
  const spent=c.slice(0,n).reduce((a,b)=>a+b,0);
  const remaining=Math.max(0,total-spent);
@@ -806,8 +806,9 @@ function skillCostStatusText(){
    : `${state} · Next cost: ${next} badges · ${spent}/${total} used · ${remaining} remaining.`;
 }
 function updateSkillCostSummaries(){
- const a=$('nextSkillCostSummary');if(a)a.innerHTML=`<b>${skillCostStatusText()}</b>`;
- const b=document.getElementById('quickNextSkillCostSummary');if(b)b.innerHTML=`<b>${skillCostStatusText()}</b>`;
+ const o=currentOfficer();
+ const a=$('nextSkillCostSummary');if(a)a.innerHTML=`<b>${skillCostStatusText(o)}</b>`;
+ const b=document.getElementById('quickNextSkillCostSummary');if(b)b.innerHTML=`<b>${skillCostStatusText(o)}</b>`;
 }
 function updateSkillRarityNotice(o=currentOfficer()){
  const el=$('skillSequenceNotice');if(!el||!o)return;
@@ -818,8 +819,9 @@ function updateSkillRarityNotice(o=currentOfficer()){
 function openSkillCostInfo(){
  const used=totalPaidSkillUpgrades(),rows=document.getElementById('skillCostSequenceRows');
  const costs=skillCostsForOfficer(); if(rows)rows.innerHTML=costs.map((c,i)=>`<tr><td>${i+1}${i===used?' ← NEXT':''}</td><td>${c}</td></tr>`).join('');
- const cur=document.getElementById('skillCostCurrent');if(cur)cur.innerHTML=`<b>${officerRarity(currentOfficer())} Officer · ${skillCostStatusText()}</b>`;
- const levels=getSkillStrandLevels(),next=nextSkillUpgradeCost(),per=document.getElementById('skillCostPerStrand');
+ const o=currentOfficer();
+ const cur=document.getElementById('skillCostCurrent');if(cur)cur.innerHTML=`<b>${officerRarity(o)} Officer · ${skillCostStatusText(o)}</b>`;
+ const levels=getSkillStrandLevels(),next=nextSkillUpgradeCost(o),per=document.getElementById('skillCostPerStrand');
  if(per)per.innerHTML=levels.map((lvl,i)=>lvl>=5?`<b>Strand ${i+1}:</b> Level 5 — MAX`:`<b>Strand ${i+1}:</b> Level ${lvl} → Level ${lvl+1} would currently cost ${next} badges`).join('<br>');
  document.getElementById('skillCostInfoModal').style.display='block';
 }
@@ -881,7 +883,7 @@ function normalizeOfficer(o){
 async function loadOfficers(){
  let published=clone(DEFAULT_OFFICERS).map(normalizeOfficer).filter(o=>o.name);
  try{
-   const response=await fetch('./officers.json?v=435-dorothea-fix2',{cache:'no-store'});
+   const response=await fetch('./officers.json?v=435-progress-rarity-consistency',{cache:'no-store'});
    if(response.ok){
      const data=await response.json();
      if(Array.isArray(data)&&data.length){
@@ -2103,32 +2105,40 @@ function savedOfficerProgressData(){
    const displayName=o?.name || '';
    const season=o?.season || '';
 
-   const skillFlags=Array.isArray(p.skills)?p.skills:[];
-   let paidSkillUpgrades=0;
-   for(let strand=0;strand<4;strand++){
-     for(let step=0;step<4;step++){
-       if(skillFlags[strand*4+step]) paidSkillUpgrades++;
-       else break;
-     }
-   }
-   const skillSpent=skillCostsForOfficer(o).slice(0,paidSkillUpgrades).reduce((a,b)=>a+b,0);
+   const skillFlags=Array.isArray(p.skills)?p.skills.slice(0,16):[];
+   // Each true flag is one paid skill increase (Lv1 is free). Count all saved paid
+   // increases rather than stopping at the first false, so older profiles cannot
+   // be under-counted by strand ordering.
+   const paidSkillUpgrades=Math.min(16,skillFlags.filter(Boolean).length);
+   const skillCosts=skillCostsForOfficer(o);
+   const promotionTotal=promotionBadgeTotal(o);
+   const skillSpent=paidSkillUpgrades>=16
+     ? promotionTotal
+     : skillCosts.slice(0,paidSkillUpgrades).reduce((a,b)=>a+b,0);
+
+   const training=Math.max(0,Math.min(180,Number(p.training)||0));
    const officerMaxBadges=maxBadgesForOfficer(o);
-   const badgesUsed=(p.unlocked?10:0)+skillSpent+(Number(p.training)||0)*trainingBadgeCost(o);
-   const badgeShort=Math.max(0,officerMaxBadges-badgesUsed);
-   const dev=savedPct(badgesUsed,officerMaxBadges);
+   const developmentComplete=!!p.unlocked && paidSkillUpgrades>=16 && training>=180;
+
+   // A semantically MAXED development profile is always 100%, regardless of the
+   // rarity cost table used to reach it. Partial profiles remain rarity-aware.
+   const rawBadgesUsed=(p.unlocked?10:0)+skillSpent+training*trainingBadgeCost(o);
+   const badgesUsed=developmentComplete?officerMaxBadges:Math.min(officerMaxBadges,rawBadgesUsed);
+   const badgeShort=developmentComplete?0:Math.max(0,officerMaxBadges-badgesUsed);
+   const dev=developmentComplete?100:savedPct(badgesUsed,officerMaxBadges);
 
    const currentStar=Math.max(0,Math.min(5,Number(p.currentStar)||0));
    const starValue=STAR_CUM[currentStar]||0;
-   const starShort=Math.max(0,MAX_STAR-starValue);
-   const stars=savedPct(starValue,MAX_STAR);
+   const starShort=currentStar>=5?0:Math.max(0,MAX_STAR-starValue);
+   const stars=currentStar>=5?100:savedPct(starValue,MAX_STAR);
 
-   const level=Math.max(1,Math.min(70,Number(p.currentLevel)||1));
-   const xpUsed=cumulativeXp(level);
-   const xpShort=Math.max(0,MAX_XP-xpUsed);
-   const xp=savedPct(xpUsed,MAX_XP);
+   const level=Math.max(0,Math.min(70,Number(p.currentLevel)||0));
+   const xpUsed=level>=70?MAX_XP:cumulativeXp(Math.max(1,level||1));
+   const xpShort=level>=70?0:Math.max(0,MAX_XP-xpUsed);
+   const xp=level>=70?100:savedPct(xpUsed,MAX_XP);
 
-   const overall=Math.round(((dev+stars+xp)/3)*10)/10;
-   const maxed=badgeShort===0&&starShort===0&&xpShort===0;
+   const maxed=developmentComplete && currentStar>=5 && level>=70;
+   const overall=maxed?100:Math.round(((dev+stars+xp)/3)*10)/10;
    const hasProgress=badgesUsed>0||currentStar>0||level>1;
    const notStarted=!maxed&&!hasProgress;
    const status=maxed?'MAXED':hasProgress?'IN PROGRESS':'NOT STARTED';

@@ -1,4 +1,4 @@
-const CACHE='kow-v4.3.35-test-rarity-flow-fix';
+const CACHE='kow-v4.3.35-test-progress-rarity-consistency-fix';
 const ASSETS=[
   './',
   './index.html',
