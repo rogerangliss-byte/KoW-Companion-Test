@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.3.32</title>
+<title>KoW Companion v4.3.34</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -290,6 +290,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <div class="officer-filter-grid">
         <div><label>Search Officer</label><input id="officerSearch" placeholder="Type an Officer name"></div>
         <div><label>Season</label><select id="officerSeasonFilter"><option value="">All Seasons</option></select></div>
+        <div><label>Rarity</label><select id="officerRarityFilter"><option value="">All Rarities</option><option>Legendary</option><option>Epic</option><option>Elite</option></select></div>
         <div><label>Role</label><select id="officerRoleFilter"><option value="">All Roles</option></select></div>
       </div>
 
@@ -307,6 +308,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
           <label>Officer</label><select id="officerSelect"></select>
           <div class="officer-meta">
             <div><span>Season</span><b id="officerSeasonValue">—</b></div>
+            <div><span>Rarity</span><b id="officerRarityValue">—</b></div>
             <div><span>Role</span><b id="officerRoleValue">—</b></div>
             <div><span>Shown</span><b id="officerFilterCount">0</b></div>
           </div>
@@ -373,7 +375,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 <div id="skillGrid" class="skill-strands"></div>
 <div id="nextSkillCostSummary" class="notice" style="margin-top:8px"></div>
       <div class="notice">Strands unlock with the Officer’s Current Star Level: unlocked at 0★ = Strand 1, 1★ = Strands 1–2, 2★ = Strands 1–3, and 3★+ = all four strands. Level 1 is free when a strand becomes available. Each additional skill level uses the next cost in the existing sequence: 10, 10, 15, 15, 30, 30, 40, 40, 45, 45, 50, 50, 75, 75, 80, 80 — regardless of which available strand you increase.</div>
-      <label>Training Level: <b id="trainingLabel">0</b> / 180</label>
+      <label>Training Level: <b id="trainingLabel">0</b> / 180</label><div class="muted" id="trainingRarityNote">Training badge cost follows Officer rarity.</div>
       <div style="display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center">
         <input id="training" type="range" min="0" max="180" value="0">
         <input id="trainingExact" type="number" min="0" max="180" step="1" inputmode="numeric" value="0" aria-label="Exact Training Level">
@@ -501,14 +503,14 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <h2>❓ Help & Instructions</h2>
 
 <div class="card" id="whatsNewV4329" style="margin-bottom:16px">
-  <h3 style="margin-top:0">✨ What’s New — v4.3.33 TEST</h3>
+  <h3 style="margin-top:0">✨ What’s New — v4.3.34 TEST</h3>
   <div class="notice">
-    <b>v4.3.33 TEST adds Star-based Skill Strand unlocking and visual locking while retaining the newest-first Progress ordering from v4.3.32.</b>
+    <b>v4.3.34 TEST adds Legendary, Epic and Elite Officer rarity logic, rarity filtering, multi-role filtering and rarity-aware Training badge costs.</b>
   </div>
 
   <h4>📊 Officer Progress</h4>
   <p>Officers are automatically classified as <b>MAXED</b>, <b>IN PROGRESS</b>, or <b>NOT STARTED</b>. The main Progress filters and Compare Officer Progress filters work independently.</p>
-  <p><b>New in v4.3.33 TEST:</b> Skill Strands now follow Current Star Level: <b>0★ = Strand 1</b>, <b>1★ = Strands 1–2</b>, <b>2★ = Strands 1–3</b>, and <b>3★+ = all four strands</b>. Unavailable strands are greyed out, disabled and show the Star requirement.</p>
+  <p><b>New in v4.3.34 TEST:</b> Officer Rarity now supports <b>Legendary (Gold)</b>, <b>Epic (Purple)</b> and <b>Elite (Blue)</b>. Training costs are 5 / 25 / 100 badges per point respectively. Epic and Elite Original Officers are included, with multi-role filtering. Skill Strand unlocking remains identical for every rarity.</p>
 
   <h4>🔎 Compare Officer Progress</h4>
   <p>Compare saved Officers in Season order. You can compare Not Started and In Progress Officers even when the main Officer Progress table is filtered differently.</p>
@@ -703,7 +705,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </nav>
 
 <script type="module">
-const DEFAULT_OFFICERS=[{"name": "S7 Roisin", "role": "Tank", "season": "S7", "orv": 600, "srv": 300, "notes": ""}, {"name": "S7 Barbara", "role": "Tank", "season": "S7", "orv": 600, "srv": 300, "notes": ""}, {"name": "S7 Romana", "season": "S7", "orv": 500, "srv": 250, "notes": ""}, {"name": "S7 Liora", "season": "S7", "orv": 500, "srv": 250, "notes": ""}, {"name": "S7 Stella", "role": "Tank", "season": "S7", "orv": 416, "srv": 208, "notes": ""}, {"name": "S7 Klara", "role": "Tank", "season": "S7", "orv": 416, "srv": 208, "notes": ""}, {"name": "S7 Code", "role": "Tank", "season": "S7", "orv": 346, "srv": 173, "notes": ""}, {"name": "S7 Kamila", "role": "Tank", "season": "S7", "orv": 346, "srv": 173, "notes": ""}, {"name": "S6 Regina", "role": "Tank", "season": "S6", "orv": 289, "srv": 144, "notes": ""}, {"name": "S6 Veronica", "role": "Tank", "season": "S6", "orv": 289, "srv": 144, "notes": ""}, {"name": "S6 Silverhand", "season": "S6", "orv": 240, "srv": 120, "notes": ""}, {"name": "S6 Red Queen", "season": "S6", "orv": 240, "srv": 120, "notes": ""}, {"name": "S6 Samantha", "season": "S6", "orv": 200, "srv": 100, "notes": ""}, {"name": "S6 Saoirse", "season": "S6", "orv": 200, "srv": 100, "notes": ""}, {"name": "S6 Emily", "season": "S6", "orv": 167, "srv": 84, "notes": ""}, {"name": "S6 Zoya", "season": "S6", "orv": 167, "srv": 84, "notes": ""}];
+const DEFAULT_OFFICERS=[{"name":"S7 Roisin","season":"S7","role":"Tank Destroyer","orv":600,"srv":300,"notes":"Tank Destroyer","rarity":"Legendary"},{"name":"S7 Barbara","season":"S7","role":"Tank Destroyer","orv":600,"srv":300,"notes":"Tank Destroyer","rarity":"Legendary"},{"name":"S7 Romana","season":"S7","role":"Tank","orv":500,"srv":250,"notes":"Tank","rarity":"Legendary"},{"name":"S7 Liora","season":"S7","role":"Tank","orv":500,"srv":250,"notes":"Tank","rarity":"Legendary"},{"name":"S7 Stella","season":"S7","role":"Infantry","orv":416,"srv":208,"notes":"Infantry","rarity":"Legendary"},{"name":"S7 Klara","season":"S7","role":"Infantry","orv":416,"srv":208,"notes":"Infantry","rarity":"Legendary"},{"name":"S7 Code","season":"S7","role":"Rally","orv":346,"srv":173,"notes":"Rally","rarity":"Legendary"},{"name":"S7 Kamila","season":"S7","role":"Garrison","orv":346,"srv":173,"notes":"Garrison","rarity":"Legendary"},{"name":"S6 Regina","season":"S6","role":"Tank Destroyer","orv":289,"srv":144,"notes":"Tank Destroyer","rarity":"Legendary"},{"name":"S6 Veronica","season":"S6","role":"Tank Destroyer","orv":289,"srv":144,"notes":"Tank Destroyer","rarity":"Legendary"},{"name":"S6 Silverhand","season":"S6","role":"Tank","orv":240,"srv":120,"notes":"Tank","rarity":"Legendary"},{"name":"S6 Red Queen","season":"S6","role":"Tank","orv":240,"srv":120,"notes":"Tank","rarity":"Legendary"},{"name":"S6 Samantha","season":"S6","role":"Infantry","orv":200,"srv":100,"notes":"Infantry","rarity":"Legendary"},{"name":"S6 Saoirse","season":"S6","role":"Infantry","orv":200,"srv":100,"notes":"Infantry","rarity":"Legendary"},{"name":"S6 Emily","season":"S6","role":"Rally","orv":167,"srv":84,"notes":"Rally","rarity":"Legendary"},{"name":"S6 Zoya","season":"S6","role":"Garrison","orv":167,"srv":84,"notes":"Garrison","rarity":"Legendary"},{"name":"S5 Feng","season":"S5","role":"Tank Destroyer","orv":139,"srv":69,"notes":"Tank Destroyer","rarity":"Legendary"},{"name":"S5 Halina","season":"S5","role":"Tank Destroyer","orv":139,"srv":69,"notes":"Tank Destroyer","rarity":"Legendary"},{"name":"S5 Eva","season":"S5","role":"Tank","orv":116,"srv":58,"notes":"Tank","rarity":"Legendary"},{"name":"S5 Elsa","season":"S5","role":"Tank","orv":116,"srv":58,"notes":"Tank","rarity":"Legendary"},{"name":"S5 Camile","season":"S5","role":"Infantry","orv":96,"srv":48,"notes":"Infantry","rarity":"Legendary"},{"name":"S5 Betty","season":"S5","role":"Infantry","orv":96,"srv":48,"notes":"Infantry","rarity":"Legendary"},{"name":"S5 Miyeon","season":"S5","role":"Rally","orv":80,"srv":40,"notes":"Rally","rarity":"Legendary"},{"name":"S5 Julia","season":"S5","role":"Garrison","orv":80,"srv":40,"notes":"Garrison","rarity":"Legendary"},{"name":"S4 Melina","season":"S4","role":"Tank Destroyer","orv":67,"srv":34,"notes":"Tank Destroyer","rarity":"Legendary"},{"name":"S4 Jane","season":"S4","role":"Tank Destroyer","orv":67,"srv":34,"notes":"Tank Destroyer","rarity":"Legendary"},{"name":"S4 Anna","season":"S4","role":"Tank","orv":56,"srv":28,"notes":"Tank","rarity":"Legendary"},{"name":"S4 Yuki","season":"S4","role":"Tank","orv":56,"srv":28,"notes":"Tank","rarity":"Legendary"},{"name":"S4 Eunice","season":"S4","role":"Infantry","orv":47,"srv":23,"notes":"Infantry","rarity":"Legendary"},{"name":"S4 Derya","season":"S4","role":"Infantry","orv":47,"srv":23,"notes":"Infantry","rarity":"Legendary"},{"name":"S4 Hardwin","season":"S4","role":"Rally","orv":39,"srv":20,"notes":"Rally","rarity":"Legendary"},{"name":"S4 Erin","season":"S4","role":"Garrison","orv":39,"srv":20,"notes":"Garrison","rarity":"Legendary"},{"name":"S3 Su","season":"S3","role":"Tank Destroyer","orv":33,"srv":16,"notes":"Tank Destroyer","rarity":"Legendary"},{"name":"S3 Erica","season":"S3","role":"Tank Destroyer","orv":33,"srv":16,"notes":"Tank Destroyer","rarity":"Legendary"},{"name":"S3 Aurora","season":"S3","role":"Tank","orv":28,"srv":14,"notes":"Tank","rarity":"Legendary"},{"name":"S3 Ada","season":"S3","role":"Tank","orv":28,"srv":14,"notes":"Tank","rarity":"Legendary"},{"name":"S3 Hannah","season":"S3","role":"Infantry","orv":23,"srv":11,"notes":"Infantry","rarity":"Legendary"},{"name":"S3 Christina","season":"S3","role":"Infantry","orv":23,"srv":11,"notes":"Infantry","rarity":"Legendary"},{"name":"S3 Sophia","season":"S3","role":"Rally","orv":23,"srv":11,"notes":"Rally","rarity":"Legendary"},{"name":"S3 Oliva","season":"S3","role":"Garrison","orv":23,"srv":11,"notes":"Garrison","rarity":"Legendary"},{"name":"S2 Lady Pandora","season":"S2","role":"Tank","orv":20,"srv":10,"notes":"Tank","rarity":"Legendary"},{"name":"S2 Amanda","season":"S2","role":"Infantry","orv":20,"srv":10,"notes":"Infantry","rarity":"Legendary"},{"name":"S2 Diana","season":"S2","role":"Tank Destroyer","orv":20,"srv":10,"notes":"Tank Destroyer","rarity":"Legendary"},{"name":"S2 Natalia","season":"S2","role":"Tank","orv":20,"srv":10,"notes":"Tank","rarity":"Legendary"},{"name":"Katherine","season":"Original","role":"Tank","orv":0,"srv":0,"notes":"Tank","rarity":"Legendary"},{"name":"Grace","season":"Original","role":"Tank","orv":0,"srv":0,"notes":"Tank","rarity":"Legendary"},{"name":"Chloe","season":"Original","role":"Rally","orv":0,"srv":0,"notes":"Rally","rarity":"Legendary"},{"name":"Ling","season":"Original","role":"Tank Destroyer","orv":0,"srv":0,"notes":"Tank Destroyer","rarity":"Legendary"},{"name":"Jessica","season":"Original","role":"Tank Destroyer","orv":0,"srv":0,"notes":"Tank Destroyer","rarity":"Legendary"},{"name":"Lilith","season":"Original","role":"Tank Destroyer","orv":0,"srv":0,"notes":"Tank Destroyer","rarity":"Legendary"},{"name":"Angel","season":"Original","role":"Gatherer","orv":0,"srv":0,"notes":"Gatherer","rarity":"Legendary"},{"name":"Sakura","season":"Original","role":"Infantry","orv":0,"srv":0,"notes":"Infantry","rarity":"Legendary"},{"name":"Loubna","season":"Original","role":"Infantry","orv":0,"srv":0,"notes":"Infantry","rarity":"Legendary"},{"name":"Angelica","season":"Original","role":"Infantry","orv":0,"srv":0,"notes":"Infantry","rarity":"Legendary"},{"name":"Ophelia","season":"Original","role":"Rally","orv":0,"srv":0,"notes":"Rally","rarity":"Legendary"},{"name":"Doireann","season":"Original","role":"Garrison","orv":0,"srv":0,"notes":"Garrison","rarity":"Legendary"},{"name":"Dorethea","season":"Original","role":"General","orv":0,"srv":0,"notes":"General","rarity":"Epic"},{"name":"Abigail","season":"Original","role":"Tank","orv":0,"srv":0,"notes":"Tank","rarity":"Epic"},{"name":"Monica","season":"Original","role":"Tank Destroyer, Gatherer","orv":0,"srv":0,"notes":"Tank Destroyer, Gatherer","rarity":"Epic"},{"name":"Linda","season":"Original","role":"Tank","orv":0,"srv":0,"notes":"Tank","rarity":"Epic"},{"name":"Riven","season":"Original","role":"Infantry","orv":0,"srv":0,"notes":"Infantry","rarity":"Epic"},{"name":"Maria","season":"Original","role":"Tank Destroyer","orv":0,"srv":0,"notes":"Tank Destroyer","rarity":"Epic"},{"name":"Evelyn","season":"Original","role":"Infantry, Gatherer","orv":0,"srv":0,"notes":"Infantry, Gatherer","rarity":"Epic"},{"name":"Helena","season":"Original","role":"General","orv":0,"srv":0,"notes":"General","rarity":"Epic"},{"name":"Marjorie","season":"Original","role":"Tank, Gatherer","orv":0,"srv":0,"notes":"Tank, Gatherer","rarity":"Elite"},{"name":"Jeanne","season":"Original","role":"Tank Destroyer, Gatherer","orv":0,"srv":0,"notes":"Tank Destroyer, Gatherer","rarity":"Elite"}];
 const STAR_CUM=[0,500,1500,8000,33000,98000];
 const SKILL_COSTS=[10,10,15,15,30,30,40,40,45,45,50,50,75,75,80,80];
 const XP_DENOMS=[50,100,500,1000,5000,10000,20000,50000];
@@ -829,7 +831,7 @@ const clone=v=>JSON.parse(JSON.stringify(v));
 
 function normalizeOfficer(o){
  const season=String(o?.season||String(o?.name||'').match(/^S\d+/)?.[0]||'').trim();
- return {name:String(o?.name||'').trim(),season,orv:Number(o?.orv)||0,srv:Number(o?.srv)||0,role:String(o?.role||'').trim(),notes:String(o?.notes||''),readinessEligible:season.toLowerCase()!=='original'&&o?.readinessEligible!==false}
+ return {name:String(o?.name||'').trim(),season,orv:Number(o?.orv)||0,srv:Number(o?.srv)||0,role:String(o?.role||'').trim(),notes:String(o?.notes||''),rarity:['Legendary','Epic','Elite'].includes(o?.rarity)?o.rarity:'Legendary',readinessEligible:season.toLowerCase()!=='original'&&o?.readinessEligible!==false}
 }
 async function loadOfficers(){
  let published=clone(DEFAULT_OFFICERS).map(normalizeOfficer).filter(o=>o.name);
@@ -860,6 +862,7 @@ async function loadOfficers(){
          existing.orv=o.orv;
          existing.srv=o.srv;
          existing.readinessEligible=o.readinessEligible;
+         existing.rarity=o.rarity;
        }
      });
      officers=merged;
@@ -884,9 +887,11 @@ function officerPortraitCandidates(name){
   slug+'.jpg'
  ];
 }
-function officerRole(o){
- return String(o?.role||'').trim()||'Unspecified';
-}
+function officerRole(o){ return String(o?.role||'').trim()||'Unspecified'; }
+function officerRoles(o){ return officerRole(o).split(',').map(v=>v.trim()).filter(Boolean); }
+function officerRarity(o){ return ['Legendary','Epic','Elite'].includes(o?.rarity)?o.rarity:'Legendary'; }
+function trainingBadgeCost(o=currentOfficer()){ return officerRarity(o)==='Elite'?100:officerRarity(o)==='Epic'?25:5; }
+function maxBadgesForOfficer(o=currentOfficer()){ return 10+690+180*trainingBadgeCost(o); }
 function seasonSort(a,b){
  if(a==='Original')return -1;if(b==='Original')return 1;
  const an=Number(String(a).match(/\d+/)?.[0]||999),bn=Number(String(b).match(/\d+/)?.[0]||999);
@@ -896,7 +901,7 @@ function renderOfficerFilters(){
  const seasonEl=$('officerSeasonFilter'),roleEl=$('officerRoleFilter');if(!seasonEl||!roleEl)return;
  const currentSeason=seasonEl.value,currentRole=roleEl.value;
  const seasons=[...new Set(officers.map(o=>o.season).filter(Boolean))].sort(seasonSort);
- const roles=[...new Set(officers.map(officerRole).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+ const roles=[...new Set(officers.flatMap(officerRoles).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
  seasonEl.innerHTML='<option value="">All Seasons</option>'+seasons.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
  roleEl.innerHTML='<option value="">All Roles</option>'+roles.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
  if(seasons.includes(currentSeason))seasonEl.value=currentSeason;
@@ -904,9 +909,9 @@ function renderOfficerFilters(){
 }
 function filteredOfficerIndexes(){
  const q=String($('officerSearch')?.value||'').trim().toLowerCase();
- const season=$('officerSeasonFilter')?.value||'',role=$('officerRoleFilter')?.value||'';
+ const season=$('officerSeasonFilter')?.value||'',rarity=$('officerRarityFilter')?.value||'',role=$('officerRoleFilter')?.value||'';
  return officers.map((o,i)=>({o,i})).filter(({o})=>
-  (!q||o.name.toLowerCase().includes(q))&&(!season||o.season===season)&&(!role||officerRole(o)===role)
+  (!q||o.name.toLowerCase().includes(q))&&(!season||o.season===season)&&(!rarity||officerRarity(o)===rarity)&&(!role||officerRoles(o).includes(role))
  );
 }
 function renderOfficerOptions(name){
@@ -924,6 +929,7 @@ function renderOfficerOptions(name){
    s.innerHTML='<option value="">No Officers match these filters</option>';
    $('officerFilterCount').textContent='0';
    if($('officerSeasonValue'))$('officerSeasonValue').textContent='—';
+   if($('officerRarityValue'))$('officerRarityValue').textContent='—';
    if($('officerRoleValue'))$('officerRoleValue').textContent='—';
    if($('orvCost'))$('orvCost').value='';
    if($('srvCost'))$('srvCost').value='';
@@ -1057,20 +1063,21 @@ function calculate(){
  $('selectionChestOrvGenerated').textContent=fmt(selectionChestOrv);
  $('universalBadgesAvailable').textContent=fmt(universalBadgesAvailable);
 
- const badgesUsed=($('unlocked').checked?10:0)+skillBadgesSpent()+ +$('training').value*5;
+ const officerMaxBadges=maxBadgesForOfficer(o);
+ const badgesUsed=($('unlocked').checked?10:0)+skillBadgesSpent()+ +$('training').value*trainingBadgeCost(o);
  const badgesFromOrv=readinessEligible&&o.orv>0?Math.floor(orvHeld/o.orv):0;
  const orvRemainder=o.orv>0?orvHeld-badgesFromOrv*o.orv:orvHeld;
  const badgeTotal=badgesUsed+badgesHeld+universalBadgesAvailable+badgesFromOrv;
- const badgesRequired=Math.max(0,MAX_BADGES-badgeTotal);
+ const badgesRequired=Math.max(0,officerMaxBadges-badgeTotal);
  const orvRequired=readinessEligible?badgesRequired*o.orv:0;
- $('trainingLabel').textContent=$('training').value;$('badgesUsed').textContent=fmt(badgesUsed);$('badgesFromOrv').textContent=fmt(badgesFromOrv);$('orvRemainder').textContent=fmt(orvRemainder);$('badgesRequired').textContent=fmt(badgesRequired);$('orvRequired').textContent=fmt(orvRequired);$('badgeBar').style.width=pct(badgeTotal,MAX_BADGES)+'%';
+ $('trainingLabel').textContent=$('training').value;$('badgesUsed').textContent=fmt(badgesUsed);$('badgesFromOrv').textContent=fmt(badgesFromOrv);$('orvRemainder').textContent=fmt(orvRemainder);$('badgesRequired').textContent=fmt(badgesRequired);$('orvRequired').textContent=fmt(orvRequired);$('badgeBar').style.width=pct(badgeTotal,officerMaxBadges)+'%';
 
  let xpHeld=0;XP_DENOMS.forEach(v=>xpHeld+=(+($('xp'+v)?.value||0))*v);
  const cl=Math.max(1,Math.min(70,Number($('currentLevel').value)||1));const tl=Math.max(cl,Math.min(70,Number($('targetLevel').value)||70));
  const xpRequired=Math.max(0,cumulativeXp(tl)-cumulativeXp(cl));const xpShortfall=Math.max(0,xpRequired-xpHeld);
  $('xpHeld').textContent=fmt(xpHeld);$('xpRequired').textContent=fmt(xpRequired);$('xpShortfall').textContent=fmt(xpShortfall);$('xpBar').style.width=pct(xpHeld,xpRequired||1)+'%';
 
- const overall=(pct(starsTotal,MAX_STAR)+pct(badgeTotal,MAX_BADGES)+pct(xpHeld,MAX_XP))/3;
+ const overall=(pct(starsTotal,MAX_STAR)+pct(badgeTotal,officerMaxBadges)+pct(xpHeld,MAX_XP))/3;
  $('overallPct').textContent=overall.toFixed(1)+'%';$('overallBar').style.width=overall+'%';
  $('dashStarsHeld').textContent=fmt(starsHeld);$('dashStarsRequired').textContent=fmt(Math.max(0,MAX_STAR-starsTotal));
  $('dashBadgesFromOrv').textContent=fmt(badgesFromOrv);$('dashBadgesRequired').textContent=fmt(badgesRequired);
@@ -1084,7 +1091,7 @@ function renderPlanner(o,cs,starsUsed,legendaryHeld,srvHeld,badgesUsed,badgesHel
  const readinessEligible=o.readinessEligible!==false&&String(o.season||'').toLowerCase()!=='original';
  const g=$('goalSelect').value;let starTarget=0,badgeTarget=0,xpTarget=0;
  if(g==='nextStar')starTarget=STAR_CUM[Math.min(5,cs+1)];else if(g==='fiveStar'||g==='max')starTarget=MAX_STAR;
- if(g==='maxSkills')badgeTarget=700;else if(g==='maxTraining'||g==='max')badgeTarget=MAX_BADGES;
+ if(g==='maxSkills')badgeTarget=700;else if(g==='maxTraining'||g==='max')badgeTarget=maxBadgesForOfficer(o);
  if(g==='max')xpTarget=xpRequiredSelected;
  const exclusiveFromSrv=readinessEligible&&o.srv?Math.floor(srvHeld/o.srv):0;
  const starHeld=legendaryHeld+exclusiveFromSrv*110;
@@ -1354,7 +1361,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='4.3.32';
+const APP_VERSION='4.3.34';
 function syncVersionUI(){
  const v='v'+APP_VERSION;
  if($('headerVersion'))$('headerVersion').textContent=v;
@@ -1779,7 +1786,7 @@ function updateFutureOfficerForecast(){
 }
 async function init(){
  await loadOfficers();renderOfficerFilters();renderOfficerOptions();
- ['officerSearch','officerSeasonFilter','officerRoleFilter'].forEach(id=>{
+ ['officerSearch','officerSeasonFilter','officerRarityFilter','officerRoleFilter'].forEach(id=>{
   const el=$(id);if(!el)return;
   const evt=id==='officerSearch'?'input':'change';
   el.addEventListener(evt,()=>{renderOfficerOptions();calculate();populateCompareOfficers();buildUpgradeSummary()});
@@ -1898,7 +1905,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.32';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.34';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
@@ -1930,7 +1937,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
 
  loadProgress();
 
- // v4.3.32 feature wiring
+ // v4.3.34 feature wiring
  populateCompareOfficers();
  const compareSelect=$('compareOfficerSelect');
  if(compareSelect){
@@ -2005,9 +2012,10 @@ function savedOfficerProgressData(){
      }
    }
    const skillSpent=SKILL_COSTS.slice(0,paidSkillUpgrades).reduce((a,b)=>a+b,0);
-   const badgesUsed=(p.unlocked?10:0)+skillSpent+(Number(p.training)||0)*5;
-   const badgeShort=Math.max(0,MAX_BADGES-badgesUsed);
-   const dev=savedPct(badgesUsed,MAX_BADGES);
+   const officerMaxBadges=maxBadgesForOfficer(o);
+   const badgesUsed=(p.unlocked?10:0)+skillSpent+(Number(p.training)||0)*trainingBadgeCost(o);
+   const badgeShort=Math.max(0,officerMaxBadges-badgesUsed);
+   const dev=savedPct(badgesUsed,officerMaxBadges);
 
    const currentStar=Math.max(0,Math.min(5,Number(p.currentStar)||0));
    const starValue=STAR_CUM[currentStar]||0;

@@ -1,4 +1,12 @@
-## v4.3.33 TEST
+## v4.3.34 TEST
+- Added Legendary / Epic / Elite rarity.
+- Added rarity filter and rarity colour indicator.
+- Added 8 Epic and 2 Elite Original Officers.
+- Added multi-role filtering.
+- Training costs now vary by rarity: 5 / 25 / 100 badges per point.
+- Skill Strand star-unlock logic remains identical for all rarities.
+
+## v4.3.33 LIVE
 - Progress tab now keeps the three status categories: MAXED, IN PROGRESS and NOT STARTED.
 - Within each category, Officers are sorted newest season first: S7, S6, S5, S4, S3, S2, Original.
 - Officers within the same season retain database order in the main Progress table.
