@@ -1,4 +1,4 @@
-const CACHE='kow-v4.3.34-test';
+const CACHE='kow-v4.3.35-test-dorothea-final';
 const ASSETS=[
   './',
   './index.html',

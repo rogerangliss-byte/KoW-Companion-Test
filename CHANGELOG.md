@@ -26,3 +26,6 @@
 - Restore avoids stale KoW Companion local-storage values on the destination device.
 
 - Corrected v4.3.35 Officer database migration so the 8 Epic and 2 Elite Officers are merged into existing 56-Officer browser databases without resetting saved progress. All Rarities now contains 66 Officers.
+- Added portraits for all 8 Epic and 2 Elite Original Officers.
+- Corrected Dorothea spelling throughout published Officer data and added migration compatibility for previously saved `Dorethea` profiles.
+
