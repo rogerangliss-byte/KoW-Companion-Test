@@ -37,3 +37,10 @@
 - Progress now uses each Officer's rarity-specific Promotion and Training requirements.
 - Fully MAXED profiles (5★, Level 70, unlocked, all skills Level 5, Training 180) report 100% / MAXED consistently.
 - Skill-cost summaries explicitly follow the currently selected Officer rarity.
+
+
+### v4.3.35 TEST — Confirmed Elite badge correction
+- Elite unlock: 10 badges.
+- Elite Skills 1–16: 10,10,15,15,20,20,25,25,30,30,35,35,40,40,45,45 = 440 badges.
+- Elite Training: 100 × 180 = 18,000 badges.
+- Elite MAX total corrected to 18,450 badges.

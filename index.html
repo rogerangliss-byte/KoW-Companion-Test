@@ -740,7 +740,7 @@ const DEFAULT_OFFICERS=[{"name":"S7 Roisin","season":"S7","role":"Tank Destroyer
 const STAR_CUM=[0,500,1500,8000,33000,98000];
 const LEGENDARY_SKILL_COSTS=[10,10,15,15,30,30,40,40,45,45,50,50,75,75,80,80];
 const EPIC_SKILL_COSTS=[10,10,10,20,20,20,20,30,30,30,30,40,40,40,40,50]; // confirmed total 440
-const ELITE_SKILL_COSTS=[25,25,25,25,20,20,20,20,20,20,20,20,20,20,20,20]; // TEST provisional distribution; confirmed total 340
+const ELITE_SKILL_COSTS=[10,10,15,15,20,20,25,25,30,30,35,35,40,40,45,45]; // TEST provisional distribution; confirmed total 340
 function skillCostsForOfficer(o=currentOfficer()){const r=officerRarity(o);return r==='Epic'?EPIC_SKILL_COSTS:r==='Elite'?ELITE_SKILL_COSTS:LEGENDARY_SKILL_COSTS;}
 const SKILL_COSTS=LEGENDARY_SKILL_COSTS;
 const XP_DENOMS=[50,100,500,1000,5000,10000,20000,50000];
@@ -883,7 +883,7 @@ function normalizeOfficer(o){
 async function loadOfficers(){
  let published=clone(DEFAULT_OFFICERS).map(normalizeOfficer).filter(o=>o.name);
  try{
-   const response=await fetch('./officers.json?v=435-progress-rarity-consistency',{cache:'no-store'});
+   const response=await fetch('./officers.json?v=435-elite-18450',{cache:'no-store'});
    if(response.ok){
      const data=await response.json();
      if(Array.isArray(data)&&data.length){
@@ -950,7 +950,7 @@ function officerRole(o){ return String(o?.role||'').trim()||'Unspecified'; }
 function officerRoles(o){ return officerRole(o).split(',').map(v=>v.trim()).filter(Boolean); }
 function officerRarity(o){ return ['Legendary','Epic','Elite'].includes(o?.rarity)?o.rarity:'Legendary'; }
 function trainingBadgeCost(o=currentOfficer()){ return officerRarity(o)==='Elite'?100:officerRarity(o)==='Epic'?25:5; }
-function promotionBadgeTotal(o=currentOfficer()){return officerRarity(o)==='Epic'?440:officerRarity(o)==='Elite'?340:690;}
+function promotionBadgeTotal(o=currentOfficer()){return officerRarity(o)==='Epic'?440:officerRarity(o)==='Elite'?440:690;}
 function maxBadgesForOfficer(o=currentOfficer()){ return 10+promotionBadgeTotal(o)+180*trainingBadgeCost(o); }
 function seasonSort(a,b){
  if(a==='Original')return -1;if(b==='Original')return 1;
