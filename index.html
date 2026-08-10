@@ -414,7 +414,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
     <article class="card">
       <h2>📘 Officer XP</h2>
       <div class="two">
-        <div><label>Current Level</label><input id="currentLevel" type="number" min="1" max="70" step="1" inputmode="numeric" value="1"></div>
+        <div><label>Current Level</label><input id="currentLevel" type="number" min="0" max="70" step="1" inputmode="numeric" value="0"></div>
         <div><label>Target Level</label><input id="targetLevel" type="number" min="1" max="70" step="1" inputmode="numeric" value="70"></div>
       </div>
       <div class="notice">1–40: 5,806,700 · 41–50: 16,960,000 · 51–60: 53,430,000 · 61–70: 123,450,000</div>
@@ -527,7 +527,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
   <p>Use <b>MAX Officer</b> to set the selected Officer to <b>5★, Level 70, Unlocked, all four Skill Strands at Level 5, and Training Level 180</b>.</p>
 
   <h4>✅ Automatic Unlock</h4>
-  <p>Setting an Officer above Level 1 automatically selects <b>Officer unlocked</b>, reducing the chance of missing the unlock status.</p>
+  <p>Setting an Officer above Level 0 automatically selects <b>Officer unlocked</b>, reducing the chance of missing the unlock status.</p>
 
   <h4>🎚 Exact Training Level</h4>
   <p>Training can now be entered as an exact number from <b>0–180</b> as well as using the slider.</p>
@@ -1025,8 +1025,10 @@ function latestSeasonOrvCost(){
 
 
 $('currentLevel')?.addEventListener('input',()=>{
- if((Number($('currentLevel').value)||1)>1 && !$('unlocked').checked){
+ const level=Number($('currentLevel').value);
+ if(Number.isFinite(level) && level>0 && !$('unlocked').checked){
   $('unlocked').checked=true;
+  renderSkillStrands();
  }
 });
 
@@ -2336,7 +2338,11 @@ document.addEventListener('DOMContentLoaded',()=>{
    q('quickTrainingValue').textContent=v;
  });
  q('quickOfficerLevel')?.addEventListener('input',()=>{
-   if((Number(q('quickOfficerLevel').value)||1)>1) q('quickUnlocked').checked=true;
+   const level=Number(q('quickOfficerLevel').value);
+   if(Number.isFinite(level) && level>0 && !q('quickUnlocked').checked){
+     q('quickUnlocked').checked=true;
+     buildQuickSkills();
+   }
  });
  q('quickProgressSave')?.addEventListener('click',applyQuickProgress);
  q('quickProgressMax')?.addEventListener('click',()=>{
@@ -2362,7 +2368,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   <div id="quickProgressOfficer" class="notice"></div>
   <div class="two">
    <div><label>Current Star Level</label><select id="quickStarLevel"><option value="0">0★</option><option value="1">1★</option><option value="2">2★</option><option value="3">3★</option><option value="4">4★</option><option value="5">5★</option></select></div>
-   <div><label>Current Officer Level</label><input id="quickOfficerLevel" type="number" min="1" max="70"></div>
+   <div><label>Current Officer Level</label><input id="quickOfficerLevel" type="number" min="0" max="70"></div>
   </div>
   <label><input id="quickUnlocked" type="checkbox"> Officer unlocked (10 badges)</label>
   <h3>Skill Strands — each starts at Level 1</h3><div id="quickSkills"></div>
