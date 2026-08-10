@@ -29,3 +29,5 @@
 - Added portraits for all 8 Epic and 2 Elite Original Officers.
 - Corrected Dorothea spelling throughout published Officer data and added migration compatibility for previously saved `Dorethea` profiles.
 
+
+- Rarity flow correction: Stars and Skill Promotion information now follow the selected Officer rarity. Epic/Elite hide Legendary SRV flow; Planner labels use the matching Star rarity; Skill Promotion totals/sequences are rarity-specific.

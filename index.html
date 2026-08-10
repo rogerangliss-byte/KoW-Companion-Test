@@ -348,18 +348,28 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
         <div><label>Current Star Level</label><select id="currentStar"></select></div>
         <div><label>Target Star Level</label><select id="targetStar"></select></div>
       </div>
-      <div class="two">
-        <div><label>Legendary Star I (110)</label><input id="ls1" type="number" min="0" step="1" inputmode="numeric" value="0"></div>
-        <div><label>Legendary Star II (420)</label><input id="ls2" type="number" min="0" step="1" inputmode="numeric" value="0"></div>
+      <div id="legendaryStarInventory">
+        <div class="two">
+          <div><label>Legendary Star I (110)</label><input id="ls1" type="number" min="0" step="1" inputmode="numeric" value="0"></div>
+          <div><label>Legendary Star II (420)</label><input id="ls2" type="number" min="0" step="1" inputmode="numeric" value="0"></div>
+        </div>
+        <label>Legendary Star III (960)</label><input id="ls3" type="number" min="0" step="1" inputmode="numeric" value="0">
       </div>
-      <label>Legendary Star III (960)</label><input id="ls3" type="number" min="0" step="1" inputmode="numeric" value="0">
-      <div class="notice"><b>Rarity-specific Stars:</b> Epic and Elite Stars use the same 110 / 420 / 960 denominations but are separate inventories and cannot use SRV.</div>
-      <div class="two"><div><label>Epic Star I (110)</label><input id="es1" type="number" min="0" value="0"></div><div><label>Epic Star II (420)</label><input id="es2" type="number" min="0" value="0"></div></div><label>Epic Star III (960)</label><input id="es3" type="number" min="0" value="0">
-      <div class="two"><div><label>Elite Star I (110)</label><input id="bs1" type="number" min="0" value="0"></div><div><label>Elite Star II (420)</label><input id="bs2" type="number" min="0" value="0"></div></div><label>Elite Star III (960)</label><input id="bs3" type="number" min="0" value="0">
-      <label>Star Readiness Vouchers (SRV) Held</label><input id="srvHeld" type="number" min="0" step="1" inputmode="numeric" value="0">
-      <div class="stat"><span>Exclusive Stars from held SRV</span><b id="exclusiveFromSrv">0</b></div>
-      <div class="stat"><span>Officer Stars from held SRV</span><b id="officerStarsFromSrv">0</b></div>
-      <div class="stat"><span>Star Readiness Vouchers (SRV) remaining</span><b id="srvRemainder">0</b></div>
+      <div id="epicStarInventory" style="display:none">
+        <div class="two"><div><label>Epic Star I (110)</label><input id="es1" type="number" min="0" value="0"></div><div><label>Epic Star II (420)</label><input id="es2" type="number" min="0" value="0"></div></div>
+        <label>Epic Star III (960)</label><input id="es3" type="number" min="0" value="0">
+      </div>
+      <div id="eliteStarInventory" style="display:none">
+        <div class="two"><div><label>Elite Star I (110)</label><input id="bs1" type="number" min="0" value="0"></div><div><label>Elite Star II (420)</label><input id="bs2" type="number" min="0" value="0"></div></div>
+        <label>Elite Star III (960)</label><input id="bs3" type="number" min="0" value="0">
+      </div>
+      <div class="notice" id="starRarityNotice"><b>Legendary Stars:</b> Star Readiness Vouchers (SRV) are available only for eligible Legendary seasonal Officers.</div>
+      <div id="srvStarFlow">
+        <label>Star Readiness Vouchers (SRV) Held</label><input id="srvHeld" type="number" min="0" step="1" inputmode="numeric" value="0">
+        <div class="stat"><span>Exclusive Stars from held SRV</span><b id="exclusiveFromSrv">0</b></div>
+        <div class="stat"><span>Officer Stars from held SRV</span><b id="officerStarsFromSrv">0</b></div>
+        <div class="stat"><span>Star Readiness Vouchers (SRV) remaining</span><b id="srvRemainder">0</b></div>
+      </div>
       <div class="stat"><span>Stars used</span><b id="starsUsed">0</b></div>
       <div class="stat"><span>Stars held</span><b id="starsHeld">0</b></div>
       <div class="stat"><span>Stars required</span><b id="starsRequired">98,000</b></div>
@@ -377,7 +387,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 </div>
 <div id="skillGrid" class="skill-strands"></div>
 <div id="nextSkillCostSummary" class="notice" style="margin-top:8px"></div>
-      <div class="notice">Strands unlock with the Officer’s Current Star Level: unlocked at 0★ = Strand 1, 1★ = Strands 1–2, 2★ = Strands 1–3, and 3★+ = all four strands. Level 1 is free when a strand becomes available. Each additional skill level uses the next cost in the existing sequence: 10, 10, 15, 15, 30, 30, 40, 40, 45, 45, 50, 50, 75, 75, 80, 80 — regardless of which available strand you increase.</div>
+      <div class="notice" id="skillSequenceNotice">Skill Promotion costs follow the selected Officer rarity.</div>
       <label>Training Level: <b id="trainingLabel">0</b> / 180</label><div class="muted" id="trainingRarityNote">Training badge cost follows Officer rarity.</div>
       <div style="display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center">
         <input id="training" type="range" min="0" max="180" value="0">
@@ -558,7 +568,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <p><b>Original Officers:</b> Officer Readiness Vouchers (ORV) and Star Readiness Vouchers (SRV) cannot be used for Original Officers.</p>
 
       <h3>2. Stars</h3>
-      <p>Set the Officer's current and target Star level. Enter Legendary Star I, II and III held and <b>Star Readiness Vouchers (SRV)</b> held. The app calculates Officer Star value held, Exclusive Stars obtainable from SRV and the remaining Star requirement.</p>
+      <p>Set the Officer's current and target Star level. The Stars tab automatically follows the selected Officer rarity: Legendary, Epic or Elite Star I / II / III. <b>Star Readiness Vouchers (SRV)</b> are shown only for Legendary Officers and cannot be used by Epic or Elite Officers.</p>
 
       <h3>3. Development</h3>
       <p>Enter unlock status, the four independent Skill Strand levels and Training Level. Then enter Officer Badges Held, <b>Universal Legendary Badges Held</b>, <b>Legendary Officer Badge Selection Chests Held</b> and <b>Officer Readiness Vouchers (ORV) Held</b>.</p>
@@ -783,10 +793,16 @@ function updateSkillCostSummaries(){
  const a=$('nextSkillCostSummary');if(a)a.innerHTML=`<b>${skillCostStatusText()}</b>`;
  const b=document.getElementById('quickNextSkillCostSummary');if(b)b.innerHTML=`<b>${skillCostStatusText()}</b>`;
 }
+function updateSkillRarityNotice(o=currentOfficer()){
+ const el=$('skillSequenceNotice');if(!el||!o)return;
+ const rarity=officerRarity(o),costs=skillCostsForOfficer(o),total=costs.reduce((a,b)=>a+b,0);
+ const provisional=rarity==='Elite'?' <b>TEST:</b> Elite individual Promotion steps are provisional until the exact 340-badge sequence is confirmed.':'';
+ el.innerHTML=`Strands unlock with the Officer’s Current Star Level: unlocked at 0★ = Strand 1, 1★ = Strands 1–2, 2★ = Strands 1–3, and 3★+ = all four strands. Level 1 is free when a strand becomes available. <b>${rarity} Promotion sequence:</b> ${costs.join(', ')} badges · <b>${total} total</b>.${provisional}`;
+}
 function openSkillCostInfo(){
  const used=totalPaidSkillUpgrades(),rows=document.getElementById('skillCostSequenceRows');
  const costs=skillCostsForOfficer(); if(rows)rows.innerHTML=costs.map((c,i)=>`<tr><td>${i+1}${i===used?' ← NEXT':''}</td><td>${c}</td></tr>`).join('');
- const cur=document.getElementById('skillCostCurrent');if(cur)cur.innerHTML=`<b>${skillCostStatusText()}</b>`;
+ const cur=document.getElementById('skillCostCurrent');if(cur)cur.innerHTML=`<b>${officerRarity(currentOfficer())} Officer · ${skillCostStatusText()}</b>`;
  const levels=getSkillStrandLevels(),next=nextSkillUpgradeCost(),per=document.getElementById('skillCostPerStrand');
  if(per)per.innerHTML=levels.map((lvl,i)=>lvl>=5?`<b>Strand ${i+1}:</b> Level 5 — MAX`:`<b>Strand ${i+1}:</b> Level ${lvl} → Level ${lvl+1} would currently cost ${next} badges`).join('<br>');
  document.getElementById('skillCostInfoModal').style.display='block';
@@ -825,6 +841,7 @@ function renderSkillStrands(){
    g.appendChild(row);
  }
  updateSkillCostSummaries();
+ updateSkillRarityNotice();
 }
 
 function applyResponsivePageBackground(){
@@ -980,7 +997,9 @@ function updateOfficerExperience(){
  const o=currentOfficer();if(!o)return;
  const role=officerRole(o),candidates=officerPortraitCandidates(o.name);
  if($('officerSeasonValue'))$('officerSeasonValue').textContent=o.season||'—';
+ if($('officerRarityValue'))$('officerRarityValue').textContent=officerRarity(o);
  if($('officerRoleValue'))$('officerRoleValue').textContent=role;
+ updateStarRarityUI(o);
  if($('dashOfficerRole'))$('dashOfficerRole').textContent=[o.season,role].filter(Boolean).join(' · ');
  if($('expectedPortraitFile'))$('expectedPortraitFile').textContent=candidates[0];
 
@@ -1053,10 +1072,25 @@ function syncMainTrainingFromExact(){
 }
 $('training')?.addEventListener('input',syncMainTrainingFromSlider);
 $('trainingExact')?.addEventListener('input',syncMainTrainingFromExact);
+function updateStarRarityUI(o=currentOfficer()){
+ if(!o)return;
+ const rarity=officerRarity(o);
+ const map={Legendary:'legendaryStarInventory',Epic:'epicStarInventory',Elite:'eliteStarInventory'};
+ Object.entries(map).forEach(([r,id])=>{const el=$(id);if(el)el.style.display=r===rarity?'block':'none';});
+ const srvFlow=$('srvStarFlow');if(srvFlow)srvFlow.style.display=rarity==='Legendary'?'block':'none';
+ const note=$('starRarityNotice');
+ if(note){
+  note.innerHTML=rarity==='Legendary'
+   ?'<b>Legendary Stars:</b> uses Legendary Star I / II / III. Star Readiness Vouchers (SRV) are available only for eligible Legendary seasonal Officers.'
+   :`<b>${rarity} Stars:</b> uses ${rarity} Star I / II / III only. ${rarity} Officers cannot use Star Readiness Vouchers (SRV).`;
+ }
+}
+
 function calculate(){
  const o=currentOfficer();
  if(!o)return;
  if(!o)return;
+ updateStarRarityUI(o);
  const readinessEligible=o.readinessEligible!==false&&String(o.season||'').toLowerCase()!=='original';
  $('orvCost').value=readinessEligible?o.orv:'N/A';$('srvCost').value=readinessEligible?o.srv:'N/A';$('dashOfficer').textContent=o.name;updateOfficerExperience();
  $('orvHeld').disabled=!readinessEligible||officerRarity(o)!=='Legendary';$('srvHeld').disabled=!readinessEligible||officerRarity(o)!=='Legendary';
@@ -1120,19 +1154,23 @@ function renderPlanner(o,cs,starsUsed,legendaryHeld,srvHeld,badgesUsed,badgesHel
  const readinessEligible=o.readinessEligible!==false&&String(o.season||'').toLowerCase()!=='original';
  const g=$('goalSelect').value;let starTarget=0,badgeTarget=0,xpTarget=0;
  if(g==='nextStar')starTarget=STAR_CUM[Math.min(5,cs+1)];else if(g==='fiveStar'||g==='max')starTarget=MAX_STAR;
- if(g==='maxSkills')badgeTarget=700;else if(g==='maxTraining'||g==='max')badgeTarget=maxBadgesForOfficer(o);
+ if(g==='maxSkills')badgeTarget=10+promotionBadgeTotal(o);else if(g==='maxTraining'||g==='max')badgeTarget=maxBadgesForOfficer(o);
  if(g==='max')xpTarget=xpRequiredSelected;
- const exclusiveFromSrv=readinessEligible&&o.srv?Math.floor(srvHeld/o.srv):0;
+ const rarity=officerRarity(o);
+ const srvAllowed=rarity==='Legendary'&&readinessEligible;
+ const exclusiveFromSrv=srvAllowed&&o.srv?Math.floor(srvHeld/o.srv):0;
  const starHeld=legendaryHeld+exclusiveFromSrv*110;
- const badgesFromOrv=readinessEligible&&o.orv?Math.floor(orvHeld/o.orv):0;
+ const badgesFromOrv=rarity==='Legendary'&&readinessEligible&&o.orv?Math.floor(orvHeld/o.orv):0;
  const rows=[
- ['Legendary Stars',Math.max(0,starTarget-starsUsed),starHeld],
- ['Officer Badges',Math.max(0,badgeTarget-badgesUsed),badgesHeld+badgesFromOrv],
- ['Officer Readiness Vouchers',readinessEligible?Math.max(0,badgeTarget-badgesUsed-badgesHeld)*o.orv:0,readinessEligible?orvHeld:0],
- ['Exclusive Stars',Math.ceil(Math.max(0,starTarget-starsUsed-legendaryHeld)/110),exclusiveFromSrv],
- ['Star Readiness Vouchers',readinessEligible?Math.ceil(Math.max(0,starTarget-starsUsed-legendaryHeld)/110)*o.srv:0,readinessEligible?srvHeld:0],
- ['Officer XP',Math.max(0,xpTarget),xpHeld]
+ [`${rarity} Stars`,Math.max(0,starTarget-starsUsed),starHeld],
+ ['Officer Badges',Math.max(0,badgeTarget-badgesUsed),badgesHeld+badgesFromOrv]
  ];
+ if(rarity==='Legendary'){
+  rows.push(['Officer Readiness Vouchers',readinessEligible?Math.max(0,badgeTarget-badgesUsed-badgesHeld)*o.orv:0,readinessEligible?orvHeld:0]);
+  rows.push(['Exclusive Stars',Math.ceil(Math.max(0,starTarget-starsUsed-legendaryHeld)/110),exclusiveFromSrv]);
+  rows.push(['Star Readiness Vouchers',readinessEligible?Math.ceil(Math.max(0,starTarget-starsUsed-legendaryHeld)/110)*o.srv:0,readinessEligible?srvHeld:0]);
+ }
+ rows.push(['Officer XP',Math.max(0,xpTarget),xpHeld]);
  $('plannerRows').innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${fmt(r[1])}</td><td>${fmt(r[2])}</td><td>${fmt(Math.max(0,r[1]-r[2]))}</td></tr>`).join('');
 }
 
