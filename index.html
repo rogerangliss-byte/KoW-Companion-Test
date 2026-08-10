@@ -2493,8 +2493,9 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   function applyLanguage(l){
     if(!SUPPORTED.includes(l))l='en';
-    lang=l; localStorage.setItem('kow_language',l);
-    const sel=document.getElementById('appLanguage'); if(sel)sel.value=l;
+    lang=l;
+    if(localStorage.getItem('kow_language')!==l) localStorage.setItem('kow_language',l);
+    const sel=document.getElementById('appLanguage'); if(sel && sel.value!==l)sel.value=l;
     document.documentElement.lang=l;
     busy=true;
     renderHelp(l);
@@ -2510,40 +2511,19 @@ document.addEventListener('DOMContentLoaded',()=>{
     applyLanguage(lang);
   });
 
-  const OBS_CONFIG={subtree:true,childList:true,characterData:true};
-  let queued=false;
-  const pending=new Set();
-
-  function processPending(){
-    queued=false;
-    if(busy || pending.size===0)return;
-    busy=true;
-    obs.disconnect();
-    try{
-      for(const n of pending){
-        if(!n || !n.isConnected)continue;
-        if(n.nodeType===Node.TEXT_NODE)translateTextNode(n,lang);
-        else if(n.nodeType===Node.ELEMENT_NODE)walk(n,lang);
-      }
-      pending.clear();
-    } finally {
-      obs.observe(document.documentElement,OBS_CONFIG);
-      busy=false;
-    }
+  // v4.3.35 stable multilingual refresh.
+  // No MutationObserver: prevents translation recursion and blank-page freezes.
+  let translateTimer=null;
+  function scheduleLanguageRefresh(){
+    clearTimeout(translateTimer);
+    translateTimer=setTimeout(function(){
+      if(!busy) applyLanguage(lang);
+    },120);
   }
 
-  const obs=new MutationObserver(muts=>{
-    if(busy)return;
-    for(const m of muts){
-      if(m.type==='characterData')pending.add(m.target);
-      else m.addedNodes.forEach(n=>pending.add(n));
-    }
-    if(!queued){
-      queued=true;
-      requestAnimationFrame(processPending);
-    }
-  });
-  obs.observe(document.documentElement,OBS_CONFIG);
+  document.addEventListener('click',scheduleLanguageRefresh,true);
+  document.addEventListener('change',scheduleLanguageRefresh,true);
+
 })();
 </script>
 

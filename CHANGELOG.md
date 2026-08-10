@@ -68,3 +68,11 @@
 - The observer disconnects while translated DOM changes are applied.
 - Unchanged text is no longer written back to the DOM.
 - Service-worker cache key changed to force the corrected TEST files to load.
+
+### v4.3.35 Multilingual TEST — Loading Fix
+- Removed the complete recursive translation MutationObserver code.
+- Fixed the blank-page / page-unresponsive failure in the multilingual TEST build.
+- Language refresh now occurs after normal navigation/language interactions.
+- Retains English, French, German and Italian support.
+- Service-worker cache changed so browsers fetch this corrected build.
+- Inline JavaScript syntax validated before packaging.
