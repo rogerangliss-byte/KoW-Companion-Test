@@ -1,4 +1,4 @@
-const CACHE='kow-v4.3.35-test-elite-18450-fix';
+const CACHE='kow-v4.3.35-test-elite-confirmed-wording';
 const ASSETS=[
   './',
   './index.html',

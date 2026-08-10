@@ -813,7 +813,7 @@ function updateSkillCostSummaries(){
 function updateSkillRarityNotice(o=currentOfficer()){
  const el=$('skillSequenceNotice');if(!el||!o)return;
  const rarity=officerRarity(o),costs=skillCostsForOfficer(o),total=costs.reduce((a,b)=>a+b,0);
- const provisional=rarity==='Elite'?' <b>TEST:</b> Elite individual Promotion steps are provisional until the exact 340-badge sequence is confirmed.':'';
+ const provisional=rarity==='Elite'?' <b>TEST:</b>':'';
  el.innerHTML=`Strands unlock with the Officer’s Current Star Level: unlocked at 0★ = Strand 1, 1★ = Strands 1–2, 2★ = Strands 1–3, and 3★+ = all four strands. Level 1 is free when a strand becomes available. <b>${rarity} Promotion sequence:</b> ${costs.join(', ')} badges · <b>${total} total</b>.${provisional}`;
 }
 function openSkillCostInfo(){
