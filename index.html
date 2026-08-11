@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.3.35</title>
+<title>KoW Companion v4.3.37</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -44,21 +44,6 @@ body{
 body{min-height:100vh;overflow-x:hidden}
 .topbar{position:sticky;top:0;z-index:10;padding:18px;background:rgba(0,0,0,.82);border-bottom:1px solid var(--line);backdrop-filter:blur(10px)}
 .topbar h1{margin:0;color:var(--gold);font-size:1.4rem}.topbar p{margin:5px 0 0;color:var(--muted)}
-.test-banner{
-  position:sticky;
-  top:0;
-  z-index:11;
-  width:100%;
-  padding:8px 12px;
-  text-align:center;
-  background:#c40000;
-  color:#fff;
-  border-bottom:2px solid #ff6b6b;
-  font-weight:900;
-  letter-spacing:.12em;
-  box-shadow:0 3px 10px rgba(0,0,0,.45);
-}
-
 .app{position:relative;z-index:1;max-width:1000px;margin:auto;padding:14px 14px 100px;min-height:calc(100vh - 90px);background:transparent}.view{display:none}.view.active{display:block}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.wide{grid-column:1/-1}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 14px 36px rgba(0,0,0,.3);backdrop-filter:blur(10px)}
@@ -208,9 +193,203 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 .quick-strand-row.locked{opacity:.62}
 .quick-strand-row.locked .quick-strand-select{background:#555;color:#bbb;cursor:not-allowed}
 
+/* v4.3.37 LIVE — iPhone / iOS Safari responsive compatibility.
+   Scoped to html.ios-safari so Android and PC layouts are unchanged. */
+html.ios-safari{
+  -webkit-text-size-adjust:100%;
+}
+
+@media (max-width:600px){
+  html.ios-safari body{
+    min-height:100dvh;
+  }
+
+  html.ios-safari .app{
+    padding-left:10px;
+    padding-right:10px;
+    padding-bottom:calc(92px + env(safe-area-inset-bottom));
+    min-height:100dvh;
+  }
+
+  html.ios-safari .card{
+    padding:14px;
+    border-radius:16px;
+  }
+
+  html.ios-safari .card h2{
+    font-size:1.28rem;
+    line-height:1.18;
+  }
+
+  html.ios-safari .bottom-nav{
+    left:8px;
+    right:8px;
+    width:auto;
+    transform:none;
+    bottom:calc(6px + env(safe-area-inset-bottom));
+    padding:6px 7px;
+    border-radius:18px;
+    gap:2px;
+    max-height:72px;
+  }
+
+  html.ios-safari .bottom-nav button{
+    flex:0 0 62px;
+    min-width:62px;
+    min-height:54px;
+    padding:5px 2px;
+    font-size:.84rem;
+  }
+
+  html.ios-safari .bottom-nav span{
+    font-size:.56rem;
+    line-height:1.05;
+    margin-top:2px;
+  }
+
+  /* Keep the Officer profile action buttons compact on iPhone. */
+  html.ios-safari #officer .toolbar{
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    align-items:stretch;
+  }
+
+  html.ios-safari #officer .toolbar button{
+    width:100%;
+    min-width:0;
+    min-height:46px;
+    margin-top:0 !important;
+    padding:8px 9px;
+    white-space:normal;
+    line-height:1.15;
+  }
+
+  /* iPhone edit-progress modal: retain a compact two-column layout
+     instead of stacking every strand vertically. */
+  html.ios-safari #quickProgressModal{
+    padding:
+      max(8px,env(safe-area-inset-top))
+      8px
+      calc(18px + env(safe-area-inset-bottom));
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  html.ios-safari #quickProgressModal > article.card{
+    width:100%;
+    max-width:none !important;
+    margin:0 auto !important;
+    padding:12px;
+    border-radius:16px;
+  }
+
+  html.ios-safari #quickProgressModal h2{
+    font-size:1.2rem;
+    margin:0;
+  }
+
+  html.ios-safari #quickProgressModal h3{
+    font-size:1.05rem;
+    margin:12px 0 8px;
+  }
+
+  html.ios-safari #quickProgressModal label{
+    margin-top:7px;
+    font-size:.82rem;
+  }
+
+  html.ios-safari #quickProgressModal input,
+  html.ios-safari #quickProgressModal select{
+    min-height:42px;
+    padding:8px 10px;
+    font-size:16px; /* prevents iOS Safari auto-zoom */
+  }
+
+  html.ios-safari #quickProgressModal .two{
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+
+  html.ios-safari #quickSkills{
+    display:grid;
+    gap:7px;
+  }
+
+  html.ios-safari #quickSkills .quick-strand-row{
+    grid-template-columns:86px minmax(0,1fr);
+    gap:8px;
+    align-items:center;
+  }
+
+  html.ios-safari #quickSkills .skill-strand-label{
+    font-size:.82rem;
+  }
+
+  html.ios-safari #quickSkills .quick-strand-select{
+    min-height:40px;
+  }
+
+  html.ios-safari #quickProgressModal .toolbar{
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+
+  html.ios-safari #quickProgressModal .toolbar button{
+    min-height:44px;
+    margin:0 !important;
+    padding:8px;
+    white-space:normal;
+  }
+
+  html.ios-safari #quickProgressCancel{
+    grid-column:1 / -1;
+  }
+
+  html.ios-safari #quickProgressModal .notice{
+    font-size:.78rem;
+    line-height:1.3;
+    padding:8px;
+  }
+
+  /* Make long status/summary text wrap cleanly without widening cards. */
+  html.ios-safari .result-box,
+  html.ios-safari .notice,
+  html.ios-safari .stat,
+  html.ios-safari .background-status{
+    overflow-wrap:anywhere;
+    word-break:normal;
+  }
+}
+
+/* Very narrow iPhones (SE-class) */
+@media (max-width:390px){
+  html.ios-safari .bottom-nav button{
+    flex-basis:58px;
+    min-width:58px;
+  }
+
+  html.ios-safari #quickProgressModal .two{
+    grid-template-columns:1fr;
+  }
+
+  html.ios-safari #quickSkills .quick-strand-row{
+    grid-template-columns:78px minmax(0,1fr);
+  }
+}
+
+
 </style>
+<script>
+(function(){
+  var ua=navigator.userAgent||'';
+  var isiOS=/iPhone|iPad|iPod/.test(ua) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+  var isWebKit=/WebKit/.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
+  if(isiOS && isWebKit) document.documentElement.classList.add('ios-safari');
+})();
+</script>
 </head>
 <body>
+<div id="english-test-banner" style="position:sticky;top:0;z-index:99999;background:#d00000;color:#fff;text-align:center;font-weight:800;letter-spacing:1.4px;padding:9px 12px;border-bottom:2px solid #fff;">⚠ ENGLISH TEST VERSION — v4.3.37 — NOT LIVE ⚠</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
@@ -218,7 +397,6 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
   </div>
   <div class="creator-credit">Created by FireStorm (371)</div>
 </header>
-<div class="test-banner">⚠ TEST VERSION — v4.3.35 — NOT LIVE ⚠</div>
 <main class="app">
   <section id="dashboard" class="view active">
 <article class="card" id="smartDashboardCard">
@@ -412,21 +590,15 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <label>Universal Legendary Badges Held</label><input id="universalBadgeHeld" type="number" min="0" step="1" inputmode="numeric" value="0">
       <label>Universal Epic Badges Held</label><input id="universalEpicBadgeHeld" type="number" min="0" step="1" value="0">
       <label>Universal Elite Badges Held</label><input id="universalEliteBadgeHeld" type="number" min="0" step="1" value="0">
-      <label>Legendary Officer Badge Selection Chests Held</label><input id="legendaryBadgeChestHeld" type="number" min="0" step="1" inputmode="numeric" value="0">
+      <label>Legendary Officer Badge Chests Held</label><input id="legendaryBadgeChestHeld" type="number" min="0" step="1" inputmode="numeric" value="0">
       <div class="notice">
-        Each Selection Chest can be used as either <b>1 Universal Legendary Badge</b> or
-        <b><span id="selectionChestOrvValue">0</span> Officer Readiness Vouchers</b>.
-        The ORV value follows the highest ORV-per-badge cost in the latest published season.
+        Each <b>Legendary Officer Badge Chest</b> provides <b>10 Universal Legendary Badges</b>.
+        Legendary Officer Badge Selection Chests are a separate resource and are not yet implemented.
       </div>
-      <label>Use Selection Chests as</label>
-      <select id="legendaryBadgeChestMode">
-        <option value="badge">Universal Legendary Badges</option>
-        <option value="orv">Officer Readiness Vouchers</option>
-      </select>
       <label>Officer Readiness Vouchers (ORV) Held</label><input id="orvHeld" type="number" min="0" step="1" inputmode="numeric" value="0">
       <div class="stat"><span>Badges used</span><b id="badgesUsed">0</b></div>
       <div class="stat"><span>Universal Legendary Badges available</span><b id="universalBadgesAvailable">0</b></div>
-      <div class="stat"><span>ORV generated from Selection Chests</span><b id="selectionChestOrvGenerated">0</b></div>
+      <div class="stat"><span>Badges generated from Legendary Officer Badge Chests</span><b id="selectionChestOrvGenerated">0</b></div>
       <div class="stat"><span>Badges from held Officer Readiness Vouchers (ORV)</span><b id="badgesFromOrv">0</b></div>
       <div class="stat"><span>Officer Readiness Vouchers (ORV) remaining after whole badges</span><b id="orvRemainder">0</b></div>
       <div class="stat"><span>Badges required</span><b id="badgesRequired">1,600</b></div>
@@ -489,8 +661,8 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
         <div><label>Universal Legendary Badges available</label><input id="multiUniversal" type="number" min="0" step="1" inputmode="numeric" value="0"></div>
       </div>
       <div class="two">
-        <div><label>Legendary Officer Badge Selection Chests</label><input id="multiChests" type="number" min="0" step="1" inputmode="numeric" value="0"></div>
-        <div><label>Chest strategy</label><select id="multiChestMode"><option value="optimise">Optimise automatically</option><option value="badge">Use as Universal Badges</option><option value="orv">Convert to ORV (600 each)</option></select></div>
+        <div><label>Legendary Officer Badge Chests</label><input id="multiChests" type="number" min="0" step="1" inputmode="numeric" value="0"></div>
+        <div><label>Chest value</label><div class="notice" style="margin-top:0">1 Legendary Officer Badge Chest = 10 Universal Legendary Badges</div></div>
       </div>
 
       <div class="toolbar" style="margin-top:10px">
@@ -533,14 +705,14 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <h2>❓ Help & Instructions</h2>
 
 <div class="card" id="whatsNewV4329" style="margin-bottom:16px">
-  <h3 style="margin-top:0">✨ What’s New — v4.3.35 LIVE</h3>
+  <h3 style="margin-top:0">✨ What’s New — v4.3.37 LIVE</h3>
   <div class="notice">
-    <b>v4.3.35 LIVE adds rarity-specific Stars and Universal Badges, Legendary-only SRV/ORV, and confirmed Legendary/Epic/Elite promotion and Training totals.</b>
+    <b>v4.3.37 LIVE adds rarity-specific Stars and Universal Badges, Legendary-only SRV/ORV, and confirmed Legendary/Epic/Elite promotion and Training totals.</b>
   </div>
 
   <h4>📊 Officer Progress</h4>
   <p>Officers are automatically classified as <b>MAXED</b>, <b>IN PROGRESS</b>, or <b>NOT STARTED</b>. The main Progress filters and Compare Officer Progress filters work independently.</p>
-  <p><b>New in v4.3.35 LIVE:</b> Officer Rarity now supports <b>Legendary (Gold)</b>, <b>Epic (Purple)</b> and <b>Elite (Blue)</b>. Training costs are 5 / 25 / 100 badges per point respectively. Epic and Elite Original Officers are included, with multi-role filtering. Skill Strand unlocking remains identical for every rarity.</p>
+  <p><b>New in v4.3.37 LIVE:</b> Officer Rarity now supports <b>Legendary (Gold)</b>, <b>Epic (Purple)</b> and <b>Elite (Blue)</b>. Training costs are 5 / 25 / 100 badges per point respectively. Epic and Elite Original Officers are included, with multi-role filtering. Skill Strand unlocking remains identical for every rarity.</p>
 
   <h4>🔎 Compare Officer Progress</h4>
   <p>Compare saved Officers in Season order. You can compare Not Started and In Progress Officers even when the main Officer Progress table is filtered differently.</p>
@@ -586,7 +758,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <p>Set the Officer's current and target Star level. The Stars tab automatically follows the selected Officer rarity: Legendary, Epic or Elite Star I / II / III. <b>Star Readiness Vouchers (SRV)</b> are shown only for Legendary Officers and cannot be used by Epic or Elite Officers.</p>
 
       <h3>3. Development</h3>
-      <p>Enter unlock status, the four independent Skill Strand levels and Training Level. Then enter Officer Badges Held, <b>Universal Legendary Badges Held</b>, <b>Legendary Officer Badge Selection Chests Held</b> and <b>Officer Readiness Vouchers (ORV) Held</b>.</p>
+      <p>Enter unlock status, the four independent Skill Strand levels and Training Level. Then enter Officer Badges Held, <b>Universal Legendary Badges Held</b>, <b>Legendary Officer Badge Chests Held</b> and <b>Officer Readiness Vouchers (ORV) Held</b>.</p>
       <p>Each <b>Universal Legendary Badge</b> is worth <b>1 Officer Badge</b> for a Legendary Officer.</p>
       <p>Each <b>Legendary Officer Badge Selection Chest</b> can be used as <b>either</b> 1 Universal Legendary Badge <b>or</b> converted to the latest-Season Officer Readiness Voucher (ORV) value. A chest cannot count as both. With the current S7 database the benchmark is <b>600 ORV per chest</b>.</p>
 
@@ -596,11 +768,11 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
       <h3>5. Planner & Resource Optimiser</h3>
       <p>Use Planner after entering Stars, Development and XP. Select a goal such as Max Officer, Next Star, Reach 5★, Max Skills or Max Training to see requirements, resources held and shortfalls.</p>
       <p>The <b>Resource Optimiser</b> lets you select a second Officer in <b>Compare with Officer</b>. It compares the Officer Readiness Voucher (ORV) cost per Officer Badge for the two Officers.</p>
-      <p><b>How to interpret the recommendation:</b> where both Officers can use ORV, the optimiser recommends favouring ORV on the Officer with the <b>lower ORV cost per badge</b> and favouring shared <b>Universal Legendary Badges / Legendary Officer Badge Selection Chests</b> on the Officer with the <b>higher ORV cost per badge</b>. This protects the more expensive Officer from unnecessary ORV spending.</p>
+      <p><b>How to interpret the recommendation:</b> where both Officers can use ORV, the optimiser recommends favouring ORV on the Officer with the <b>lower ORV cost per badge</b> and favouring shared <b>Universal Legendary Badges / Legendary Officer Badge Chests</b> on the Officer with the <b>higher ORV cost per badge</b>. This protects the more expensive Officer from unnecessary ORV spending.</p>
       <p>The optimiser is <b>preview only</b>. It does not automatically spend, allocate or change your saved resources.</p>
 
       <h3>5a. Multi-Officer Upgrade Planner</h3>
-      <p>The Multi-Officer Planner lets you create a priority list of several Officers, set the Officer Badges still needed for each, and preview how shared ORV, Universal Legendary Badges and Legendary Officer Badge Selection Chests could cover the plan.</p>
+      <p>The Multi-Officer Planner lets you create a priority list of several Officers, set the Officer Badges still needed for each, and preview how shared ORV, Universal Legendary Badges and Legendary Officer Badge Chests could cover the plan.</p>
       <p>Use <b>Use current held resources</b> to copy the resources currently entered in Development. Plans are preview-only and do not spend or alter the normal calculator data. Named plans can be saved locally in the browser and loaded again later.</p>
 
       <h3>6. Save Progress</h3>
@@ -1465,7 +1637,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='4.3.35';
+const APP_VERSION='v4.3.37';
 function syncVersionUI(){
  const v='v'+APP_VERSION;
  if($('headerVersion'))$('headerVersion').textContent=v;
@@ -1695,14 +1867,10 @@ function calculateMultiPlanner(){
  const rows=[...document.querySelectorAll('#multiPlannerRows tr')];
  if(!rows.length){$('multiPlannerSummary').innerHTML='Add Officers to build an upgrade plan.';return}
  let orv=Math.max(0,+$('multiOrv').value||0), universal=Math.max(0,+$('multiUniversal').value||0), chests=Math.max(0,+$('multiChests').value||0);
- const mode=$('multiChestMode').value;
- // Current S7 benchmark: 600 ORV per Selection Chest.
- if(mode==='badge') universal+=chests;
- else if(mode==='orv') orv+=chests*600;
- else {
-   // Optimise: protect high-ORV Officers by treating chests as badges first.
-   universal+=chests;
- }
+ // Legendary Officer Badge Chests are the currently implemented resource.
+ // Each chest contributes 10 Universal Legendary Badges.
+ // Legendary Officer Badge Selection Chests are separate and not yet implemented.
+ universal+=chests*10;
  let fully=0, partial=0, unfunded=0, totalNeed=0, totalAllocated=0;
  multiPlanOfficers.forEach((row,pos)=>{
    const o=officers[row.officerIndex]||officers[0], needed=Math.max(0,+row.badgesNeeded||0);
@@ -1734,11 +1902,11 @@ function refreshMultiSavedPlans(selectName=''){
 }
 function saveMultiPlan(){
  const name=String($('multiPlanName').value||'').trim();if(!name){alert('Enter a plan name.');return}
- const plans=getMultiPlans();plans[name]={name,orv:+$('multiOrv').value||0,universal:+$('multiUniversal').value||0,chests:+$('multiChests').value||0,chestMode:$('multiChestMode').value,officers:multiPlanOfficers};
+ const plans=getMultiPlans();plans[name]={name,orv:+$('multiOrv').value||0,universal:+$('multiUniversal').value||0,chests:+$('multiChests').value||0,officers:multiPlanOfficers};
  localStorage.setItem('kow_multi_plans_v430',JSON.stringify(plans));refreshMultiSavedPlans(name);alert('Plan saved.');
 }
 function loadMultiPlan(name){
- const p=getMultiPlans()[name];if(!p)return;$('multiPlanName').value=p.name||name;$('multiOrv').value=p.orv||0;$('multiUniversal').value=p.universal||0;$('multiChests').value=p.chests||0;$('multiChestMode').value=p.chestMode||'optimise';multiPlanOfficers=Array.isArray(p.officers)?p.officers:[];renderMultiPlanner();
+ const p=getMultiPlans()[name];if(!p)return;$('multiPlanName').value=p.name||name;$('multiOrv').value=p.orv||0;$('multiUniversal').value=p.universal||0;$('multiChests').value=p.chests||0;multiPlanOfficers=Array.isArray(p.officers)?p.officers:[];renderMultiPlanner();
 }
 function deleteMultiPlan(){
  const name=$('multiSavedPlans').value;if(!name)return;const plans=getMultiPlans();delete plans[name];localStorage.setItem('kow_multi_plans_v430',JSON.stringify(plans));refreshMultiSavedPlans();alert('Saved plan deleted.');
@@ -2017,7 +2185,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.35';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.37';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
@@ -2049,7 +2217,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
 
  loadProgress();
 
- // v4.3.35 feature wiring
+ // v4.3.37 feature wiring
  populateCompareOfficers();
  const compareSelect=$('compareOfficerSelect');
  if(compareSelect){

@@ -1,4 +1,4 @@
-const CACHE='kow-v4.3.35-english-test-max-officer-banner';
+const CACHE='kow-v4.3.37-english-test-refresh-max-chest-planner';
 const ASSETS=[
   './',
   './index.html',
