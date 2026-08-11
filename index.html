@@ -590,15 +590,21 @@ html.ios-safari{
       <label>Universal Legendary Badges Held</label><input id="universalBadgeHeld" type="number" min="0" step="1" inputmode="numeric" value="0">
       <label>Universal Epic Badges Held</label><input id="universalEpicBadgeHeld" type="number" min="0" step="1" value="0">
       <label>Universal Elite Badges Held</label><input id="universalEliteBadgeHeld" type="number" min="0" step="1" value="0">
-      <label>Legendary Officer Badge Chests Held</label><input id="legendaryBadgeChestHeld" type="number" min="0" step="1" inputmode="numeric" value="0">
+      <label>Legendary Officer Badge Selection Chests Held</label><input id="legendaryBadgeChestHeld" type="number" min="0" step="1" inputmode="numeric" value="0">
       <div class="notice">
-        Each <b>Legendary Officer Badge Chest</b> provides <b>10 Universal Legendary Badges</b>.
-        Legendary Officer Badge Selection Chests are a separate resource and are not yet implemented.
+        Each Selection Chest can be used as either <b>1 Universal Legendary Badge</b> or
+        <b><span id="selectionChestOrvValue">600</span> Officer Readiness Vouchers</b>.
+        The ORV value follows the highest ORV-per-badge cost in the latest published season.
       </div>
+      <label>Use Selection Chests as</label>
+      <select id="legendaryBadgeChestMode">
+        <option value="badge">Universal Legendary Badges</option>
+        <option value="orv">Officer Readiness Vouchers</option>
+      </select>
       <label>Officer Readiness Vouchers (ORV) Held</label><input id="orvHeld" type="number" min="0" step="1" inputmode="numeric" value="0">
       <div class="stat"><span>Badges used</span><b id="badgesUsed">0</b></div>
       <div class="stat"><span>Universal Legendary Badges available</span><b id="universalBadgesAvailable">0</b></div>
-      <div class="stat"><span>Badges generated from Legendary Officer Badge Chests</span><b id="selectionChestOrvGenerated">0</b></div>
+      <div class="stat"><span>ORV generated from Selection Chests</span><b id="selectionChestOrvGenerated">0</b></div>
       <div class="stat"><span>Badges from held Officer Readiness Vouchers (ORV)</span><b id="badgesFromOrv">0</b></div>
       <div class="stat"><span>Officer Readiness Vouchers (ORV) remaining after whole badges</span><b id="orvRemainder">0</b></div>
       <div class="stat"><span>Badges required</span><b id="badgesRequired">1,600</b></div>
@@ -661,8 +667,8 @@ html.ios-safari{
         <div><label>Universal Legendary Badges available</label><input id="multiUniversal" type="number" min="0" step="1" inputmode="numeric" value="0"></div>
       </div>
       <div class="two">
-        <div><label>Legendary Officer Badge Chests</label><input id="multiChests" type="number" min="0" step="1" inputmode="numeric" value="0"></div>
-        <div><label>Chest value</label><div class="notice" style="margin-top:0">1 Legendary Officer Badge Chest = 10 Universal Legendary Badges</div></div>
+        <div><label>Legendary Officer Badge Selection Chests</label><input id="multiChests" type="number" min="0" step="1" inputmode="numeric" value="0"></div>
+        <div><label>Chest strategy</label><select id="multiChestMode"><option value="optimise">Optimise automatically</option><option value="badge">Use as Universal Badges</option><option value="orv">Convert to ORV (600 each)</option></select></div>
       </div>
 
       <div class="toolbar" style="margin-top:10px">
@@ -758,7 +764,7 @@ html.ios-safari{
       <p>Set the Officer's current and target Star level. The Stars tab automatically follows the selected Officer rarity: Legendary, Epic or Elite Star I / II / III. <b>Star Readiness Vouchers (SRV)</b> are shown only for Legendary Officers and cannot be used by Epic or Elite Officers.</p>
 
       <h3>3. Development</h3>
-      <p>Enter unlock status, the four independent Skill Strand levels and Training Level. Then enter Officer Badges Held, <b>Universal Legendary Badges Held</b>, <b>Legendary Officer Badge Chests Held</b> and <b>Officer Readiness Vouchers (ORV) Held</b>.</p>
+      <p>Enter unlock status, the four independent Skill Strand levels and Training Level. Then enter Officer Badges Held, <b>Universal Legendary Badges Held</b>, <b>Legendary Officer Badge Selection Chests Held</b> and <b>Officer Readiness Vouchers (ORV) Held</b>.</p>
       <p>Each <b>Universal Legendary Badge</b> is worth <b>1 Officer Badge</b> for a Legendary Officer.</p>
       <p>Each <b>Legendary Officer Badge Selection Chest</b> can be used as <b>either</b> 1 Universal Legendary Badge <b>or</b> converted to the latest-Season Officer Readiness Voucher (ORV) value. A chest cannot count as both. With the current S7 database the benchmark is <b>600 ORV per chest</b>.</p>
 
@@ -768,11 +774,11 @@ html.ios-safari{
       <h3>5. Planner & Resource Optimiser</h3>
       <p>Use Planner after entering Stars, Development and XP. Select a goal such as Max Officer, Next Star, Reach 5★, Max Skills or Max Training to see requirements, resources held and shortfalls.</p>
       <p>The <b>Resource Optimiser</b> lets you select a second Officer in <b>Compare with Officer</b>. It compares the Officer Readiness Voucher (ORV) cost per Officer Badge for the two Officers.</p>
-      <p><b>How to interpret the recommendation:</b> where both Officers can use ORV, the optimiser recommends favouring ORV on the Officer with the <b>lower ORV cost per badge</b> and favouring shared <b>Universal Legendary Badges / Legendary Officer Badge Chests</b> on the Officer with the <b>higher ORV cost per badge</b>. This protects the more expensive Officer from unnecessary ORV spending.</p>
+      <p><b>How to interpret the recommendation:</b> where both Officers can use ORV, the optimiser recommends favouring ORV on the Officer with the <b>lower ORV cost per badge</b> and favouring shared <b>Universal Legendary Badges / Legendary Officer Badge Selection Chests</b> on the Officer with the <b>higher ORV cost per badge</b>. This protects the more expensive Officer from unnecessary ORV spending.</p>
       <p>The optimiser is <b>preview only</b>. It does not automatically spend, allocate or change your saved resources.</p>
 
       <h3>5a. Multi-Officer Upgrade Planner</h3>
-      <p>The Multi-Officer Planner lets you create a priority list of several Officers, set the Officer Badges still needed for each, and preview how shared ORV, Universal Legendary Badges and Legendary Officer Badge Chests could cover the plan.</p>
+      <p>The Multi-Officer Planner lets you create a priority list of several Officers, set the Officer Badges still needed for each, and preview how shared ORV, Universal Legendary Badges and Legendary Officer Badge Selection Chests could cover the plan.</p>
       <p>Use <b>Use current held resources</b> to copy the resources currently entered in Development. Plans are preview-only and do not spend or alter the normal calculator data. Named plans can be saved locally in the browser and loaded again later.</p>
 
       <h3>6. Save Progress</h3>
@@ -1863,14 +1869,22 @@ function renderMultiPlanner(){
  tbody.querySelectorAll('[data-remove]').forEach((b,i)=>b.onclick=()=>{multiPlanOfficers.splice(i,1);renderMultiPlanner();calculateMultiPlanner()});
  calculateMultiPlanner();
 }
+
+// KOW_FIX_LEGENDARY_1600:
+// Legendary Officers require 1,600 badges to MAX. Original Legendary Officers are badge-only
+// and must never consume ORV.
 function calculateMultiPlanner(){
  const rows=[...document.querySelectorAll('#multiPlannerRows tr')];
  if(!rows.length){$('multiPlannerSummary').innerHTML='Add Officers to build an upgrade plan.';return}
  let orv=Math.max(0,+$('multiOrv').value||0), universal=Math.max(0,+$('multiUniversal').value||0), chests=Math.max(0,+$('multiChests').value||0);
- // Legendary Officer Badge Chests are the currently implemented resource.
- // Each chest contributes 10 Universal Legendary Badges.
- // Legendary Officer Badge Selection Chests are separate and not yet implemented.
- universal+=chests*10;
+ const mode=$('multiChestMode').value;
+ // Current S7 benchmark: 600 ORV per Selection Chest.
+ if(mode==='badge') universal+=chests;
+ else if(mode==='orv') orv+=chests*600;
+ else {
+   // Optimise: protect high-ORV Officers by treating chests as badges first.
+   universal+=chests;
+ }
  let fully=0, partial=0, unfunded=0, totalNeed=0, totalAllocated=0;
  multiPlanOfficers.forEach((row,pos)=>{
    const o=officers[row.officerIndex]||officers[0], needed=Math.max(0,+row.badgesNeeded||0);
@@ -1902,11 +1916,11 @@ function refreshMultiSavedPlans(selectName=''){
 }
 function saveMultiPlan(){
  const name=String($('multiPlanName').value||'').trim();if(!name){alert('Enter a plan name.');return}
- const plans=getMultiPlans();plans[name]={name,orv:+$('multiOrv').value||0,universal:+$('multiUniversal').value||0,chests:+$('multiChests').value||0,officers:multiPlanOfficers};
+ const plans=getMultiPlans();plans[name]={name,orv:+$('multiOrv').value||0,universal:+$('multiUniversal').value||0,chests:+$('multiChests').value||0,chestMode:$('multiChestMode').value,officers:multiPlanOfficers};
  localStorage.setItem('kow_multi_plans_v430',JSON.stringify(plans));refreshMultiSavedPlans(name);alert('Plan saved.');
 }
 function loadMultiPlan(name){
- const p=getMultiPlans()[name];if(!p)return;$('multiPlanName').value=p.name||name;$('multiOrv').value=p.orv||0;$('multiUniversal').value=p.universal||0;$('multiChests').value=p.chests||0;multiPlanOfficers=Array.isArray(p.officers)?p.officers:[];renderMultiPlanner();
+ const p=getMultiPlans()[name];if(!p)return;$('multiPlanName').value=p.name||name;$('multiOrv').value=p.orv||0;$('multiUniversal').value=p.universal||0;$('multiChests').value=p.chests||0;$('multiChestMode').value=p.chestMode||'optimise';multiPlanOfficers=Array.isArray(p.officers)?p.officers:[];renderMultiPlanner();
 }
 function deleteMultiPlan(){
  const name=$('multiSavedPlans').value;if(!name)return;const plans=getMultiPlans();delete plans[name];localStorage.setItem('kow_multi_plans_v430',JSON.stringify(plans));refreshMultiSavedPlans();alert('Saved plan deleted.');

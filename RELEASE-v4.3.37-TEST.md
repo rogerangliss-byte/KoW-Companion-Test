@@ -1,16 +1,26 @@
-# KoW Companion v4.3.37 TEST
+# KoW Companion v4.3.37 TEST — Full Correction
 
-Built from the supplied working English v4.3.36 LIVE baseline.
+Built from the clean English v4.3.36 LIVE baseline.
 
-## Corrections
-- Retains the working refresh/version and MAX Officer behaviour from English LIVE.
-- Correct resource name: Legendary Officer Badge Chests.
-- Each Legendary Officer Badge Chest = 10 Universal Legendary Badges.
-- No ORV conversion from Legendary Officer Badge Chests.
-- Legendary Officer Badge Selection Chests remain a separate, not-yet-implemented resource.
-- Multi-Officer Planner uses 10 badges per current chest.
-- 161 chests + 20 Universal Legendary Badges = 1,630 badges.
-- A 1,600-badge Original Officer can therefore be fully funded from that badge pool.
-- Original Officers remain ineligible for ORV.
+## Fixes included
 
-TEST build only; validate before promotion to English LIVE.
+### MAX Officer
+- MAX Officer must update the selected Officer immediately.
+- Home and Progress are recalculated/rerendered after MAX.
+- A browser refresh should no longer be required to show 100%.
+
+### Legendary Officer badge requirement
+- One Legendary Officer requires 1,600 Officer Badges to MAX.
+- The Planner must not treat a single Legendary Officer as needing 16,000 badges.
+- 16,000 is only valid as a combined total for ten separate 1,600-badge Officers.
+
+### Original Legendary Officers
+- Original Officers cannot use Officer Readiness Vouchers (ORV).
+- They can only be funded by applicable badge resources.
+
+### Legendary Officer Badge Selection Chests
+- 1 Selection Chest = either 1 Universal Legendary Badge OR 600 ORV.
+- There is no 10-badge chest.
+- Officer Badges Held remains a separate normal inventory quantity.
+
+TEST build only — validate before promotion to English LIVE.
