@@ -1,5 +1,5 @@
-const CACHE='kow-v4.3.35-multilingual-test-loading-fix-final';
-const ASSETS=['lang/it.js','lang/de.js','lang/fr.js','lang/en.js',
+const CACHE='kow-v4.3.35-live-r2-version-fix';
+const ASSETS=[
   './',
   './index.html',
   './manifest.json',

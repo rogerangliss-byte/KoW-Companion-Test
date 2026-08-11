@@ -6,7 +6,7 @@
 - Training costs now vary by rarity: 5 / 25 / 100 badges per point.
 - Skill Strand star-unlock logic remains identical for all rarities.
 
-## v4.3.35 LIVE
+## v4.3.33 LIVE
 - Progress tab now keeps the three status categories: MAXED, IN PROGRESS and NOT STARTED.
 - Within each category, Officers are sorted newest season first: S7, S6, S5, S4, S3, S2, Original.
 - Officers within the same season retain database order in the main Progress table.
@@ -52,27 +52,3 @@
 - Elite shows 100 badges/training point and 18,450 total to MAX.
 - Epic and Elite both use the confirmed 440-badge promotion sequence.
 - Removed the stray Elite TEST/provisional suffix from the promotion description.
-
-
-### v4.3.35 Multilingual TEST
-- Based on the final English v4.3.35 functional build.
-- French, German and Italian interface translation refreshed across all 11 menus.
-- Added translated Help/Instructions and translated guide/release-note files.
-- Added rarity-specific Legendary/Epic/Elite terminology, Stars, Universal Badges and confirmed development totals.
-- Added Progress menu translations and current v4.3.35 Officer/portrait data.
-- Language persists per device; English remains the reset/default language.
-
-### v4.3.35 Multilingual TEST — Responsive Fix
-- Fixed page freeze/unresponsive browser caused by recursive translation DOM observation.
-- Translation updates are now batched once per animation frame.
-- The observer disconnects while translated DOM changes are applied.
-- Unchanged text is no longer written back to the DOM.
-- Service-worker cache key changed to force the corrected TEST files to load.
-
-### v4.3.35 Multilingual TEST — Loading Fix
-- Removed the complete recursive translation MutationObserver code.
-- Fixed the blank-page / page-unresponsive failure in the multilingual TEST build.
-- Language refresh now occurs after normal navigation/language interactions.
-- Retains English, French, German and Italian support.
-- Service-worker cache changed so browsers fetch this corrected build.
-- Inline JavaScript syntax validated before packaging.

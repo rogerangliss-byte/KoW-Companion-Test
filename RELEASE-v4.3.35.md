@@ -62,3 +62,9 @@ MAX remains:
 
 ### Upgrade note
 After deployment, perform a hard refresh/cache refresh if an older cached build is displayed. Confirm the header reports v4.3.35 and that the red TEST banner is absent on LIVE.
+
+## MAX Officer consistency test fix
+- MAX Officer now derives XP completion from the Officer's saved Level 70 progress rather than shared XP Book inventory.
+- Officer Upgrade Summary now derives XP remaining from the selected Officer's current level.
+- Overall progress now measures saved Officer progress (Stars, Development and Level/XP) rather than shared resource inventory.
+- Shared XP Books remain unchanged when MAX Officer is used.
