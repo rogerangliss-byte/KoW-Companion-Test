@@ -22,3 +22,7 @@ This package deliberately contains **no Officer portrait files**. Leave the exis
 
 ## v4.3.35 Documentation
 See `USER-GUIDE.md` for the comprehensive user guide and `RELEASE-v4.3.35.md` for the full LIVE release notes.
+
+
+## Repository use
+This package is intended for the dedicated **English TEST repository**. The red TEST banner must remain visible until promoted to LIVE.
