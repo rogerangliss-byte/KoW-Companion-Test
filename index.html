@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.3.37</title>
+<title>KoW Companion v4.3.38</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -193,7 +193,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 .quick-strand-row.locked{opacity:.62}
 .quick-strand-row.locked .quick-strand-select{background:#555;color:#bbb;cursor:not-allowed}
 
-/* v4.3.37 LIVE — iPhone / iOS Safari responsive compatibility.
+/* v4.3.38 LIVE — iPhone / iOS Safari responsive compatibility.
    Scoped to html.ios-safari so Android and PC layouts are unchanged. */
 html.ios-safari{
   -webkit-text-size-adjust:100%;
@@ -389,7 +389,7 @@ html.ios-safari{
 </script>
 </head>
 <body>
-<div id="english-test-banner" style="position:sticky;top:0;z-index:99999;background:#d00000;color:#fff;text-align:center;font-weight:800;letter-spacing:1.4px;padding:9px 12px;border-bottom:2px solid #fff;">⚠ ENGLISH TEST VERSION — v4.3.37 — NOT LIVE ⚠</div>
+<div id="english-test-banner" style="position:sticky;top:0;z-index:99999;background:#d00000;color:#fff;text-align:center;font-weight:800;letter-spacing:1.4px;padding:9px 12px;border-bottom:2px solid #fff;">⚠ ENGLISH TEST VERSION — v4.3.38 — NOT LIVE ⚠</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
@@ -556,7 +556,7 @@ html.ios-safari{
         <div class="two"><div><label>Elite Star I (110)</label><input id="bs1" type="number" min="0" value="0"></div><div><label>Elite Star II (420)</label><input id="bs2" type="number" min="0" value="0"></div></div>
         <label>Elite Star III (960)</label><input id="bs3" type="number" min="0" value="0">
       </div>
-      <div class="notice" id="starRarityNotice"><b>Legendary Stars:</b> Star Readiness Vouchers (SRV) are available only for eligible Legendary seasonal Officers.</div>
+      <div class="notice" id="starRarityNotice"><b>Legendary Stars:</b> Star Readiness Vouchers (SRV) are available only for eligible Legendary seasonal Officers from S2 onward. Original Legendary Officers cannot use SRV.</div>
       <div id="srvStarFlow">
         <label>Star Readiness Vouchers (SRV) Held</label><input id="srvHeld" type="number" min="0" step="1" inputmode="numeric" value="0">
         <div class="stat"><span>Exclusive Stars from held SRV</span><b id="exclusiveFromSrv">0</b></div>
@@ -711,14 +711,14 @@ html.ios-safari{
       <h2>❓ Help & Instructions</h2>
 
 <div class="card" id="whatsNewV4329" style="margin-bottom:16px">
-  <h3 style="margin-top:0">✨ What’s New — v4.3.37 LIVE</h3>
+  <h3 style="margin-top:0">✨ What’s New — v4.3.38 LIVE</h3>
   <div class="notice">
-    <b>v4.3.37 LIVE adds rarity-specific Stars and Universal Badges, Legendary-only SRV/ORV, and confirmed Legendary/Epic/Elite promotion and Training totals.</b>
+    <b>v4.3.38 LIVE adds rarity-specific Stars and Universal Badges, Legendary-only SRV/ORV, and confirmed Legendary/Epic/Elite promotion and Training totals.</b>
   </div>
 
   <h4>📊 Officer Progress</h4>
   <p>Officers are automatically classified as <b>MAXED</b>, <b>IN PROGRESS</b>, or <b>NOT STARTED</b>. The main Progress filters and Compare Officer Progress filters work independently.</p>
-  <p><b>New in v4.3.37 LIVE:</b> Officer Rarity now supports <b>Legendary (Gold)</b>, <b>Epic (Purple)</b> and <b>Elite (Blue)</b>. Training costs are 5 / 25 / 100 badges per point respectively. Epic and Elite Original Officers are included, with multi-role filtering. Skill Strand unlocking remains identical for every rarity.</p>
+  <p><b>New in v4.3.38 LIVE:</b> Officer Rarity now supports <b>Legendary (Gold)</b>, <b>Epic (Purple)</b> and <b>Elite (Blue)</b>. Training costs are 5 / 25 / 100 badges per point respectively. Epic and Elite Original Officers are included, with multi-role filtering. Skill Strand unlocking remains identical for every rarity.</p>
 
   <h4>🔎 Compare Officer Progress</h4>
   <p>Compare saved Officers in Season order. You can compare Not Started and In Progress Officers even when the main Officer Progress table is filtered differently.</p>
@@ -1275,7 +1275,7 @@ function updateStarRarityUI(o=currentOfficer()){
  const note=$('starRarityNotice');
  if(note){
   note.innerHTML=rarity==='Legendary'
-   ?'<b>Legendary Stars:</b> uses Legendary Star I / II / III. Star Readiness Vouchers (SRV) are available only for eligible Legendary seasonal Officers.'
+   ?'<b>Legendary Stars:</b> uses Legendary Star I / II / III. Star Readiness Vouchers (SRV) are available only for eligible Legendary seasonal Officers from S2 onward. Original Legendary Officers cannot use SRV.'
    :`<b>${rarity} Stars:</b> uses ${rarity} Star I / II / III only. ${rarity} Officers cannot use Star Readiness Vouchers (SRV).`;
  }
 }
@@ -1544,11 +1544,15 @@ function maxSelectedOfficerProfile(){
  $('currentLevel').value=70;
  $('targetLevel').value=70;
 
- calculate();
  saveOfficerProfile(true);
-
+ // v4.3.38: update visible requirements immediately after MAX; no manual refresh required.
+ calculate();
+ if(typeof buildUpgradeSummary==='function')buildUpgradeSummary();
+ if(typeof renderHomeDashboard==='function')renderHomeDashboard();
+ if(typeof renderHome==='function')renderHome();
  if(typeof renderSavedOfficerProgress==='function')renderSavedOfficerProgress();
  if(typeof renderProgressCompareChoices==='function')renderProgressCompareChoices();
+ if(typeof renderProgressTable==='function')renderProgressTable();
 
  alert(`${label} is now saved as MAXED.`);
 }
@@ -1643,7 +1647,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='v4.3.37';
+const APP_VERSION='v4.3.38';
 function syncVersionUI(){
  const v='v'+APP_VERSION;
  if($('headerVersion'))$('headerVersion').textContent=v;
@@ -1869,10 +1873,6 @@ function renderMultiPlanner(){
  tbody.querySelectorAll('[data-remove]').forEach((b,i)=>b.onclick=()=>{multiPlanOfficers.splice(i,1);renderMultiPlanner();calculateMultiPlanner()});
  calculateMultiPlanner();
 }
-
-// KOW_FIX_LEGENDARY_1600:
-// Legendary Officers require 1,600 badges to MAX. Original Legendary Officers are badge-only
-// and must never consume ORV.
 function calculateMultiPlanner(){
  const rows=[...document.querySelectorAll('#multiPlannerRows tr')];
  if(!rows.length){$('multiPlannerSummary').innerHTML='Add Officers to build an upgrade plan.';return}
@@ -1890,7 +1890,9 @@ function calculateMultiPlanner(){
    const o=officers[row.officerIndex]||officers[0], needed=Math.max(0,+row.badgesNeeded||0);
    totalNeed+=needed;
    let allocated=0;
-   const eligible=o&&o.readinessEligible!==false&&String(o.season||'').toLowerCase()!=='original'&&+o.orv>0;
+   const isOriginal=String(o?.season||'').toLowerCase()==='original';
+   // Originals are badge-only. S2+ seasonal Legendary Officers may use ORV.
+   const eligible=o&&o.readinessEligible!==false&&!isOriginal&&+o.orv>0;
    // For efficiency, use ORV first on lower-cost Officers; however priority order remains authoritative.
    if(eligible){
      const fromOrv=Math.min(needed,Math.floor(orv/o.orv));
@@ -2199,7 +2201,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.37';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.38';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
@@ -2231,7 +2233,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
 
  loadProgress();
 
- // v4.3.37 feature wiring
+ // v4.3.38 feature wiring
  populateCompareOfficers();
  const compareSelect=$('compareOfficerSelect');
  if(compareSelect){
