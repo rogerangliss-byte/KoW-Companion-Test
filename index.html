@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.3.53</title>
+<title>KoW Companion v4.3.54</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -440,7 +440,7 @@ nav > button, .bottom-nav > button, #bottomNav > button {
 #inventory { padding-bottom: 145px !important; }
 #inventory .inventory-save-actions{
  position:sticky; bottom:72px; z-index:80;
- display:flex; gap:10px; flex-wrap:wrap;
+ display:flex; gap:10px; flex-wrap:nowrap;
  padding:10px 0 8px;
  background:linear-gradient(to bottom,rgba(18,20,24,.90),rgba(18,20,24,.98));
 }
@@ -467,9 +467,44 @@ nav > button, .bottom-nav > button, #bottomNav > button {
 .bottom-nav [data-tab="settings"], nav [data-tab="settings"]{order:11}
 .bottom-nav [data-tab="help"], nav [data-tab="help"]{order:12}
 </style>
+
+<style id="v4354-single-row-scroll-menu">
+/* Keep the bottom navigation on a single row on desktop/tablet/mobile.
+   If the viewport is too narrow, scroll horizontally instead of wrapping. */
+.bottom-nav,
+nav.bottom-nav,
+.navbar,
+.bottom-menu,
+#bottomNav {
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  white-space:nowrap !important;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+  scroll-behavior:smooth;
+}
+.bottom-nav > *,
+nav.bottom-nav > *,
+.navbar > *,
+.bottom-menu > *,
+#bottomNav > * {
+  flex:0 0 auto !important;
+  white-space:nowrap !important;
+}
+.bottom-nav::-webkit-scrollbar,
+nav.bottom-nav::-webkit-scrollbar,
+.navbar::-webkit-scrollbar,
+.bottom-menu::-webkit-scrollbar,
+#bottomNav::-webkit-scrollbar {
+  height:6px;
+}
+</style>
+
 </head>
 <body>
-<div id="english-test-banner" style="position:sticky;top:0;z-index:99999;background:#d00000;color:#fff;text-align:center;font-weight:800;padding:9px 12px;">⚠ ENGLISH TEST VERSION — v4.3.53 — NOT LIVE ⚠</div>
+<div id="english-test-banner" style="position:sticky;top:0;z-index:99999;background:#d00000;color:#fff;text-align:center;font-weight:800;padding:9px 12px;">⚠ ENGLISH TEST VERSION — v4.3.54 — NOT LIVE ⚠</div>
 
 <header class="topbar">
   <div>
@@ -519,7 +554,7 @@ nav > button, .bottom-nav > button, #bottomNav > button {
     <h2>📊 Officer Progress</h2>
     <p class="notice">All Officers are shown automatically. Officers with no saved development are classified as NOT STARTED. Held shared resources do not increase an Officer's progress percentage.</p>
     <div id="savedOfficerProgressSummary" class="result-box">Save Officer progress to build this dashboard.</div>
-    <div id="progressStatusFilters" class="notice" style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-top:12px">
+    <div id="progressStatusFilters" class="notice" style="display:flex;gap:18px;flex-wrap:nowrap;align-items:center;margin-top:12px">
       <b>Show:</b>
       <label><input type="checkbox" class="progressStatusFilter" value="maxed" checked> MAXED</label>
       <label><input type="checkbox" class="progressStatusFilter" value="progress" checked> IN PROGRESS</label>
@@ -536,13 +571,13 @@ nav > button, .bottom-nav > button, #bottomNav > button {
   <article class="card">
     <h2>🔎 Compare Officer Progress</h2>
     <p class="notice">Choose any saved Officers to compare their actual saved progress. Shared inventory is not counted as completed progress.</p>
-    <div id="compareStatusFilters" class="notice" style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+    <div id="compareStatusFilters" class="notice" style="display:flex;gap:18px;flex-wrap:nowrap;align-items:center;margin-bottom:12px">
       <b>Compare:</b>
       <label><input type="checkbox" class="compareStatusFilter" value="maxed" checked> MAXED</label>
       <label><input type="checkbox" class="compareStatusFilter" value="progress" checked> IN PROGRESS</label>
       <label><input type="checkbox" class="compareStatusFilter" value="notStarted" checked> NOT STARTED</label>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+    <div style="display:flex;gap:8px;flex-wrap:nowrap;margin-bottom:12px">
       <button type="button" id="compareProgressSelectAll">Select All</button>
       <button type="button" id="compareProgressClear">Clear All</button>
       <button type="button" id="compareProgressRun" class="primary" style="width:auto;margin-top:0">Compare Selected</button>
@@ -1749,7 +1784,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='v4.3.53';
+const APP_VERSION='v4.3.54';
 function syncVersionUI(){
  const v='v'+APP_VERSION;
  if($('headerVersion'))$('headerVersion').textContent=v;
@@ -2321,7 +2356,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.53';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.54';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
