@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.3.51</title>
+<title>KoW Companion v4.3.52</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -469,7 +469,7 @@ nav > button, .bottom-nav > button, #bottomNav > button {
 </style>
 </head>
 <body>
-<div id="english-test-banner" style="position:sticky;top:0;z-index:99999;background:#d00000;color:#fff;text-align:center;font-weight:800;padding:9px 12px;">⚠ ENGLISH TEST VERSION — v4.3.51 — NOT LIVE ⚠</div>
+<div id="english-test-banner" style="position:sticky;top:0;z-index:99999;background:#d00000;color:#fff;text-align:center;font-weight:800;padding:9px 12px;">⚠ ENGLISH TEST VERSION — v4.3.52 — NOT LIVE ⚠</div>
 
 <header class="topbar">
   <div>
@@ -1749,7 +1749,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='v4.3.51';
+const APP_VERSION='v4.3.52';
 function syncVersionUI(){
  const v='v'+APP_VERSION;
  if($('headerVersion'))$('headerVersion').textContent=v;
@@ -2005,12 +2005,15 @@ function calculateMultiPlanner(){
    const fromUniversal=Math.min(remaining-allocated,universal);allocated+=fromUniversal;universal-=fromUniversal;
    totalShared+=allocated;
    const covered=held+allocated;
-   const status=covered>=needed?'Fully Funded':covered>0?'Partially Funded':'Shortfall';
+   const remainingAfterAll=Math.max(0,needed-covered);
+   // Held Officer Badges reduce the requirement, but do not by themselves mean
+   // that shared resources have partially funded the Officer.
+   const status=remainingAfterAll===0?'Fully Funded':allocated>0?'Partially Funded':'Shortfall';
    if(status==='Fully Funded')fully++;else if(status==='Partially Funded')partial++;else unfunded++;
    const tr=rows[pos];if(tr){tr.querySelector('[data-multi-held]').textContent=fmt(held);tr.querySelector('[data-multi-allocated]').textContent=fmt(allocated)+' / '+fmt(remaining);tr.querySelector('[data-multi-status]').textContent=status;}
  });
  const totalCovered=totalHeld+totalShared;
- $('multiPlannerSummary').innerHTML=`<b>Plan result:</b> ${fully} fully funded · ${partial} partially funded · ${unfunded} shortfall<br><span class="muted">${fmt(totalCovered)} of ${fmt(totalNeed)} required badges covered: ${fmt(totalHeld)} individual Officer Badges held + ${fmt(totalShared)} shared resources. Remaining shared resources: ${fmt(orv)} ORV · ${fmt(universal)} Universal Badges · ${fmt(selectionChests)} Selection Chests.</span>`;
+ $('multiPlannerSummary').innerHTML=`<b>Plan result:</b> ${fully} fully funded · ${partial} partially funded · ${unfunded} shortfall<br><span class="muted">${fmt(totalCovered)} of ${fmt(totalNeed)} required badges covered: ${fmt(totalHeld)} Individual Officer Badges held + ${fmt(totalShared)} shared badges allocated. ${fmt(Math.max(0,totalNeed-totalCovered))} badges remain unfunded. Remaining shared resources: ${fmt(orv)} ORV · ${fmt(universal)} Universal Badges · ${fmt(selectionChests)} Selection Chests.</span>`;
 }
 function getMultiPlans(){try{return JSON.parse(localStorage.getItem('kow_multi_plans_v430')||'{}')}catch{return {}}}
 function refreshMultiSavedPlans(selectName=''){
@@ -2303,7 +2306,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.51';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.52';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
