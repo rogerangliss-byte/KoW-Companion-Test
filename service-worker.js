@@ -1,4 +1,4 @@
-const CACHE='kow-v4.3.38-english-test-max-original-rules';
+const CACHE='kow-v4.3.40-english-test-selection-chests';
 const ASSETS=[
   './',
   './index.html',
