@@ -1,4 +1,4 @@
-const CACHE='kow-v4.3.43-central-inventory';
+const CACHE='kow-v4.3.44-central-inventory';
 const ASSETS=[
   './',
   './index.html',
