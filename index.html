@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.3.41</title>
+<title>KoW Companion v4.3.43</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -193,7 +193,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 .quick-strand-row.locked{opacity:.62}
 .quick-strand-row.locked .quick-strand-select{background:#555;color:#bbb;cursor:not-allowed}
 
-/* v4.3.41 LIVE — iPhone / iOS Safari responsive compatibility.
+/* v4.3.43 LIVE — iPhone / iOS Safari responsive compatibility.
    Scoped to html.ios-safari so Android and PC layouts are unchanged. */
 html.ios-safari{
   -webkit-text-size-adjust:100%;
@@ -387,9 +387,27 @@ html.ios-safari{
   if(isiOS && isWebKit) document.documentElement.classList.add('ios-safari');
 })();
 </script>
+
+<style id="v4342-nav-fix">
+nav, .bottom-nav, #bottomNav {
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+nav > button, .bottom-nav > button, #bottomNav > button {
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+}
+@media (min-width: 700px) {
+  nav, .bottom-nav, #bottomNav { scroll-behavior: smooth; }
+}
+</style>
+
 </head>
 <body>
-<div id="english-test-banner" style="position:sticky;top:0;z-index:99999;background:#d00000;color:#fff;text-align:center;font-weight:800;padding:9px 12px;">⚠ ENGLISH TEST VERSION — v4.3.41 — NOT LIVE ⚠</div>
+<div id="english-test-banner" style="position:sticky;top:0;z-index:99999;background:#d00000;color:#fff;text-align:center;font-weight:800;padding:9px 12px;">⚠ ENGLISH TEST VERSION — v4.3.43 — NOT LIVE ⚠</div>
 
 <header class="topbar">
   <div>
@@ -715,14 +733,14 @@ html.ios-safari{
       <h2>❓ Help & Instructions</h2>
 
 <div class="card" id="whatsNewV4329" style="margin-bottom:16px">
-  <h3 style="margin-top:0">✨ What’s New — v4.3.41 LIVE</h3>
+  <h3 style="margin-top:0">✨ What’s New — v4.3.43 LIVE</h3>
   <div class="notice">
-    <b>v4.3.41 LIVE adds rarity-specific Stars and Universal Badges, Legendary-only SRV/ORV, and confirmed Legendary/Epic/Elite promotion and Training totals.</b>
+    <b>v4.3.43 LIVE adds rarity-specific Stars and Universal Badges, Legendary-only SRV/ORV, and confirmed Legendary/Epic/Elite promotion and Training totals.</b>
   </div>
 
   <h4>📊 Officer Progress</h4>
   <p>Officers are automatically classified as <b>MAXED</b>, <b>IN PROGRESS</b>, or <b>NOT STARTED</b>. The main Progress filters and Compare Officer Progress filters work independently.</p>
-  <p><b>New in v4.3.41 LIVE:</b> Officer Rarity now supports <b>Legendary (Gold)</b>, <b>Epic (Purple)</b> and <b>Elite (Blue)</b>. Training costs are 5 / 25 / 100 badges per point respectively. Epic and Elite Original Officers are included, with multi-role filtering. Skill Strand unlocking remains identical for every rarity.</p>
+  <p><b>New in v4.3.43 LIVE:</b> Officer Rarity now supports <b>Legendary (Gold)</b>, <b>Epic (Purple)</b> and <b>Elite (Blue)</b>. Training costs are 5 / 25 / 100 badges per point respectively. Epic and Elite Original Officers are included, with multi-role filtering. Skill Strand unlocking remains identical for every rarity.</p>
 
   <h4>🔎 Compare Officer Progress</h4>
   <p>Compare saved Officers in Season order. You can compare Not Started and In Progress Officers even when the main Officer Progress table is filtered differently.</p>
@@ -1563,7 +1581,7 @@ function maxSelectedOfficerProfile(){
  $('targetLevel').value=70;
 
  saveOfficerProfile(true);
- // v4.3.41: update visible requirements immediately after MAX; no manual refresh required.
+ // v4.3.43: update visible requirements immediately after MAX; no manual refresh required.
  calculate();
  if(typeof buildUpgradeSummary==='function')buildUpgradeSummary();
  if(typeof renderHomeDashboard==='function')renderHomeDashboard();
@@ -1665,7 +1683,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='v4.3.41';
+const APP_VERSION='v4.3.43';
 function syncVersionUI(){
  const v='v'+APP_VERSION;
  if($('headerVersion'))$('headerVersion').textContent=v;
@@ -1892,7 +1910,7 @@ function renderMultiPlanner(){
  calculateMultiPlanner();
 }
 
-// v4.3.41 Selection Chest eligibility is maintained explicitly by release pair.
+// v4.3.43 Selection Chest eligibility is maintained explicitly by release pair.
 const LEGENDARY_SELECTION_CHEST_ELIGIBLE = new Set(["Katherine", "Grace", "Chloe", "Ling", "Jessica", "Lilith", "Angel", "Sakura", "Loubna", "Angelica", "Ophelia", "Doireann", "Natalia", "Sophia", "Edward", "Helene", "Nadia", "Vera", "Marsha", "Tanya", "Emily", "Zoya"]);
 function selectionChestEligibleOfficer(o){
   return LEGENDARY_SELECTION_CHEST_ELIGIBLE.has(String(o?.name||o||'').trim());
@@ -2228,7 +2246,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.41';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.43';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
@@ -2260,7 +2278,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
 
  loadProgress();
 
- // v4.3.41 feature wiring
+ // v4.3.43 feature wiring
  populateCompareOfficers();
  const compareSelect=$('compareOfficerSelect');
  if(compareSelect){
@@ -2698,6 +2716,80 @@ document.addEventListener('click',e=>{
  if(e.target?.id==='invSetOfficer'){const n=document.getElementById('invOfficerName')?.value;if(!n)return;const x=kowInvGet();x.officerBadges=x.officerBadges||{};x.officerBadges[n]=Math.max(0,+document.getElementById('invOfficerQty').value||0);x.savedAt=new Date().toISOString();localStorage.setItem(KOW_INV_KEY,JSON.stringify(x));kowInvList(x.officerBadges);kowInvApply(x);}
 });
 document.addEventListener('DOMContentLoaded',()=>{const a=document.getElementById('invOfficerName'),b=document.getElementById('officerSelect');if(a&&b)a.innerHTML=b.innerHTML;const x=kowInvLoad();if(x.savedAt)kowInvApply(x);});
+</script>
+<script>
+function kowPopulateInventoryOfficers(){
+ const target=document.getElementById('invOfficerName');
+ if(!target) return;
+ let names=[];
+ const candidates=['officerSelect','compareOfficer1','compareOfficer2','plannerOfficer'];
+ for(const id of candidates){
+   const s=document.getElementById(id);
+   if(s && s.options && s.options.length){
+     names=[...s.options].map(o=>({value:o.value,text:o.textContent.trim()}))
+       .filter(o=>o.value && o.text && !/select/i.test(o.text));
+     if(names.length) break;
+   }
+ }
+ if(!names.length && typeof officers!=='undefined' && Array.isArray(officers)){
+   names=officers.map(o=>({value:o.id||o.name,text:((o.season||'')+' '+(o.name||'')).trim()})).filter(o=>o.value);
+ }
+ if(!names.length){
+   document.querySelectorAll('select option').forEach(o=>{
+     const t=o.textContent.trim(),v=o.value;
+     if(v && /^(Original|S[2-7])\s/i.test(t)) names.push({value:v,text:t});
+   });
+ }
+ const seen=new Set();
+ names=names.filter(o=>{const k=o.value+'|'+o.text;if(seen.has(k))return false;seen.add(k);return true;});
+ if(names.length){
+   target.innerHTML='<option value="">Select Officer</option>'+names.map(o=>'<option value="'+String(o.value).replace(/"/g,'&quot;')+'">'+o.text+'</option>').join('');
+ }
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(kowPopulateInventoryOfficers,150));
+document.addEventListener('click',e=>{if(e.target?.dataset?.view==='inventory')setTimeout(kowPopulateInventoryOfficers,50);});
+</script>
+<script>
+function kowOrderCentralInventory(){
+ const marker=[...document.querySelectorAll('h1,h2,h3')].find(e=>/central inventory|inventory/i.test(e.textContent||''));
+ if(!marker) return;
+ const root=marker.closest('section,.card,.panel,main,div') || document;
+ const wanted=[
+  'Legendary Officer Badge Chest',
+  'Legendary Officer Badge Selection Chest',
+  'Officer Readiness Voucher',
+  'Star Readiness Voucher',
+  'Legendary Officer Badge (Universal)',
+  'Epic Officer Badge (Universal)',
+  'Elite Officer Badge (Universal)',
+  'Elite Star I','Elite Star II','Elite Star III',
+  'Epic Star I','Epic Star II','Epic Star III',
+  'Legendary Star I','Legendary Star II','Legendary Star III'
+ ];
+ const labels=[...root.querySelectorAll('label')];
+ const blockFor=l=>l.closest('.field,.form-group,.inventory-field,.input-group') || l.parentElement;
+ let blocks=wanted.map(txt=>{
+   let l=labels.find(x=>(x.textContent||'').trim().toLowerCase().startsWith(txt.toLowerCase()));
+   return l && blockFor(l);
+ }).filter(Boolean);
+ if(blocks.length<2) return;
+ const parent=blocks[0].parentElement;
+ if(!blocks.every(b=>b.parentElement===parent)) return;
+ const anchor=blocks[0];
+ wanted.forEach(txt=>{
+   const l=labels.find(x=>(x.textContent||'').trim().toLowerCase().startsWith(txt.toLowerCase()));
+   const b=l&&blockFor(l); if(b&&b.parentElement===parent) parent.insertBefore(b,anchor);
+ });
+ // The insert-before loop reverses; re-append in exact required order at the first position.
+ const ordered=wanted.map(txt=>{
+   const l=labels.find(x=>(x.textContent||'').trim().toLowerCase().startsWith(txt.toLowerCase()));
+   return l&&blockFor(l);
+ }).filter(Boolean);
+ const ref=ordered[0];
+ ordered.slice().reverse().forEach(b=>parent.insertBefore(b,ref));
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(kowOrderCentralInventory,250));
+document.addEventListener('click',e=>{if(e.target?.dataset?.view==='inventory')setTimeout(kowOrderCentralInventory,80);});
 </script>
 </body>
 </html>
