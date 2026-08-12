@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.3.49</title>
+<title>KoW Companion v4.3.50</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -193,7 +193,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 .quick-strand-row.locked{opacity:.62}
 .quick-strand-row.locked .quick-strand-select{background:#555;color:#bbb;cursor:not-allowed}
 
-/* v4.3.49 LIVE — iPhone / iOS Safari responsive compatibility.
+/* v4.3.50 LIVE — iPhone / iOS Safari responsive compatibility.
    Scoped to html.ios-safari so Android and PC layouts are unchanged. */
 html.ios-safari{
   -webkit-text-size-adjust:100%;
@@ -452,9 +452,24 @@ nav > button, .bottom-nav > button, #bottomNav > button {
 .inv-rarity-btn{flex:0 0 auto;min-width:92px;padding:8px 12px;border:1px solid #8b6a12;border-radius:8px;background:#11151a;color:#fff;font-weight:700}
 .inv-rarity-btn.active{background:#6b5313;border-color:#d4a900}
 </style>
+<style id="v4350-inventory-menu-position">
+/* Inventory is positioned directly after Officer in the bottom menu. */
+.bottom-nav [data-tab="home"], nav [data-tab="home"]{order:1}
+.bottom-nav [data-tab="progress"], nav [data-tab="progress"]{order:2}
+.bottom-nav [data-tab="officer"], nav [data-tab="officer"]{order:3}
+.bottom-nav [data-tab="inventory"], nav [data-tab="inventory"]{order:4}
+.bottom-nav [data-tab="stars"], nav [data-tab="stars"]{order:5}
+.bottom-nav [data-tab="develop"], nav [data-tab="develop"]{order:6}
+.bottom-nav [data-tab="xp"], nav [data-tab="xp"]{order:7}
+.bottom-nav [data-tab="planner"], nav [data-tab="planner"]{order:8}
+.bottom-nav [data-tab="database"], nav [data-tab="database"]{order:9}
+.bottom-nav [data-tab="releases"], nav [data-tab="releases"]{order:10}
+.bottom-nav [data-tab="settings"], nav [data-tab="settings"]{order:11}
+.bottom-nav [data-tab="help"], nav [data-tab="help"]{order:12}
+</style>
 </head>
 <body>
-<div id="english-test-banner" style="position:sticky;top:0;z-index:99999;background:#d00000;color:#fff;text-align:center;font-weight:800;padding:9px 12px;">⚠ ENGLISH TEST VERSION — v4.3.49 — NOT LIVE ⚠</div>
+<div id="english-test-banner" style="position:sticky;top:0;z-index:99999;background:#d00000;color:#fff;text-align:center;font-weight:800;padding:9px 12px;">⚠ ENGLISH TEST VERSION — v4.3.50 — NOT LIVE ⚠</div>
 
 <header class="topbar">
   <div>
@@ -780,14 +795,14 @@ nav > button, .bottom-nav > button, #bottomNav > button {
       <h2>❓ Help & Instructions</h2>
 
 <div class="card" id="whatsNewV4329" style="margin-bottom:16px">
-  <h3 style="margin-top:0">✨ What’s New — v4.3.49 LIVE</h3>
+  <h3 style="margin-top:0">✨ What’s New — v4.3.50 LIVE</h3>
   <div class="notice">
-    <b>v4.3.49 LIVE adds rarity-specific Stars and Universal Badges, Legendary-only SRV/ORV, and confirmed Legendary/Epic/Elite promotion and Training totals.</b>
+    <b>v4.3.50 LIVE adds rarity-specific Stars and Universal Badges, Legendary-only SRV/ORV, and confirmed Legendary/Epic/Elite promotion and Training totals.</b>
   </div>
 
   <h4>📊 Officer Progress</h4>
   <p>Officers are automatically classified as <b>MAXED</b>, <b>IN PROGRESS</b>, or <b>NOT STARTED</b>. The main Progress filters and Compare Officer Progress filters work independently.</p>
-  <p><b>New in v4.3.49 LIVE:</b> Officer Rarity now supports <b>Legendary (Gold)</b>, <b>Epic (Purple)</b> and <b>Elite (Blue)</b>. Training costs are 5 / 25 / 100 badges per point respectively. Epic and Elite Original Officers are included, with multi-role filtering. Skill Strand unlocking remains identical for every rarity.</p>
+  <p><b>New in v4.3.50 LIVE:</b> Officer Rarity now supports <b>Legendary (Gold)</b>, <b>Epic (Purple)</b> and <b>Elite (Blue)</b>. Training costs are 5 / 25 / 100 badges per point respectively. Epic and Elite Original Officers are included, with multi-role filtering. Skill Strand unlocking remains identical for every rarity.</p>
 
   <h4>🔎 Compare Officer Progress</h4>
   <p>Compare saved Officers in Season order. You can compare Not Started and In Progress Officers even when the main Officer Progress table is filtered differently.</p>
@@ -988,13 +1003,13 @@ nav > button, .bottom-nav > button, #bottomNav > button {
   <button data-view="dashboard" class="active">🏠<span>Home</span></button>
   <button data-view="progress">📊<span>Progress</span></button>
   <button data-view="officer">👤<span>Officer</span></button>
+  <button data-view="inventory">📦<span>Inventory</span></button>
   <button data-view="stars">⭐<span>Stars</span></button>
   <button data-view="development">🏅<span>Develop</span></button>
   <button data-view="xp">📘<span>XP</span></button>
   <button data-view="planner">🎯<span>Planner</span></button>
   <button data-view="database">📋<span>Database</span></button>
   <button data-view="releases">📅<span>Releases</span></button>
-  <button data-view="inventory">📦<span>Inventory</span></button>
   <button data-view="settings">⚙️<span>Settings</span></button>
   <button data-view="help">📖<span>Help</span></button>
 </nav>
@@ -1632,7 +1647,7 @@ function maxSelectedOfficerProfile(){
  $('targetLevel').value=70;
 
  saveOfficerProfile(true);
- // v4.3.49: update visible requirements immediately after MAX; no manual refresh required.
+ // v4.3.50: update visible requirements immediately after MAX; no manual refresh required.
  calculate();
  if(typeof buildUpgradeSummary==='function')buildUpgradeSummary();
  if(typeof renderHomeDashboard==='function')renderHomeDashboard();
@@ -1734,7 +1749,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='v4.3.49';
+const APP_VERSION='v4.3.50';
 function syncVersionUI(){
  const v='v'+APP_VERSION;
  if($('headerVersion'))$('headerVersion').textContent=v;
@@ -1961,7 +1976,7 @@ function renderMultiPlanner(){
  calculateMultiPlanner();
 }
 
-// v4.3.49 Selection Chest eligibility is maintained explicitly by release pair.
+// v4.3.50 Selection Chest eligibility is maintained explicitly by release pair.
 const LEGENDARY_SELECTION_CHEST_ELIGIBLE = new Set(["Katherine", "Grace", "Chloe", "Ling", "Jessica", "Lilith", "Angel", "Sakura", "Loubna", "Angelica", "Ophelia", "Doireann", "Natalia", "Sophia", "Edward", "Helene", "Nadia", "Vera", "Marsha", "Tanya", "Emily", "Zoya"]);
 function selectionChestEligibleOfficer(o){
   return LEGENDARY_SELECTION_CHEST_ELIGIBLE.has(String(o?.name||o||'').trim());
@@ -2297,7 +2312,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.49';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.50';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
@@ -2329,7 +2344,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
 
  loadProgress();
 
- // v4.3.49 feature wiring
+ // v4.3.50 feature wiring
  populateCompareOfficers();
  const compareSelect=$('compareOfficerSelect');
  if(compareSelect){
