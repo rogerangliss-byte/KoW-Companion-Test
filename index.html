@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.3.54</title>
+<title>KoW Companion v4.3.55</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -502,9 +502,53 @@ nav.bottom-nav::-webkit-scrollbar,
 }
 </style>
 
+
+<style id="v4355-full-width-nav">
+/* Use the full available menu width while keeping all buttons on one row.
+   Buttons expand evenly when space is available, but retain a usable minimum
+   size and scroll horizontally when the viewport is narrower. */
+.bottom-nav{
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  justify-content:stretch !important;
+  align-items:stretch !important;
+  gap:3px !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  scrollbar-width:thin;
+  -webkit-overflow-scrolling:touch;
+  padding:7px 8px !important;
+}
+.bottom-nav > button{
+  flex:1 0 60px !important;
+  min-width:60px !important;
+  min-height:56px !important;
+  padding:6px 3px !important;
+  font-size:1.18rem !important;
+  line-height:1 !important;
+  text-align:center !important;
+  white-space:nowrap !important;
+}
+.bottom-nav > button span{
+  display:block !important;
+  margin-top:5px !important;
+  font-size:.66rem !important;
+  line-height:1.05 !important;
+  white-space:nowrap !important;
+}
+@media (max-width:700px){
+  .bottom-nav > button{
+    flex-basis:58px !important;
+    min-width:58px !important;
+    font-size:1.12rem !important;
+  }
+  .bottom-nav > button span{font-size:.61rem !important;}
+}
+</style>
+
 </head>
 <body>
-<div id="english-test-banner" style="position:sticky;top:0;z-index:99999;background:#d00000;color:#fff;text-align:center;font-weight:800;padding:9px 12px;">⚠ ENGLISH TEST VERSION — v4.3.54 — NOT LIVE ⚠</div>
+<div id="english-test-banner" style="position:sticky;top:0;z-index:99999;background:#d00000;color:#fff;text-align:center;font-weight:800;padding:9px 12px;">⚠ ENGLISH TEST VERSION — v4.3.55 — NOT LIVE ⚠</div>
 
 <header class="topbar">
   <div>
@@ -1784,7 +1828,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='v4.3.54';
+const APP_VERSION='v4.3.55';
 function syncVersionUI(){
  const v='v'+APP_VERSION;
  if($('headerVersion'))$('headerVersion').textContent=v;
@@ -2356,7 +2400,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.54';
+  $('appName').value='GODS OF WAR 371';$('appTitle').textContent='GODS OF WAR 371';document.title='KoW Companion v4.3.55';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
