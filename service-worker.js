@@ -1,4 +1,4 @@
-const CACHE='kow-v4.3.50-central-inventory';
+const CACHE='kow-v4.3.51-planner-held-badges';
 const ASSETS=[
   './',
   './index.html',
