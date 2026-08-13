@@ -548,7 +548,7 @@ nav.bottom-nav::-webkit-scrollbar,
 
 </head>
 <body>
-<div id="english-test-banner" style="background:#c40000;color:white;text-align:center;font-weight:800;padding:9px 12px;position:relative;z-index:9999">⚠ ENGLISH TEST VERSION — v4.3.57 — NOT LIVE ⚠</div>
+<div id="english-test-banner" style="background:#c40000;color:white;text-align:center;font-weight:800;padding:9px 12px;position:relative;z-index:9999">⚠ ENGLISH TEST VERSION — v4.3.58 — NOT LIVE ⚠</div>
 
 <header class="topbar">
   <div>
@@ -877,6 +877,17 @@ nav.bottom-nav::-webkit-scrollbar,
       </div>
       <div id="multiPlannerSummary" class="result-box">Add Officers to build an upgrade plan.</div>
     </article>
+
+<div class="card" id="advancedMultiOfficerPlanning" style="margin-top:14px">
+  <h2>🧠 Advanced Multi-Officer Planning</h2>
+  <p class="muted">Preview-only recommendations. This tool never spends or changes Inventory.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
+    <button class="primary" type="button" onclick="kowRunAdvancedPlanner()">Analyse Saved Officers</button>
+    <button type="button" onclick="kowRunAdvancedPlanner(true)">Refresh Recommendation</button>
+  </div>
+  <div id="kowAdvancedPlannerSummary" class="notice">Save progress for the Officers you are considering, then run the analysis.</div>
+  <div id="kowAdvancedPlannerResults" style="margin-top:10px"></div>
+</div>
 </section>
 
   <section id="database" class="view">
@@ -907,7 +918,7 @@ nav.bottom-nav::-webkit-scrollbar,
     <b>v4.3.56 TEST adds Guided Workflow & Inventory Intelligence. v4.3.55 introduced the new Central Inventory alongside rarity-specific Stars and Universal Badges, Legendary-only SRV/ORV, and confirmed Legendary/Epic/Elite promotion and Training totals.</b>
   </div>
 
-  <h4>🧠 v4.3.57 TEST — Officer Readiness Intelligence</h4>
+  <h4>🧠 v4.3.58 TEST — Officer Readiness Intelligence</h4>
   <p>The Home screen now analyses the selected Officer against saved Inventory and shows <b>Ready / Shortfall</b> for Unlock, Next Star, 5★, Skills, Training, Level 70 XP and MAX Officer. Guided Workflow steps are clickable and take you directly to each stage.</p>
   <h4>🧭 v4.3.56 TEST — Guided Workflow & Inventory Intelligence</h4>
   <p>The Home screen now guides users through the recommended Inventory-first workflow and shows the next suggested step. A new Inventory Readiness panel summarises saved badge resources, Star value, XP and individual Officer Badges. Smart Dashboard shortcut buttons take you directly to the relevant calculator.</p>
@@ -1871,7 +1882,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='4.3.57';
+const APP_VERSION='4.3.58';
 function syncVersionUI(){
  const v='v'+APP_VERSION;
  if($('headerVersion'))$('headerVersion').textContent=v;
@@ -3132,5 +3143,111 @@ document.addEventListener("click",function(e){
  });
 });
 </script>
+
+<script id="kow-v4358-advanced-planner">
+(function(){
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function num(v){v=Number(v); return Number.isFinite(v)?v:0;}
+  function getJSON(k,fb){try{var v=JSON.parse(localStorage.getItem(k));return v==null?fb:v}catch(e){return fb}}
+  function allStorage(){
+    var out={};
+    for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);out[k]=localStorage.getItem(k);}
+    return out;
+  }
+  function inventorySnapshot(){
+    var s=allStorage(), inv={orv:0,srv:0,universal:0,selection:0,xp:0};
+    Object.keys(s).forEach(function(k){
+      var lk=k.toLowerCase(), v=s[k];
+      var parsed; try{parsed=JSON.parse(v)}catch(e){parsed=v}
+      function walk(o,path){
+        if(o && typeof o==='object'){
+          Object.keys(o).forEach(function(x){walk(o[x],path+' '+x.toLowerCase())});
+        } else {
+          var n=num(o), p=path.toLowerCase();
+          if(!n)return;
+          if(p.includes('orv')) inv.orv=Math.max(inv.orv,n);
+          if(p.includes('srv')) inv.srv=Math.max(inv.srv,n);
+          if(p.includes('universal') && p.includes('badge')) inv.universal=Math.max(inv.universal,n);
+          if(p.includes('selection') && p.includes('chest')) inv.selection=Math.max(inv.selection,n);
+          if(p.includes('xp') && (p.includes('total')||p.includes('inventory')||p.includes('book'))) inv.xp=Math.max(inv.xp,n);
+        }
+      }
+      walk(parsed,lk);
+    });
+    return inv;
+  }
+  function savedOfficers(){
+    var s=allStorage(), rows=[], seen={};
+    Object.keys(s).forEach(function(k){
+      if(!/(officer|progress|profile|saved)/i.test(k)) return;
+      var o; try{o=JSON.parse(s[k])}catch(e){return}
+      function inspect(x){
+        if(!x||typeof x!=='object')return;
+        if(Array.isArray(x)){x.forEach(inspect);return}
+        var name=x.name||x.officerName||x.officer||x.selectedOfficer;
+        if(typeof name==='string' && name.length>1){
+          var key=name.toLowerCase();
+          if(!seen[key]){
+            var pct=num(x.progressPercent||x.percent||x.completion||x.progress||0);
+            var maxed=!!(x.maxed||x.isMaxed)||pct>=100;
+            var badges=num(x.badges||x.officerBadges||x.badgesHeld||0);
+            var need=num(x.badgesNeeded||x.remainingBadges||0);
+            var orvCost=num(x.orvCost||x.orvPerBadge||0);
+            rows.push({name:name,pct:pct,maxed:maxed,badges:badges,need:need,orvCost:orvCost});
+            seen[key]=1;
+          }
+        }
+        Object.keys(x).forEach(function(a){if(typeof x[a]==='object')inspect(x[a])});
+      }
+      inspect(o);
+    });
+    return rows;
+  }
+  function score(r,inv){
+    if(r.maxed)return -999999;
+    var remaining=r.need>0?r.need:Math.max(0,1600-r.badges);
+    var affordableBadges=inv.universal+inv.selection+(r.orvCost?Math.floor(inv.orv/r.orvCost):0);
+    var gap=Math.max(0,remaining-affordableBadges);
+    // favour nearer completion, then smaller resource gap
+    return (r.pct*1000)-gap;
+  }
+  window.kowRunAdvancedPlanner=function(){
+    var inv=inventorySnapshot(), rows=savedOfficers();
+    var box=document.getElementById('kowAdvancedPlannerResults');
+    var sum=document.getElementById('kowAdvancedPlannerSummary');
+    if(!box||!sum)return;
+    if(!rows.length){
+      sum.innerHTML='<b>No saved Officer profiles were detected.</b> Save progress for at least two Officers, then run again.';
+      box.innerHTML='';
+      return;
+    }
+    rows.sort(function(a,b){return score(b,inv)-score(a,inv)});
+    var active=rows.filter(function(r){return !r.maxed});
+    if(!active.length){
+      sum.innerHTML='<b>All detected saved Officers are MAXED.</b> No badge spending is recommended.';
+      box.innerHTML='';
+      return;
+    }
+    var first=active[0];
+    sum.innerHTML='<b>Recommended next investment: '+esc(first.name)+'</b><br><span class="muted">Priority favours Officers closest to completion while reducing use of scarce universal resources. Preview only.</span>';
+    var html='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse"><thead><tr><th>Priority</th><th>Officer</th><th>Saved progress</th><th>Recommendation</th></tr></thead><tbody>';
+    active.forEach(function(r,i){
+      var remaining=r.need>0?r.need:Math.max(0,1600-r.badges);
+      var orvBadges=r.orvCost?Math.floor(inv.orv/r.orvCost):0;
+      var flexible=inv.universal+inv.selection;
+      var recommendation;
+      if(r.orvCost && orvBadges>0){
+        recommendation='Use Officer-specific badges first, then ORV where eligible. Preserve Universal Badges/Selection Chests for remaining shortfall.';
+      } else {
+        recommendation='Use Officer-specific badges first. Use flexible Universal/Selection resources only where required.';
+      }
+      html+='<tr><td>'+(i+1)+'</td><td><b>'+esc(r.name)+'</b></td><td>'+esc(r.pct?r.pct.toFixed(1)+'%':'Saved')+'</td><td>'+esc(recommendation)+'</td></tr>';
+    });
+    html+='</tbody></table></div><p class="muted" style="margin-top:8px">Inventory detected for planning: ORV '+inv.orv.toLocaleString()+', Universal Badges '+inv.universal.toLocaleString()+', Selection Chests '+inv.selection.toLocaleString()+'. No Inventory values have been changed.</p>';
+    box.innerHTML=html;
+  };
+})();
+</script>
+
 </body>
 </html>
