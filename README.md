@@ -1,6 +1,6 @@
-# KoW Companion v4.3.56 TEST — LIVE
+# KoW Companion v4.3.58 LIVE
 
-## What's New — v4.3.58 TEST Fix 9
+## What's New — v4.3.58 LIVE
 
 - Advanced Multi-Officer Planning with saved Progress and Inventory.
 - Future session planning for October, January, April and July.

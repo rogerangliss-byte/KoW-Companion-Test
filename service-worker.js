@@ -1,4 +1,4 @@
-const CACHE='kow-v4.3.58-test-fix2-advanced-planner';
+const CACHE='kow-english-v4.3.59-test1-future-targets';
 const ASSETS=[
   './',
   './index.html',

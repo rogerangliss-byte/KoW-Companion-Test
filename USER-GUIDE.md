@@ -1,5 +1,5 @@
 # KoW Companion — User Guide
-## v4.3.58 TEST Fix 9
+## v4.3.58 LIVE
 
 ### Recommended workflow
 1. **Inventory first** — enter and save all resources currently held.

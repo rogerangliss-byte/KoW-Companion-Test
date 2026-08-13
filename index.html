@@ -550,9 +550,7 @@ nav.bottom-nav::-webkit-scrollbar,
 </style>
 
 </head>
-<body>
-<div id="english-test-banner" style="background:#c40000;color:white;text-align:center;font-weight:800;padding:9px 12px;position:relative;z-index:9999">⚠ ENGLISH TEST VERSION — v4.3.58 — NOT LIVE ⚠</div>
-
+<body><div style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:6px">ENGLISH TEST VERSION — v4.3.59 TEST 1 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
@@ -825,7 +823,37 @@ nav.bottom-nav::-webkit-scrollbar,
   </section>
 
   <section id="planner" class="view">
-    <article class="card">
+    
+<article class="card" id="futurePlanningTargets">
+  <h2>🎯 Future Officer Targets & Saved Scenarios</h2>
+  <p class="muted">Create a reusable future-Officer target without changing Inventory. Saved scenarios are stored on this device.</p>
+  <div class="two">
+    <div><label>Target release session</label>
+      <select id="scenarioSession">
+        <option value="next">Next Officer session</option>
+        <option value="october">October — Rally / Garrison</option>
+        <option value="january">January — Infantry</option>
+        <option value="april">April — Tanks</option>
+        <option value="july">July — Tank Destroyers</option>
+      </select>
+    </div>
+    <div><label>Projected Officers</label>
+      <select id="scenarioOfficerCount"><option value="1">1 Officer</option><option value="2">2 Officers</option></select>
+    </div>
+  </div>
+  <div class="two">
+    <div><label>Scenario name</label><input id="scenarioName" placeholder="e.g. April S8 Tank"></div>
+    <div><label>Target year</label><input id="scenarioYear" type="number" min="2026" max="2100"></div>
+  </div>
+  <div class="two">
+    <button type="button" class="primary" id="calculateScenario">📊 Calculate Target</button>
+    <button type="button" id="saveScenario">💾 Save Planning Scenario</button>
+  </div>
+  <div id="scenarioResult" class="notice" style="margin-top:10px">Choose a target session and calculate the scenario.</div>
+  <h3 style="margin-top:14px">Saved Planning Scenarios</h3>
+  <div id="savedScenarioList" class="muted">No planning scenarios saved yet.</div>
+</article>
+<article class="card">
       <h2>🎯 Goals Planner</h2>
       <label>Goal</label>
       <select id="goalSelect">
@@ -952,9 +980,9 @@ nav.bottom-nav::-webkit-scrollbar,
       <h2>❓ Help & Instructions</h2>
 
 <div class="card" id="whatsNewV4329" style="margin-bottom:16px">
-  <h3 style="margin-top:0">✨ What’s New — v4.3.55 LIVE</h3>
+  <h3 style="margin-top:0">✨ What’s New — v4.3.58 LIVE</h3>
   <div class="notice">
-    <b>v4.3.56 TEST adds Guided Workflow & Inventory Intelligence. v4.3.55 introduced the new Central Inventory alongside rarity-specific Stars and Universal Badges, Legendary-only SRV/ORV, and confirmed Legendary/Epic/Elite promotion and Training totals.</b>
+    <b>v4.3.58 LIVE adds Advanced Multi-Officer Planning, Future Officer forecasting, focused Session/Season/Type filtering, saved Officer analysis, XP/Inventory integration and direct Releases-to-Planner navigation.</b>
   </div>
 
   
@@ -1076,25 +1104,25 @@ nav.bottom-nav::-webkit-scrollbar,
   <li>Use Saved Officers only for current development decisions; use All Officer sessions for current-versus-future comparison; use a specific future session for a focused future-release report.</li>
 </ul>
 
-<h4>🔎 v4.3.58 TEST Fix 9 — Focused Session, Season & Type Filtering</h4>
+<h4>🔎 Focused Session, Season & Type Filtering</h4>
 <p><b>New in this build:</b> specific future sessions now show only their selected projected Officer (for example April — Tanks → S8 Tank — PROJECTED); Saved/All reports use a Top 10 view with Show all / Collapse; Officer Session / Season filtering supports All, Original and S2–S7; Season and Officer Type can be combined for reports such as S6 + Tank; projected S8 planning includes one- and two-Officer resource requirements; Releases links directly to Advanced Planner; and future ORV/SRV costs remain clearly identified as forecasts.</p>
-<h4>🔗 v4.3.58 TEST Fix 7 — Planner Module Bridge & Releases Link</h4>
+<h4>🔗 Planner Integration & Releases Link</h4>
 <p>The Advanced Planner now receives saved Progress, Officer database data, XP Books and shared Inventory through an explicit bridge from the main app module. This resolves the module-scope issue that prevented Saved Officers and XP held from appearing in Advanced Planning. The Releases Future Officer Cost Forecast now also includes a note and direct <b>Open Advanced Planner</b> button.</p>
-<h4>🔧 v4.3.58 TEST Fix 6 — Progress & XP Source Alignment</h4>
+<h4>🔧 Progress, XP & Inventory Integration</h4>
 <p>The Advanced Planner now reads current Officer candidates from the exact same <b>Progress</b> data source used by the Progress screen, and reads XP Books and shared resources from the exact same global resource store used by the XP and Inventory calculations. This fixes Saved Officers / All Sessions candidate detection and projected XP readiness.</p>
-<h4>🛠 v4.3.58 TEST Fix 5 — Planner Saved/All Sessions & ORV/SRV Forecast</h4>
+<h4>🛠 Saved/All Sessions & ORV/SRV Forecasting</h4>
 <p>Saved Officers and All Officer Sessions now use the actual saved profile store. MAXED Officers remain excluded. The Projected S8 Resource Requirement now shows ORV and SRV forecasts derived from the Releases percentage growth setting, and the Releases input label now explicitly shows <b>(%)</b> for clarity.</p>
-<h4>🔮 v4.3.58 TEST Fix 4 — Saved Officers & S8 Resource Forecast</h4>
+<h4>🔮 Saved Officers & S8 Resource Forecast</h4>
 <p>Saved Officers mode now reads actual saved Officer profiles correctly. The Advanced Planner also shows projected resource requirements for one and two future S8 Legendary Officers, including 1,600 / 3,200 badges, 98,000 / 196,000 Star value, and 199,646,700 / 399,293,400 XP. ORV and SRV amounts are explicitly labelled FORECAST until S8 costs are published.</p>
-<h4>🧭 v4.3.58 TEST Fix 3 — Saved Officers & Session Scope</h4>
+<h4>🧭 Saved Officers & Session Scope</h4>
 <p>Advanced Planning now uses only genuinely saved Officer profiles for current candidates. Planning Session can be set to Saved Officers only, All Officer sessions, Next Officer session, or a specific recurring Officer session. Include Not Started and Include Original Officers remain optional toggles. MAXED Officers remain excluded, and future scenarios are projected as S8+ Officer types without assuming unpublished ORV/SRV costs.</p>
-<h4>🎯 v4.3.58 TEST Fix 2 — Focused Advanced Planner</h4>
+<h4>🎯 Focused Advanced Planner</h4>
   <p>Advanced Planning now excludes MAXED Officers, shows In Progress seasonal Officers by default, adds optional Not Started and Original Officer toggles, corrects future projections to the next database season (S8 with the current S7 database), and places PROJECTED scenarios prominently in the comparison.</p>
-  <h4>🔭 v4.3.58 TEST Fix 1 — Future Session & Officer Type Planning</h4>
+  <h4>🔭 Future Session & Officer Type Planning</h4>
 <p>Advanced Multi-Officer Planning can now select a future Officer session and a specific future Officer Type: Tank, Tank Destroyer, Infantry, Rally or Garrison. Session defaults can be overridden manually. Future entries are clearly marked PROJECTED, MAXED Officers are excluded, and the Home Officer Readiness card includes an Open Officer Progress shortcut.</p>
-<h4>🧠 v4.3.58 TEST — Officer Readiness Intelligence</h4>
+<h4>🧠 Officer Readiness Intelligence</h4>
   <p>The Home screen now analyses the selected Officer against saved Inventory and shows <b>Ready / Shortfall</b> for Unlock, Next Star, 5★, Skills, Training, Level 70 XP and MAX Officer. Guided Workflow steps are clickable and take you directly to each stage.</p>
-  <h4>🧭 v4.3.56 TEST — Guided Workflow & Inventory Intelligence</h4>
+  <h4>🧭 Guided Workflow & Inventory Intelligence</h4>
   <p>The Home screen now guides users through the recommended Inventory-first workflow and shows the next suggested step. A new Inventory Readiness panel summarises saved badge resources, Star value, XP and individual Officer Badges. Smart Dashboard shortcut buttons take you directly to the relevant calculator.</p>
   <h4>📦 New Central Inventory</h4>
   <p>Enter your shared resources once in <b>Inventory</b> and press <b>Save Inventory</b>. The saved values are then available throughout the app instead of being re-entered for each Officer.</p>
@@ -3613,6 +3641,69 @@ document.addEventListener("click",function(e){
     }
     projectedResourceHtml(projected,inv);
   };
+})();
+</script>
+
+
+<script id="v4359-future-targets">
+(function(){
+'use strict';
+const KEY='kow_v4359_planning_scenarios';
+const TOTAL={badges:1600,stars:98000,xp:199646700};
+const LABEL={next:'Next Officer session',october:'October — Rally / Garrison',january:'January — Infantry',april:'April — Tanks',july:'July — Tank Destroyers'};
+let current=null;
+function n(id){return Number(document.getElementById(id)?.value||0);}
+function getHeld(){
+ const pick=(...ids)=>{for(const id of ids){const e=document.getElementById(id);if(e&&Number(e.value))return Number(e.value)}return 0};
+ // Read common shared-resource inputs if present. Badge equivalents include universal badges + selection chests.
+ const universal=pick('invUniversalBadges','universalBadges','universalBadgeQty');
+ const chests=pick('invSelectionChests','selectionChests','legendarySelectionChests');
+ const starValue=pick('invOfficerStars','officerStarsHeld','starValueHeld');
+ // Prefer any already-calculated XP held value; otherwise sum XP book inputs by denomination.
+ let xp=pick('inventoryXpTotal','xpHeldTotal','totalXpHeld');
+ if(!xp){
+   const vals=[50,100,500,1000,5000,10000,20000,50000];
+   xp=vals.reduce((s,v)=>{
+     const candidates=[`xp${v}`,`xpBook${v}`,`invXp${v}`];
+     return s+pick(...candidates)*v;
+   },0);
+ }
+ return {badges:universal+chests,stars:starValue,xp};
+}
+function fmt(x){return Math.max(0,Math.round(x)).toLocaleString();}
+function pct(h,r){return r?Math.min(100,(h/r)*100):100}
+function calculate(){
+ const session=document.getElementById('scenarioSession').value;
+ const count=n('scenarioOfficerCount')||1;
+ const year=n('scenarioYear')||new Date().getFullYear()+1;
+ const held=getHeld(), req={badges:TOTAL.badges*count,stars:TOTAL.stars*count,xp:TOTAL.xp*count};
+ const short={badges:Math.max(0,req.badges-held.badges),stars:Math.max(0,req.stars-held.stars),xp:Math.max(0,req.xp-held.xp)};
+ const overall=Math.min(pct(held.badges,req.badges),pct(held.stars,req.stars),pct(held.xp,req.xp));
+ current={id:Date.now(),name:document.getElementById('scenarioName').value.trim()||`${LABEL[session]} — ${count} Officer${count>1?'s':''}`,session,count,year,held,req,short,overall};
+ document.getElementById('scenarioResult').innerHTML=
+ `<b>${current.name}</b><br>Target: ${LABEL[session]} ${year} · ${count} projected Officer${count>1?'s':''}<br>`+
+ `<b>Current readiness: ${overall.toFixed(1)}%</b><br>`+
+ `Badges: ${fmt(held.badges)} / ${fmt(req.badges)} — ${short.badges?'<b>SHORT '+fmt(short.badges)+'</b>':'<b>READY</b>'}<br>`+
+ `Stars: ${fmt(held.stars)} / ${fmt(req.stars)} — ${short.stars?'<b>SHORT '+fmt(short.stars)+'</b>':'<b>READY</b>'}<br>`+
+ `XP: ${fmt(held.xp)} / ${fmt(req.xp)} — ${short.xp?'<b>SHORT '+fmt(short.xp)+'</b>':'<b>READY</b>'}<br>`+
+ `<small>Preview only. Inventory has not been changed. ORV/SRV remain governed by the existing Releases forecast.</small>`;
+ return current;
+}
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return[]}}
+function store(a){localStorage.setItem(KEY,JSON.stringify(a))}
+function render(){
+ const box=document.getElementById('savedScenarioList'); if(!box)return;
+ const a=load(); if(!a.length){box.innerHTML='No planning scenarios saved yet.';return}
+ box.innerHTML=a.map((s,i)=>`<div class="result-box"><b>${s.name}</b><br>${LABEL[s.session]||s.session} ${s.year} · ${s.count} Officer${s.count>1?'s':''} · Readiness ${Number(s.overall||0).toFixed(1)}%<br><small>Shortfall — Badges ${fmt(s.short.badges)}, Stars ${fmt(s.short.stars)}, XP ${fmt(s.short.xp)}</small><br><button type="button" data-load-scenario="${i}">Load</button> <button type="button" data-delete-scenario="${i}">Delete</button></div>`).join('');
+}
+function save(){const s=calculate();const a=load();a.unshift(s);store(a);render()}
+document.addEventListener('click',e=>{
+ if(e.target?.id==='calculateScenario')calculate();
+ if(e.target?.id==='saveScenario')save();
+ const li=e.target?.dataset?.loadScenario;if(li!==undefined){const s=load()[Number(li)];if(!s)return;document.getElementById('scenarioSession').value=s.session;document.getElementById('scenarioOfficerCount').value=s.count;document.getElementById('scenarioName').value=s.name;document.getElementById('scenarioYear').value=s.year;calculate();}
+ const di=e.target?.dataset?.deleteScenario;if(di!==undefined){const a=load();a.splice(Number(di),1);store(a);render();}
+});
+document.addEventListener('DOMContentLoaded',()=>{const y=document.getElementById('scenarioYear');if(y&&!y.value)y.value=new Date().getFullYear()+1;render()});
 })();
 </script>
 
