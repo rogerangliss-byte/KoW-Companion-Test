@@ -944,7 +944,9 @@ nav.bottom-nav::-webkit-scrollbar,
     <b>v4.3.56 TEST adds Guided Workflow & Inventory Intelligence. v4.3.55 introduced the new Central Inventory alongside rarity-specific Stars and Universal Badges, Legendary-only SRV/ORV, and confirmed Legendary/Epic/Elite promotion and Training totals.</b>
   </div>
 
-  <h4>🔮 v4.3.58 TEST Fix 4 — Saved Officers & S8 Resource Forecast</h4>
+  <h4>🛠 v4.3.58 TEST Fix 5 — Planner Saved/All Sessions & ORV/SRV Forecast</h4>
+<p>Saved Officers and All Officer Sessions now use the actual saved profile store. MAXED Officers remain excluded. The Projected S8 Resource Requirement now shows ORV and SRV forecasts derived from the Releases percentage growth setting, and the Releases input label now explicitly shows <b>(%)</b> for clarity.</p>
+<h4>🔮 v4.3.58 TEST Fix 4 — Saved Officers & S8 Resource Forecast</h4>
 <p>Saved Officers mode now reads actual saved Officer profiles correctly. The Advanced Planner also shows projected resource requirements for one and two future S8 Legendary Officers, including 1,600 / 3,200 badges, 98,000 / 196,000 Star value, and 199,646,700 / 399,293,400 XP. ORV and SRV amounts are explicitly labelled FORECAST until S8 costs are published.</p>
 <h4>🧭 v4.3.58 TEST Fix 3 — Saved Officers & Session Scope</h4>
 <p>Advanced Planning now uses only genuinely saved Officer profiles for current candidates. Planning Session can be set to Saved Officers only, All Officer sessions, Next Officer session, or a specific recurring Officer session. Include Not Started and Include Original Officers remain optional toggles. MAXED Officers remain excluded, and future scenarios are projected as S8+ Officer types without assuming unpublished ORV/SRV costs.</p>
@@ -1072,7 +1074,7 @@ nav.bottom-nav::-webkit-scrollbar,
       </select>
     </div>
     <div>
-      <label>Forecast increase per Officer release</label>
+      <label>Forecast increase per Officer release (%)</label>
       <input id="forecastGrowth" type="number" min="0" max="100" step="0.1" value="20">
     </div>
   </div>
@@ -3197,32 +3199,52 @@ document.addEventListener("click",function(e){
   }
   function dbOfficer(name){return (typeof officers!=='undefined'?officers:[]).find(function(o){return String(o.name||'').trim().toLowerCase()===String(name||'').trim().toLowerCase()})||{};}
   function plannerOfficers(includeNotStarted,includeOriginals){
-    if(typeof savedOfficerProgressData!=='function' || typeof getOfficerProfiles!=='function')return [];
-    var progressRows=savedOfficerProgressData();
+    if(typeof getOfficerProfiles!=='function')return [];
     var profiles=getOfficerProfiles()||{};
-    function profileFor(r){
-      var exact=String(r.season||'').trim()+'|'+String(r.name||'').trim();
-      if(profiles[exact])return profiles[exact];
-      var key=Object.keys(profiles).find(function(k){
-        return String(k).split('|').pop().trim()===String(r.name||'').trim();
+    var progress=(typeof savedOfficerProgressData==='function'?savedOfficerProgressData():[]);
+    var progressByName={};
+    progress.forEach(function(r){progressByName[String(r.name||'').trim().toLowerCase()]=r;});
+
+    var rows=[];
+    Object.keys(profiles).forEach(function(key){
+      var p=profiles[key]||{};
+      var parts=String(key).split('|');
+      var savedName=String(parts.length>1?parts.slice(1).join('|'):parts[0]).trim();
+      if(!savedName)return;
+
+      var o=(typeof officers!=='undefined'?officers:[]).find(function(x){
+        return String(x.name||'').trim().toLowerCase()===savedName.toLowerCase();
       });
-      return key?profiles[key]:null;
-    }
-    return progressRows.filter(function(r){
+      if(!o)return;
+
+      var r=progressByName[savedName.toLowerCase()];
+      if(!r)return;
       if(r.maxed)return false;
-      var p=profileFor(r);
-      if(!p)return false; // only genuinely saved profiles
       if(!includeNotStarted && r.notStarted)return false;
-      if(!includeOriginals && String(r.season||'').toLowerCase()==='original')return false;
+      if(!includeOriginals && String(r.season||o.season||'').trim().toLowerCase()==='original')return false;
+
+      rows.push({
+        name:r.name||o.name,
+        season:r.season||o.season,
+        pct:num(r.overall),
+        maxed:false,
+        notStarted:!!r.notStarted,
+        status:r.status||'IN PROGRESS',
+        need:num(r.badgeShort),
+        orvCost:num(o.orv),
+        srvCost:num(o.srv),
+        type:o.role||o.notes||'Current',
+        future:false
+      });
+    });
+
+    // De-duplicate in case an older save exists under more than one key.
+    var seen={};
+    return rows.filter(function(r){
+      var k=String(r.season||'')+'|'+String(r.name||'').toLowerCase();
+      if(seen[k])return false;
+      seen[k]=1;
       return true;
-    }).map(function(r){
-      var o=dbOfficer(r.name), p=profileFor(r)||{};
-      return {
-        name:r.name,season:r.season,pct:num(r.overall),maxed:false,
-        notStarted:!!r.notStarted,status:r.status||'IN PROGRESS',
-        need:num(r.badgeShort),orvCost:num(o.orv),
-        type:o.role||o.notes||'Current',future:false,profile:p
-      };
     });
   }
   function score(r,inv){var remaining=Math.max(0,r.need),affordable=inv.universal+inv.selection+(r.orvCost?Math.floor(inv.orv/r.orvCost):0),gap=Math.max(0,remaining-affordable);return (r.pct*1000)-gap;}
@@ -3253,11 +3275,21 @@ document.addEventListener("click",function(e){
     return 'S'+Math.max(8,max+1);
   }
 
-  function forecastS8Costs(){
+
+  function releaseForecastPercent(){
+    var el=document.getElementById('forecastGrowth');
+    if(el && isFinite(+el.value))return +el.value;
+    // fallback: find known forecast increase field by common ids
+    var ids=['forecastIncrease','releaseForecastIncrease','forecastPct'];
+    for(var i=0;i<ids.length;i++){var x=document.getElementById(ids[i]);if(x&&isFinite(+x.value))return +x.value;}
+    return 20;
+  }
+  function latestPublishedLegendaryCosts(){
     var seasonal=(typeof officers!=='undefined'?officers:[]).filter(function(o){
-      return /^S\d+$/i.test(String(o.season||'')) && +o.orv>0 && +o.srv>0;
+      return /^S\d+$/i.test(String(o.season||'')) && +o.orv>0 && +o.srv>0 &&
+        String(o.rarity||'Legendary').toLowerCase()==='legendary';
     });
-    if(!seasonal.length)return {orv:0,srv:0,source:'No seasonal cost data'};
+    if(!seasonal.length)return {orv:600,srv:300,season:7};
     var maxSeason=seasonal.reduce(function(m,o){
       var n=+(String(o.season).match(/\d+/)||[0])[0];
       return Math.max(m,n);
@@ -3265,9 +3297,24 @@ document.addEventListener("click",function(e){
     var recent=seasonal.filter(function(o){
       return +(String(o.season).match(/\d+/)||[0])[0]===maxSeason;
     });
-    var avgOrv=Math.round(recent.reduce(function(a,o){return a+(+o.orv||0)},0)/recent.length);
-    var avgSrv=Math.round(recent.reduce(function(a,o){return a+(+o.srv||0)},0)/recent.length);
-    return {orv:avgOrv,srv:avgSrv,source:'Average of latest published season (S'+maxSeason+')'};
+    // Use the highest published cost in the latest season as a conservative baseline,
+    // matching the release planner's "latest known" approach.
+    return {
+      orv:Math.max.apply(null,recent.map(function(o){return +o.orv||0;})),
+      srv:Math.max.apply(null,recent.map(function(o){return +o.srv||0;})),
+      season:maxSeason
+    };
+  }
+  function forecastS8Costs(){
+    var base=latestPublishedLegendaryCosts();
+    var pct=releaseForecastPercent();
+    var factor=1+pct/100;
+    return {
+      orv:Math.round(base.orv*factor),
+      srv:Math.round(base.srv*factor),
+      source:'Latest published S'+base.season+' cost ('+base.orv+' ORV / '+base.srv+' SRV) increased by '+pct+'%',
+      pct:pct
+    };
   }
 
   function projectedResourceHtml(projected,inv){
@@ -3275,32 +3322,38 @@ document.addEventListener("click",function(e){
     if(!box)return;
     if(!projected.length){box.innerHTML='';return;}
     var c=forecastS8Costs();
-    var countOne=1, countBoth=2;
-    function row(label,count){
+    var starsPerOfficer=Math.ceil(98000/110); // 891 Exclusive Stars
+    function scenarioRow(count,label){
       var badges=1600*count, stars=98000*count, xp=199646700*count;
-      var orvBadges=c.orv?Math.floor(inv.orv/c.orv):0;
-      var srvStars=c.srv?Math.floor(inv.srv/c.srv):0;
-      return '<tr><td><b>'+esc(label)+'</b></td><td>'+badges.toLocaleString()+' badges</td><td>'+stars.toLocaleString()+' Star value</td><td>'+xp.toLocaleString()+' XP</td><td>'+(c.orv?(badges*c.orv).toLocaleString()+' ORV FORECAST':'—')+'</td><td>'+(c.srv?Math.ceil(stars/110)*c.srv.toLocaleString():'—')+'</td></tr>';
+      var orv=badges*c.orv;
+      var srv=starsPerOfficer*count*c.srv;
+      return '<tr><td><b>'+esc(label)+'</b></td><td>'+badges.toLocaleString()+' badges</td><td>'+stars.toLocaleString()+' Star value</td><td>'+xp.toLocaleString()+' XP</td><td>'+orv.toLocaleString()+' ORV <b>FORECAST</b></td><td>'+srv.toLocaleString()+' SRV <b>FORECAST</b></td></tr>';
     }
-    var oneLabel='1 × '+projected[0].name.replace(' — PROJECTED','');
-    var twoLabel='2 × '+projected[0].name.replace(' — PROJECTED','');
-    var oneBadges=1600, twoBadges=3200, oneStars=98000, twoStars=196000, oneXp=199646700, twoXp=399293400;
-    var badgeAvailable=(inv.universal||0)+(inv.selection||0)+(c.orv?Math.floor((inv.orv||0)/c.orv):0);
-    var oneBadgeShort=Math.max(0,oneBadges-badgeAvailable), twoBadgeShort=Math.max(0,twoBadges-badgeAvailable);
-    var oneXpShort=Math.max(0,oneXp-(inv.xp||0)), twoXpShort=Math.max(0,twoXp-(inv.xp||0));
+
+    var baseName=projected[0].name.replace(' — PROJECTED','');
+    var badgeEquiv=(inv.universal||0)+(inv.selection||0)+Math.floor((inv.orv||0)/c.orv);
+    var oneBadgeShort=Math.max(0,1600-badgeEquiv), twoBadgeShort=Math.max(0,3200-badgeEquiv);
+    var oneXpShort=Math.max(0,199646700-(inv.xp||0)), twoXpShort=Math.max(0,399293400-(inv.xp||0));
+    var starUnitsFromSrv=Math.floor((inv.srv||0)/c.srv);
+    var starValueFromSrv=starUnitsFromSrv*110;
+    var oneStarShort=Math.max(0,98000-starValueFromSrv), twoStarShort=Math.max(0,196000-starValueFromSrv);
+
     box.innerHTML='<div class="card" style="margin-top:12px"><h3>🔮 Projected S8 Resource Requirement</h3>'+
-      '<div class="notice">Badge, Star and XP totals are established per Legendary Officer. ORV/SRV values are clearly marked <b>FORECAST</b> because S8 costs are not yet published.</div>'+
+      '<div class="notice">Badge, Star and XP totals are established per Legendary Officer. ORV/SRV are forecast from the Releases growth setting and are clearly marked <b>FORECAST</b>.</div>'+
       '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse"><thead><tr><th>Scenario</th><th>Development</th><th>Stars</th><th>XP</th><th>ORV forecast</th><th>SRV forecast</th></tr></thead><tbody>'+
-      '<tr><td><b>'+esc(oneLabel)+'</b></td><td>1,600 badges</td><td>98,000 Star value</td><td>199,646,700 XP</td><td>'+(c.orv?(1600*c.orv).toLocaleString()+' ORV':'—')+'</td><td>'+(c.srv?(Math.ceil(98000/110)*c.srv).toLocaleString()+' SRV':'—')+'</td></tr>'+
-      '<tr><td><b>'+esc(twoLabel)+'</b></td><td>3,200 badges</td><td>196,000 Star value</td><td>399,293,400 XP</td><td>'+(c.orv?(3200*c.orv).toLocaleString()+' ORV':'—')+'</td><td>'+(c.srv?(Math.ceil(196000/110)*c.srv).toLocaleString()+' SRV':'—')+'</td></tr>'+
+      scenarioRow(1,'1 × '+baseName)+scenarioRow(2,'2 × '+baseName)+
       '</tbody></table></div>'+
       '<div class="two" style="margin-top:10px">'+
-      '<div class="result-box"><b>1 Officer — estimated badge position</b><br>'+ (oneBadgeShort===0?'READY':'Short by '+oneBadgeShort.toLocaleString()+' badge equivalents') +'<br><span class="muted">Available estimate uses Universal Badges + Selection Chests + forecast ORV conversion.</span></div>'+
-      '<div class="result-box"><b>2 Officers — estimated badge position</b><br>'+ (twoBadgeShort===0?'READY':'Short by '+twoBadgeShort.toLocaleString()+' badge equivalents') +'</div>'+
+        '<div class="result-box"><b>1 Officer — badge position</b><br>'+(oneBadgeShort===0?'READY':'Short by '+oneBadgeShort.toLocaleString()+' badge equivalents')+'</div>'+
+        '<div class="result-box"><b>2 Officers — badge position</b><br>'+(twoBadgeShort===0?'READY':'Short by '+twoBadgeShort.toLocaleString()+' badge equivalents')+'</div>'+
       '</div>'+
       '<div class="two">'+
-      '<div class="result-box"><b>1 Officer — XP position</b><br>'+(oneXpShort===0?'READY':'Short by '+oneXpShort.toLocaleString()+' XP')+'</div>'+
-      '<div class="result-box"><b>2 Officers — XP position</b><br>'+(twoXpShort===0?'READY':'Short by '+twoXpShort.toLocaleString()+' XP')+'</div>'+
+        '<div class="result-box"><b>1 Officer — Star position</b><br>'+(oneStarShort===0?'READY':'Short by '+oneStarShort.toLocaleString()+' Star value')+'</div>'+
+        '<div class="result-box"><b>2 Officers — Star position</b><br>'+(twoStarShort===0?'READY':'Short by '+twoStarShort.toLocaleString()+' Star value')+'</div>'+
+      '</div>'+
+      '<div class="two">'+
+        '<div class="result-box"><b>1 Officer — XP position</b><br>'+(oneXpShort===0?'READY':'Short by '+oneXpShort.toLocaleString()+' XP')+'</div>'+
+        '<div class="result-box"><b>2 Officers — XP position</b><br>'+(twoXpShort===0?'READY':'Short by '+twoXpShort.toLocaleString()+' XP')+'</div>'+
       '</div>'+
       '<p class="muted" style="margin-top:8px">Forecast basis: '+esc(c.source)+'. Inventory is not changed by this calculation.</p></div>';
   }
@@ -3328,7 +3381,7 @@ document.addEventListener("click",function(e){
     }
 
     if(!current.length&&!projected.length){
-      sum.innerHTML='<b>No eligible Officers are available.</b> There are no non-MAXED saved Officers matching the current toggles, and no projected session is selected.';
+      sum.innerHTML='<b>No eligible Officers are available.</b> No non-MAXED saved Officer profiles match the current toggles, and no projected session is selected.';
       box.innerHTML='';
       projectedResourceHtml([],inv);
       return;
