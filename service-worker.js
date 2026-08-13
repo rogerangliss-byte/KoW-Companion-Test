@@ -1,4 +1,4 @@
-const CACHE='kow-english-v4.3.59-test8-help-portrait-fix';
+const CACHE='kow-english-v4.3.59-test9-help-table';
 const ASSETS=[
   './',
   './index.html',

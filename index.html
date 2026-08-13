@@ -450,6 +450,76 @@ html.ios-safari{
   }
 }
 
+
+
+
+
+/* v4.3.59 TEST 9 — Help portrait tablet table containment fix */
+@media (orientation:portrait) and (max-width:1100px){
+  #help,
+  #help .card,
+  #help > article.card{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    box-sizing:border-box !important;
+    overflow-x:hidden !important;
+  }
+
+  #help p,
+  #help li,
+  #help h2,
+  #help h3,
+  #help h4,
+  #help .notice{
+    max-width:100% !important;
+    overflow-wrap:anywhere !important;
+  }
+
+  #help table{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    table-layout:fixed !important;
+    box-sizing:border-box !important;
+  }
+
+  #help table th,
+  #help table td{
+    min-width:0 !important;
+    box-sizing:border-box !important;
+    white-space:normal !important;
+    overflow-wrap:anywhere !important;
+    padding:7px 4px !important;
+    vertical-align:top !important;
+  }
+
+  /* Keep all four projected-resource columns visible in portrait. */
+  #help table th:nth-child(1),
+  #help table td:nth-child(1){width:45% !important;text-align:left !important}
+  #help table th:nth-child(2),
+  #help table td:nth-child(2){width:17% !important;text-align:right !important}
+  #help table th:nth-child(3),
+  #help table td:nth-child(3){width:18% !important;text-align:right !important}
+  #help table th:nth-child(4),
+  #help table td:nth-child(4){width:20% !important;text-align:right !important}
+
+  #help table th:nth-child(4),
+  #help table td:nth-child(4){
+    font-variant-numeric:tabular-nums;
+  }
+}
+
+@media (orientation:portrait) and (max-width:700px){
+  #help > article.card{
+    padding-left:12px !important;
+    padding-right:12px !important;
+  }
+  #help table{font-size:.78rem !important}
+  #help table th,
+  #help table td{padding:6px 2px !important}
+}
+
 </style>
 <script>
 (function(){
@@ -669,31 +739,8 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
 /* Modal cancel/close controls should not look browser-default. */
 #quickProgressCancel,#quickProgressClose,#skillCostInfoClose{background:rgba(213,167,47,.08)!important;border:1px solid rgba(213,167,47,.50)!important;color:var(--gold2)!important;cursor:pointer}
 </style>
-
-<style id="v4359-test8-help-portrait-fix">
-/* TEST 8 — Help/User Guide portrait-only responsive fix. Landscape is intentionally unchanged. */
-@media (orientation:portrait) and (max-width:1100px){
-  #help, #help *{box-sizing:border-box}
-  #help article.card{width:100%;max-width:100%;overflow:hidden}
-  #help article.card > .card{width:100%;max-width:100%;min-width:0;overflow:hidden}
-  #help p,#help li,#help h2,#help h3,#help h4{max-width:100%;overflow-wrap:anywhere;word-break:normal}
-  #help ul,#help ol{max-width:100%;padding-left:1.55rem;padding-right:.15rem}
-  #help table{width:100%!important;max-width:100%!important;table-layout:fixed!important;font-size:.88rem}
-  #help table th,#help table td{min-width:0!important;padding:8px 6px!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;vertical-align:top}
-  #help table th:first-child,#help table td:first-child{width:48%}
-  #help table th:not(:first-child),#help table td:not(:first-child){width:17.33%;text-align:right}
-}
-@media (orientation:portrait) and (max-width:700px){
-  #help article.card{padding-left:12px;padding-right:12px}
-  #help article.card > .card{padding-left:12px;padding-right:12px}
-  #help table{font-size:.78rem}
-  #help table th,#help table td{padding:6px 4px!important}
-}
-.test-build-banner{position:sticky;top:0;z-index:9999;background:#9f0000;color:#fff;text-align:center;font-weight:800;padding:7px 10px;letter-spacing:.02em}
-</style>
 </head>
-<body>
-<div class="test-build-banner">ENGLISH TEST VERSION — v4.3.59 TEST 8 — NOT LIVE</div>
+<body><div id="helpPortraitTestBanner" style="position:sticky;top:0;z-index:9999;background:#8b0000;color:#fff;text-align:center;font-weight:800;padding:6px">ENGLISH TEST VERSION — v4.3.59 TEST 9 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
