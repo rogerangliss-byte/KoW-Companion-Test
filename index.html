@@ -550,7 +550,7 @@ nav.bottom-nav::-webkit-scrollbar,
 </style>
 
 </head>
-<body><div style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:6px">ENGLISH TEST VERSION — v4.3.59 TEST 1 — NOT LIVE</div>
+<body><div style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:6px">ENGLISH TEST VERSION — v4.3.59 TEST 2 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
@@ -3649,29 +3649,39 @@ document.addEventListener("click",function(e){
 (function(){
 'use strict';
 const KEY='kow_v4359_planning_scenarios';
+const INV_KEY='kow_central_inventory_v1';
 const TOTAL={badges:1600,stars:98000,xp:199646700};
 const LABEL={next:'Next Officer session',october:'October — Rally / Garrison',january:'January — Infantry',april:'April — Tanks',july:'July — Tank Destroyers'};
+const STEP={next:1,october:1,january:2,april:3,july:4};
 let current=null;
 function n(id){return Number(document.getElementById(id)?.value||0);}
+function savedInventory(){try{return JSON.parse(localStorage.getItem(INV_KEY)||'{}')}catch(e){return {}}}
 function getHeld(){
- const pick=(...ids)=>{for(const id of ids){const e=document.getElementById(id);if(e&&Number(e.value))return Number(e.value)}return 0};
- // Read common shared-resource inputs if present. Badge equivalents include universal badges + selection chests.
- const universal=pick('invUniversalBadges','universalBadges','universalBadgeQty');
- const chests=pick('invSelectionChests','selectionChests','legendarySelectionChests');
- const starValue=pick('invOfficerStars','officerStarsHeld','starValueHeld');
- // Prefer any already-calculated XP held value; otherwise sum XP book inputs by denomination.
- let xp=pick('inventoryXpTotal','xpHeldTotal','totalXpHeld');
- if(!xp){
-   const vals=[50,100,500,1000,5000,10000,20000,50000];
-   xp=vals.reduce((s,v)=>{
-     const candidates=[`xp${v}`,`xpBook${v}`,`invXp${v}`];
-     return s+pick(...candidates)*v;
-   },0);
- }
- return {badges:universal+chests,stars:starValue,xp};
+ const x=savedInventory();
+ const val=id=>Math.max(0,Number(x[id]||0));
+ // Future Legendary Officers can use shared Legendary badge resources. Each chest is one badge-equivalent.
+ const universal=val('invUniversalLegendary');
+ const badgeChests=val('invLegendaryBadgeChests');
+ const selectionChests=val('invLegendarySelectionChests');
+ const stars=val('invLegStar1')*110+val('invLegStar2')*420+val('invLegStar3')*960;
+ const denoms=[50,100,500,1000,5000,10000,20000,50000];
+ const xp=denoms.reduce((sum,v)=>sum+val('invXp'+v)*v,0);
+ return {badges:universal+badgeChests+selectionChests,stars,xp,orv:val('invOrv'),srv:val('invSrv'),badgeParts:{universal,badgeChests,selectionChests},savedAt:x.savedAt||null};
+}
+function forecast(session,count){
+ const growth=Math.max(0,Number(document.getElementById('forecastGrowth')?.value||20))/100;
+ const steps=STEP[session]||1;
+ const orvPerBadge=Math.round(600*Math.pow(1+growth,steps));
+ const srvPerStar=Math.round(300*Math.pow(1+growth,steps));
+ const badges=TOTAL.badges*count;
+ const exclusiveStars=Math.ceil((TOTAL.stars*count)/110);
+ return {growth,steps,orvPerBadge,srvPerStar,orv:badges*orvPerBadge,srv:exclusiveStars*srvPerStar};
 }
 function fmt(x){return Math.max(0,Math.round(x)).toLocaleString();}
 function pct(h,r){return r?Math.min(100,(h/r)*100):100}
+function statusLine(label,held,req,short,unit=''){
+ return `<b>${label}:</b> ${fmt(held)} / ${fmt(req)}${unit} — ${short?'<b>SHORT '+fmt(short)+'</b>':'<b>READY</b>'}`;
+}
 function calculate(){
  const session=document.getElementById('scenarioSession').value;
  const count=n('scenarioOfficerCount')||1;
@@ -3679,14 +3689,17 @@ function calculate(){
  const held=getHeld(), req={badges:TOTAL.badges*count,stars:TOTAL.stars*count,xp:TOTAL.xp*count};
  const short={badges:Math.max(0,req.badges-held.badges),stars:Math.max(0,req.stars-held.stars),xp:Math.max(0,req.xp-held.xp)};
  const overall=Math.min(pct(held.badges,req.badges),pct(held.stars,req.stars),pct(held.xp,req.xp));
- current={id:Date.now(),name:document.getElementById('scenarioName').value.trim()||`${LABEL[session]} — ${count} Officer${count>1?'s':''}`,session,count,year,held,req,short,overall};
+ const fc=forecast(session,count);
+ current={id:Date.now(),name:document.getElementById('scenarioName').value.trim()||`${LABEL[session]} — ${count} Officer${count>1?'s':''}`,session,count,year,held,req,short,overall,forecast:fc};
+ const invNote=held.savedAt?'Saved Central Inventory: '+new Date(held.savedAt).toLocaleString():'WARNING: Central Inventory has not been saved yet.';
  document.getElementById('scenarioResult').innerHTML=
  `<b>${current.name}</b><br>Target: ${LABEL[session]} ${year} · ${count} projected Officer${count>1?'s':''}<br>`+
  `<b>Current readiness: ${overall.toFixed(1)}%</b><br>`+
- `Badges: ${fmt(held.badges)} / ${fmt(req.badges)} — ${short.badges?'<b>SHORT '+fmt(short.badges)+'</b>':'<b>READY</b>'}<br>`+
- `Stars: ${fmt(held.stars)} / ${fmt(req.stars)} — ${short.stars?'<b>SHORT '+fmt(short.stars)+'</b>':'<b>READY</b>'}<br>`+
- `XP: ${fmt(held.xp)} / ${fmt(req.xp)} — ${short.xp?'<b>SHORT '+fmt(short.xp)+'</b>':'<b>READY</b>'}<br>`+
- `<small>Preview only. Inventory has not been changed. ORV/SRV remain governed by the existing Releases forecast.</small>`;
+ statusLine('Badges',held.badges,req.badges,short.badges)+'<br>'+statusLine('Stars',held.stars,req.stars,short.stars,' Star value')+'<br>'+statusLine('XP',held.xp,req.xp,short.xp)+'<br><br>'+ 
+ `<b>Projected voucher requirement — FORECAST</b><br>`+
+ `ORV: ${fmt(fc.orv)} FORECAST (${fmt(fc.orvPerBadge)} per badge) · Held ${fmt(held.orv)} · ${held.orv>=fc.orv?'<b>READY</b>':'<b>SHORT '+fmt(fc.orv-held.orv)+'</b>'}<br>`+
+ `SRV: ${fmt(fc.srv)} FORECAST (${fmt(fc.srvPerStar)} per Exclusive Star) · Held ${fmt(held.srv)} · ${held.srv>=fc.srv?'<b>READY</b>':'<b>SHORT '+fmt(fc.srv-held.srv)+'</b>'}<br>`+
+ `<small>${invNote}<br>Preview only. Inventory has not been changed. Future ORV/SRV figures use the Releases growth forecast and remain FORECAST until published.</small>`;
  return current;
 }
 function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return[]}}
@@ -3694,7 +3707,12 @@ function store(a){localStorage.setItem(KEY,JSON.stringify(a))}
 function render(){
  const box=document.getElementById('savedScenarioList'); if(!box)return;
  const a=load(); if(!a.length){box.innerHTML='No planning scenarios saved yet.';return}
- box.innerHTML=a.map((s,i)=>`<div class="result-box"><b>${s.name}</b><br>${LABEL[s.session]||s.session} ${s.year} · ${s.count} Officer${s.count>1?'s':''} · Readiness ${Number(s.overall||0).toFixed(1)}%<br><small>Shortfall — Badges ${fmt(s.short.badges)}, Stars ${fmt(s.short.stars)}, XP ${fmt(s.short.xp)}</small><br><button type="button" data-load-scenario="${i}">Load</button> <button type="button" data-delete-scenario="${i}">Delete</button></div>`).join('');
+ box.innerHTML=a.map((s,i)=>{
+   const f=s.forecast||{};
+   return `<div class="result-box"><b>${s.name}</b><br>${LABEL[s.session]||s.session} ${s.year} · ${s.count} Officer${s.count>1?'s':''} · Readiness ${Number(s.overall||0).toFixed(1)}%<br>`+
+   `<small>${s.short.badges?'<b>Badges: SHORT '+fmt(s.short.badges)+'</b>':'<b>Badges: READY</b>'}<br>${s.short.stars?'<b>Stars: SHORT '+fmt(s.short.stars)+'</b>':'<b>Stars: READY</b>'}<br>${s.short.xp?'<b>XP: SHORT '+fmt(s.short.xp)+'</b>':'<b>XP: READY</b>'}`+
+   (f.orv!==undefined?`<br>ORV: ${fmt(f.orv)} FORECAST · SRV: ${fmt(f.srv)} FORECAST`:'')+`</small><br><button type="button" data-load-scenario="${i}">Load</button> <button type="button" data-delete-scenario="${i}">Delete</button></div>`;
+ }).join('');
 }
 function save(){const s=calculate();const a=load();a.unshift(s);store(a);render()}
 document.addEventListener('click',e=>{
