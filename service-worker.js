@@ -1,4 +1,4 @@
-const CACHE='kow-v4.3.56-test-live';
+const CACHE='kow-v4.3.57-test-officer-readiness';
 const ASSETS=[
   './',
   './index.html',

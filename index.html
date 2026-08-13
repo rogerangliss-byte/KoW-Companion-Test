@@ -548,7 +548,7 @@ nav.bottom-nav::-webkit-scrollbar,
 
 </head>
 <body>
-<div id="english-test-banner" style="background:#c40000;color:white;text-align:center;font-weight:800;padding:9px 12px;position:relative;z-index:9999">⚠ ENGLISH TEST VERSION — v4.3.56 — NOT LIVE ⚠</div>
+<div id="english-test-banner" style="background:#c40000;color:white;text-align:center;font-weight:800;padding:9px 12px;position:relative;z-index:9999">⚠ ENGLISH TEST VERSION — v4.3.57 — NOT LIVE ⚠</div>
 
 <header class="topbar">
   <div>
@@ -577,6 +577,12 @@ nav.bottom-nav::-webkit-scrollbar,
     <div class="result-box"><b>Individual Officer Badges</b><br><span id="invIntelOfficerBadges">—</span></div>
   </div>
   <button type="button" data-go-view="inventory" class="primary" style="margin-top:10px">📦 Open Inventory</button>
+</article>
+<article class="card" id="officerReadinessCard">
+  <h2>🧠 Officer Readiness Intelligence</h2>
+  <div id="officerReadinessTitle" class="result-box"><b>Select an Officer</b> to see what your saved Inventory can achieve now.</div>
+  <div id="officerReadinessGrid" class="grid" style="margin-top:10px"></div>
+  <div id="officerReadinessShortfall" class="notice" style="margin-top:10px">Readiness is calculated from the selected Officer's saved progress plus the resources currently available from Inventory.</div>
 </article>
 <article class="card" id="smartDashboardCard">
   <h2>🎯 Smart Dashboard</h2>
@@ -901,6 +907,8 @@ nav.bottom-nav::-webkit-scrollbar,
     <b>v4.3.56 TEST adds Guided Workflow & Inventory Intelligence. v4.3.55 introduced the new Central Inventory alongside rarity-specific Stars and Universal Badges, Legendary-only SRV/ORV, and confirmed Legendary/Epic/Elite promotion and Training totals.</b>
   </div>
 
+  <h4>🧠 v4.3.57 TEST — Officer Readiness Intelligence</h4>
+  <p>The Home screen now analyses the selected Officer against saved Inventory and shows <b>Ready / Shortfall</b> for Unlock, Next Star, 5★, Skills, Training, Level 70 XP and MAX Officer. Guided Workflow steps are clickable and take you directly to each stage.</p>
   <h4>🧭 v4.3.56 TEST — Guided Workflow & Inventory Intelligence</h4>
   <p>The Home screen now guides users through the recommended Inventory-first workflow and shows the next suggested step. A new Inventory Readiness panel summarises saved badge resources, Star value, XP and individual Officer Badges. Smart Dashboard shortcut buttons take you directly to the relevant calculator.</p>
   <h4>📦 New Central Inventory</h4>
@@ -1561,6 +1569,7 @@ function calculate(){
 
  renderPlanner(o,cs,starsUsed,legendaryHeld,srvHeld,badgesUsed,badgesHeld+universalBadgesAvailable,orvHeld,xpHeld,xpRequired);
  if(typeof updateSmartDashboard==='function')updateSmartDashboard();
+ if(typeof kowOfficerReadiness==='function')kowOfficerReadiness();
 }
 
 function renderPlanner(o,cs,starsUsed,legendaryHeld,srvHeld,badgesUsed,badgesHeld,orvHeld,xpHeld,xpRequiredSelected){
@@ -1862,7 +1871,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='4.3.56';
+const APP_VERSION='4.3.57';
 function syncVersionUI(){
  const v='v'+APP_VERSION;
  if($('headerVersion'))$('headerVersion').textContent=v;
@@ -2906,8 +2915,39 @@ function kowInventoryIntelligence(){
  const box=document.getElementById('guidedWorkflowSteps');if(box)box.innerHTML=steps.map((s,i)=>'<button type="button" data-go-view="'+s[0]+'" style="min-width:105px">'+(s[2]?'✓ ':'')+(i+1)+'. '+s[1]+'</button>').join('');
  const next=document.getElementById('guidedNextStep');if(next)next.innerHTML=x.savedAt?'<b>Next suggested step:</b> Select an Officer and confirm their current progress.':'<b>Next suggested step:</b> Enter and Save Inventory.';
 }
-document.addEventListener('DOMContentLoaded',()=>setTimeout(kowInventoryIntelligence,300));
-document.addEventListener('click',e=>{if(e.target?.id==='saveInventory'||e.target?.id==='resetInventory')setTimeout(kowInventoryIntelligence,100);});
+function kowOfficerReadiness(){
+ try{
+  const o=typeof currentOfficer==='function'?currentOfficer():null;if(!o)return;
+  const fmt=n=>Math.max(0,Math.ceil(Number(n)||0)).toLocaleString();
+  const cs=Math.max(0,Math.min(5,Number(document.getElementById('currentStar')?.value)||0));
+  const usedBadges=Number(String(document.getElementById('badgesUsed')?.textContent||'0').replace(/[^0-9.-]/g,''))||0;
+  const badgeShort=Number(String(document.getElementById('badgesRequired')?.textContent||'0').replace(/[^0-9.-]/g,''))||0;
+  const maxBadges=typeof maxBadgesForOfficer==='function'?maxBadgesForOfficer(o):1600;
+  const badgeAvailable=Math.max(0,maxBadges-usedBadges-badgeShort);
+  const totalBadgePower=usedBadges+badgeAvailable;
+  const skillTarget=(typeof promotionBadgeTotal==='function'?promotionBadgeTotal(o):10)+(typeof skillCostsForOfficer==='function'?skillCostsForOfficer(o).reduce((a,b)=>a+b,0):690);
+  const nextStarTarget=STAR_CUM[Math.min(5,cs+1)]||MAX_STAR;
+  const starsHeld=Number(String(document.getElementById('starsHeld')?.textContent||'0').replace(/[^0-9.-]/g,''))||0;
+  const starPower=(STAR_CUM[cs]||0)+starsHeld;
+  const cl=Math.max(1,Math.min(70,Number(document.getElementById('currentLevel')?.value)||1));
+  const xpHeld=Number(String(document.getElementById('xpHeld')?.textContent||'0').replace(/[^0-9.-]/g,''))||0;
+  const xpNeed=Math.max(0,MAX_XP-(cl>=70?MAX_XP:cumulativeXp(cl)));
+  const checks=[
+   ['🔓','Unlock',totalBadgePower>=10,Math.max(0,10-totalBadgePower),'Officer Badges'],
+   ['⭐','Next Star',cs>=5||starPower>=nextStarTarget,cs>=5?0:Math.max(0,nextStarTarget-starPower),'Officer Star value'],
+   ['🌟','Reach 5★',starPower>=MAX_STAR,Math.max(0,MAX_STAR-starPower),'Officer Star value'],
+   ['🏅','MAX Skills',totalBadgePower>=skillTarget,Math.max(0,skillTarget-totalBadgePower),'Officer Badges'],
+   ['🎖️','MAX Training',totalBadgePower>=maxBadges,Math.max(0,maxBadges-totalBadgePower),'Officer Badges'],
+   ['📘','Level 70 XP',xpHeld>=xpNeed,Math.max(0,xpNeed-xpHeld),'XP'],
+  ];
+  const canMax=checks.slice(2).every(x=>x[2]);checks.push(['🏆','MAX Officer',canMax,0,'']);
+  const title=document.getElementById('officerReadinessTitle');if(title)title.innerHTML='<b>'+officerDisplayName(o)+'</b> — what your current saved Inventory can achieve now.';
+  const grid=document.getElementById('officerReadinessGrid');if(grid)grid.innerHTML=checks.map(x=>'<div class="result-box"><b>'+x[0]+' '+x[1]+'</b><br><span style="font-weight:800">'+(x[2]?'✅ READY':'⚠️ SHORTFALL')+'</span>'+(x[2]?'':('<br>Need '+fmt(x[3])+' more '+x[4]))+'</div>').join('');
+  const misses=checks.filter(x=>!x[2]&&x[1]!=='MAX Officer');const sh=document.getElementById('officerReadinessShortfall');if(sh)sh.innerHTML=misses.length?'<b>Priority shortfalls:</b> '+misses.map(x=>x[1]+': '+fmt(x[3])+' '+x[4]).join(' · '):'<b>All requirements covered:</b> this Officer can be completed with the resources currently available.';
+ }catch(e){console.warn('Officer readiness',e)}
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{kowInventoryIntelligence();kowOfficerReadiness();},300));
+document.addEventListener('click',e=>{if(e.target?.id==='saveInventory'||e.target?.id==='resetInventory')setTimeout(()=>{kowInventoryIntelligence();kowOfficerReadiness();},100);});
 const KOW_INV_KEY='kow_central_inventory_v1',KOW_INV_IDS=['invOrv', 'invSrv', 'invUniversalLegendary', 'invUniversalEpic', 'invUniversalElite', 'invLegendaryBadgeChests', 'invLegendarySelectionChests', 'invLegStar1', 'invLegStar2', 'invLegStar3', 'invEpicStar1', 'invEpicStar2', 'invEpicStar3', 'invEliteStar1', 'invEliteStar2', 'invEliteStar3', 'invXp50', 'invXp100', 'invXp500', 'invXp1000', 'invXp5000', 'invXp10000', 'invXp20000', 'invXp50000'];
 function kowInvGet(){try{return JSON.parse(localStorage.getItem(KOW_INV_KEY)||'{}')}catch(e){return {}}}
 function kowInvField(id,v){const e=document.getElementById(id);if(e){e.value=Math.max(0,+v||0);e.dispatchEvent(new Event('input',{bubbles:true}));}}
