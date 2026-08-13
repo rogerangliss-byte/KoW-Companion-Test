@@ -1,4 +1,4 @@
-const CACHE='kow-english-v4.3.59-test2-inventory-intelligence';
+const CACHE='kow-english-v4.3.59-test4-ui-consistency';
 const ASSETS=[
   './',
   './index.html',
