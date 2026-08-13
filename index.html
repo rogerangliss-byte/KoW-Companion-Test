@@ -944,7 +944,9 @@ nav.bottom-nav::-webkit-scrollbar,
     <b>v4.3.56 TEST adds Guided Workflow & Inventory Intelligence. v4.3.55 introduced the new Central Inventory alongside rarity-specific Stars and Universal Badges, Legendary-only SRV/ORV, and confirmed Legendary/Epic/Elite promotion and Training totals.</b>
   </div>
 
-  <h4>🛠 v4.3.58 TEST Fix 5 — Planner Saved/All Sessions & ORV/SRV Forecast</h4>
+  <h4>🔧 v4.3.58 TEST Fix 6 — Progress & XP Source Alignment</h4>
+<p>The Advanced Planner now reads current Officer candidates from the exact same <b>Progress</b> data source used by the Progress screen, and reads XP Books and shared resources from the exact same global resource store used by the XP and Inventory calculations. This fixes Saved Officers / All Sessions candidate detection and projected XP readiness.</p>
+<h4>🛠 v4.3.58 TEST Fix 5 — Planner Saved/All Sessions & ORV/SRV Forecast</h4>
 <p>Saved Officers and All Officer Sessions now use the actual saved profile store. MAXED Officers remain excluded. The Projected S8 Resource Requirement now shows ORV and SRV forecasts derived from the Releases percentage growth setting, and the Releases input label now explicitly shows <b>(%)</b> for clarity.</p>
 <h4>🔮 v4.3.58 TEST Fix 4 — Saved Officers & S8 Resource Forecast</h4>
 <p>Saved Officers mode now reads actual saved Officer profiles correctly. The Advanced Planner also shows projected resource requirements for one and two future S8 Legendary Officers, including 1,600 / 3,200 badges, 98,000 / 196,000 Star value, and 199,646,700 / 399,293,400 XP. ORV and SRV amounts are explicitly labelled FORECAST until S8 costs are published.</p>
@@ -3186,46 +3188,43 @@ document.addEventListener("click",function(e){
   function num(v){v=Number(v);return Number.isFinite(v)?v:0;}
   function allStorage(){var out={};for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);out[k]=localStorage.getItem(k);}return out;}
   function inventorySnapshot(){
-    var s=allStorage(),inv={orv:0,srv:0,universal:0,selection:0,xp:0};
-    Object.keys(s).forEach(function(k){var parsed;try{parsed=JSON.parse(s[k])}catch(e){parsed=s[k]}
-      function walk(o,path){if(o&&typeof o==='object'){Object.keys(o).forEach(function(x){walk(o[x],path+' '+x.toLowerCase())});return;}
-        var n=num(o),p=path.toLowerCase();if(!n)return;
-        if(p.includes('orv'))inv.orv=Math.max(inv.orv,n);if(p.includes('srv'))inv.srv=Math.max(inv.srv,n);
-        if(p.includes('universal')&&p.includes('badge'))inv.universal=Math.max(inv.universal,n);
-        if(p.includes('selection')&&p.includes('chest'))inv.selection=Math.max(inv.selection,n);
-        if(p.includes('xp')&&(p.includes('total')||p.includes('inventory')||p.includes('book')))inv.xp=Math.max(inv.xp,n);
-      } walk(parsed,k.toLowerCase());
-    });return inv;
+    var g=(typeof getGlobalResources==='function'?getGlobalResources():{})||{};
+    var inv={orv:0,srv:0,universal:0,selection:0,xp:0,starValue:0};
+
+    inv.orv=num(g.orvHeld);
+    inv.srv=num(g.srvHeld);
+    inv.universal=num(g.universalBadgeHeld);
+    inv.selection=num(g.legendaryBadgeChestHeld);
+
+    // Use the exact XP Book values used by the XP tab.
+    var xpObj=g.xp||{};
+    (typeof XP_DENOMS!=='undefined'?XP_DENOMS:[50,100,500,1000,5000,10000,20000,50000]).forEach(function(v){
+      inv.xp += num(xpObj[v] ?? xpObj[String(v)]) * v;
+    });
+
+    // Use the exact shared Legendary Star inventory captured by the app.
+    // Star I / II / III values are 110 / 420 / 960.
+    inv.starValue =
+      num(g.ls1)*110 + num(g.ls2)*420 + num(g.ls3)*960 +
+      num(g.es1)*110 + num(g.es2)*420 + num(g.es3)*960;
+
+    return inv;
   }
   function dbOfficer(name){return (typeof officers!=='undefined'?officers:[]).find(function(o){return String(o.name||'').trim().toLowerCase()===String(name||'').trim().toLowerCase()})||{};}
   function plannerOfficers(includeNotStarted,includeOriginals){
-    if(typeof getOfficerProfiles!=='function')return [];
-    var profiles=getOfficerProfiles()||{};
-    var progress=(typeof savedOfficerProgressData==='function'?savedOfficerProgressData():[]);
-    var progressByName={};
-    progress.forEach(function(r){progressByName[String(r.name||'').trim().toLowerCase()]=r;});
+    if(typeof savedOfficerProgressData!=='function')return [];
 
-    var rows=[];
-    Object.keys(profiles).forEach(function(key){
-      var p=profiles[key]||{};
-      var parts=String(key).split('|');
-      var savedName=String(parts.length>1?parts.slice(1).join('|'):parts[0]).trim();
-      if(!savedName)return;
-
-      var o=(typeof officers!=='undefined'?officers:[]).find(function(x){
-        return String(x.name||'').trim().toLowerCase()===savedName.toLowerCase();
-      });
-      if(!o)return;
-
-      var r=progressByName[savedName.toLowerCase()];
-      if(!r)return;
+    // This is deliberately the same source used by the Progress screen.
+    return savedOfficerProgressData().filter(function(r){
       if(r.maxed)return false;
       if(!includeNotStarted && r.notStarted)return false;
-      if(!includeOriginals && String(r.season||o.season||'').trim().toLowerCase()==='original')return false;
-
-      rows.push({
-        name:r.name||o.name,
-        season:r.season||o.season,
+      if(!includeOriginals && String(r.season||'').trim().toLowerCase()==='original')return false;
+      return true;
+    }).map(function(r){
+      var o=dbOfficer(r.name);
+      return {
+        name:r.name,
+        season:r.season,
         pct:num(r.overall),
         maxed:false,
         notStarted:!!r.notStarted,
@@ -3235,16 +3234,7 @@ document.addEventListener("click",function(e){
         srvCost:num(o.srv),
         type:o.role||o.notes||'Current',
         future:false
-      });
-    });
-
-    // De-duplicate in case an older save exists under more than one key.
-    var seen={};
-    return rows.filter(function(r){
-      var k=String(r.season||'')+'|'+String(r.name||'').toLowerCase();
-      if(seen[k])return false;
-      seen[k]=1;
-      return true;
+      };
     });
   }
   function score(r,inv){var remaining=Math.max(0,r.need),affordable=inv.universal+inv.selection+(r.orvCost?Math.floor(inv.orv/r.orvCost):0),gap=Math.max(0,remaining-affordable);return (r.pct*1000)-gap;}
@@ -3334,9 +3324,9 @@ document.addEventListener("click",function(e){
     var badgeEquiv=(inv.universal||0)+(inv.selection||0)+Math.floor((inv.orv||0)/c.orv);
     var oneBadgeShort=Math.max(0,1600-badgeEquiv), twoBadgeShort=Math.max(0,3200-badgeEquiv);
     var oneXpShort=Math.max(0,199646700-(inv.xp||0)), twoXpShort=Math.max(0,399293400-(inv.xp||0));
-    var starUnitsFromSrv=Math.floor((inv.srv||0)/c.srv);
-    var starValueFromSrv=starUnitsFromSrv*110;
-    var oneStarShort=Math.max(0,98000-starValueFromSrv), twoStarShort=Math.max(0,196000-starValueFromSrv);
+    var starUnitsFromSrv=c.srv?Math.floor((inv.srv||0)/c.srv):0;
+    var starValueAvailable=(inv.starValue||0)+(starUnitsFromSrv*110);
+    var oneStarShort=Math.max(0,98000-starValueAvailable), twoStarShort=Math.max(0,196000-starValueAvailable);
 
     box.innerHTML='<div class="card" style="margin-top:12px"><h3>🔮 Projected S8 Resource Requirement</h3>'+
       '<div class="notice">Badge, Star and XP totals are established per Legendary Officer. ORV/SRV are forecast from the Releases growth setting and are clearly marked <b>FORECAST</b>.</div>'+
@@ -3409,7 +3399,7 @@ document.addEventListener("click",function(e){
     });
     html+='</tbody></table></div><p class="muted" style="margin-top:8px">Showing '+current.length+' saved current candidate'+(current.length===1?'':'s')+
       ' and '+projected.length+' projected scenario'+(projected.length===1?'':'s')+'. Inventory detected: ORV '+inv.orv.toLocaleString()+
-      ', Universal Badges '+inv.universal.toLocaleString()+', Selection Chests '+inv.selection.toLocaleString()+'. No Inventory values have been changed.</p>';
+      ', Universal Badges '+inv.universal.toLocaleString()+', Selection Chests '+inv.selection.toLocaleString()+', XP '+inv.xp.toLocaleString()+'. No Inventory values have been changed.</p>';
     box.innerHTML=html;
     projectedResourceHtml(projected,inv);
   };
