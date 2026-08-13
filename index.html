@@ -901,6 +901,10 @@ nav.bottom-nav::-webkit-scrollbar,
     </select></div>
   </div>
   <div class="notice" style="margin-bottom:10px">Future Officers are planning placeholders only. The session can suggest a type, or Future Officer Type can override it manually.</div>
+  <div style="display:flex;gap:18px;flex-wrap:wrap;margin:10px 0;align-items:center">
+    <label style="display:flex;gap:7px;align-items:center"><input id="kowPlannerIncludeNotStarted" type="checkbox"> Include Not Started</label>
+    <label style="display:flex;gap:7px;align-items:center"><input id="kowPlannerIncludeOriginals" type="checkbox"> Include Original Officers</label>
+  </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
     <button class="primary" type="button" onclick="kowRunAdvancedPlanner()">Analyse Planning Session</button>
     <button type="button" onclick="kowRunAdvancedPlanner(true)">Refresh Recommendation</button>
@@ -938,6 +942,8 @@ nav.bottom-nav::-webkit-scrollbar,
     <b>v4.3.56 TEST adds Guided Workflow & Inventory Intelligence. v4.3.55 introduced the new Central Inventory alongside rarity-specific Stars and Universal Badges, Legendary-only SRV/ORV, and confirmed Legendary/Epic/Elite promotion and Training totals.</b>
   </div>
 
+  <h4>🎯 v4.3.58 TEST Fix 2 — Focused Advanced Planner</h4>
+  <p>Advanced Planning now excludes MAXED Officers, shows In Progress seasonal Officers by default, adds optional Not Started and Original Officer toggles, corrects future projections to the next database season (S8 with the current S7 database), and places PROJECTED scenarios prominently in the comparison.</p>
   <h4>🔭 v4.3.58 TEST Fix 1 — Future Session & Officer Type Planning</h4>
 <p>Advanced Multi-Officer Planning can now select a future Officer session and a specific future Officer Type: Tank, Tank Destroyer, Infantry, Rally or Garrison. Session defaults can be overridden manually. Future entries are clearly marked PROJECTED, MAXED Officers are excluded, and the Home Officer Readiness card includes an Open Officer Progress shortcut.</p>
 <h4>🧠 v4.3.58 TEST — Officer Readiness Intelligence</h4>
@@ -3169,135 +3175,49 @@ document.addEventListener("click",function(e){
 <script id="kow-v4358-advanced-planner">
 (function(){
   function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-  function num(v){v=Number(v); return Number.isFinite(v)?v:0;}
-  function getJSON(k,fb){try{var v=JSON.parse(localStorage.getItem(k));return v==null?fb:v}catch(e){return fb}}
-  function allStorage(){
-    var out={};
-    for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);out[k]=localStorage.getItem(k);}
-    return out;
-  }
+  function num(v){v=Number(v);return Number.isFinite(v)?v:0;}
+  function allStorage(){var out={};for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);out[k]=localStorage.getItem(k);}return out;}
   function inventorySnapshot(){
-    var s=allStorage(), inv={orv:0,srv:0,universal:0,selection:0,xp:0};
-    Object.keys(s).forEach(function(k){
-      var lk=k.toLowerCase(), v=s[k];
-      var parsed; try{parsed=JSON.parse(v)}catch(e){parsed=v}
-      function walk(o,path){
-        if(o && typeof o==='object'){
-          Object.keys(o).forEach(function(x){walk(o[x],path+' '+x.toLowerCase())});
-        } else {
-          var n=num(o), p=path.toLowerCase();
-          if(!n)return;
-          if(p.includes('orv')) inv.orv=Math.max(inv.orv,n);
-          if(p.includes('srv')) inv.srv=Math.max(inv.srv,n);
-          if(p.includes('universal') && p.includes('badge')) inv.universal=Math.max(inv.universal,n);
-          if(p.includes('selection') && p.includes('chest')) inv.selection=Math.max(inv.selection,n);
-          if(p.includes('xp') && (p.includes('total')||p.includes('inventory')||p.includes('book'))) inv.xp=Math.max(inv.xp,n);
-        }
-      }
-      walk(parsed,lk);
-    });
-    return inv;
+    var s=allStorage(),inv={orv:0,srv:0,universal:0,selection:0,xp:0};
+    Object.keys(s).forEach(function(k){var parsed;try{parsed=JSON.parse(s[k])}catch(e){parsed=s[k]}
+      function walk(o,path){if(o&&typeof o==='object'){Object.keys(o).forEach(function(x){walk(o[x],path+' '+x.toLowerCase())});return;}
+        var n=num(o),p=path.toLowerCase();if(!n)return;
+        if(p.includes('orv'))inv.orv=Math.max(inv.orv,n);if(p.includes('srv'))inv.srv=Math.max(inv.srv,n);
+        if(p.includes('universal')&&p.includes('badge'))inv.universal=Math.max(inv.universal,n);
+        if(p.includes('selection')&&p.includes('chest'))inv.selection=Math.max(inv.selection,n);
+        if(p.includes('xp')&&(p.includes('total')||p.includes('inventory')||p.includes('book')))inv.xp=Math.max(inv.xp,n);
+      } walk(parsed,k.toLowerCase());
+    });return inv;
   }
-  function savedOfficers(){
-    var s=allStorage(), rows=[], seen={};
-    Object.keys(s).forEach(function(k){
-      if(!/(officer|progress|profile|saved)/i.test(k)) return;
-      var o; try{o=JSON.parse(s[k])}catch(e){return}
-      function inspect(x){
-        if(!x||typeof x!=='object')return;
-        if(Array.isArray(x)){x.forEach(inspect);return}
-        var name=x.name||x.officerName||x.officer||x.selectedOfficer;
-        if(typeof name==='string' && name.trim().length>1 && /[A-Za-z]/.test(name)){
-          name=name.trim();
-          var key=name.toLowerCase();
-          if(!seen[key]){
-            var pct=num(x.progressPercent||x.percent||x.completion||x.progress||0);
-            var maxed=!!(x.maxed||x.isMaxed)||pct>=100;
-            var badges=num(x.badges||x.officerBadges||x.badgesHeld||0);
-            var need=num(x.badgesNeeded||x.remainingBadges||0);
-            var orvCost=num(x.orvCost||x.orvPerBadge||0);
-            rows.push({name:name,pct:pct,maxed:maxed,badges:badges,need:need,orvCost:orvCost});
-            seen[key]=1;
-          }
-        }
-        Object.keys(x).forEach(function(a){if(typeof x[a]==='object')inspect(x[a])});
-      }
-      inspect(o);
-    });
-    return rows;
+  function dbOfficer(name){return (typeof officers!=='undefined'?officers:[]).find(function(o){return String(o.name||'').trim().toLowerCase()===String(name||'').trim().toLowerCase()})||{};}
+  function plannerOfficers(includeNotStarted,includeOriginals){
+    if(typeof savedOfficerProgressData!=='function')return [];
+    return savedOfficerProgressData().filter(function(r){
+      if(r.maxed)return false;
+      if(!includeNotStarted && r.notStarted)return false;
+      if(!includeOriginals && String(r.season||'').toLowerCase()==='original')return false;
+      return true;
+    }).map(function(r){var o=dbOfficer(r.name);return {name:r.name,season:r.season,pct:num(r.overall),maxed:false,notStarted:!!r.notStarted,status:r.status||'IN PROGRESS',need:num(r.badgeShort),orvCost:num(o.orv),type:o.role||o.notes||'Current',future:false};});
   }
-  function score(r,inv){
-    if(r.maxed)return -999999;
-    var remaining=r.need>0?r.need:Math.max(0,1600-r.badges);
-    var affordableBadges=inv.universal+inv.selection+(r.orvCost?Math.floor(inv.orv/r.orvCost):0);
-    var gap=Math.max(0,remaining-affordableBadges);
-    // favour nearer completion, then smaller resource gap
-    return (r.pct*1000)-gap;
-  }
-  function kowFutureSession(mode){
-    var sessions={
-      october:{label:'October — Rally / Garrison',types:['Rally','Garrison']},
-      january:{label:'January — Infantry',types:['Infantry']},
-      april:{label:'April — Tanks',types:['Tank']},
-      july:{label:'July — Tank Destroyers',types:['Tank Destroyer']}
-    };
-    if(mode==='next'){
-      var month=(new Date()).getMonth();
-      var seq=[{m:9,k:'october'},{m:0,k:'january'},{m:3,k:'april'},{m:6,k:'july'}];
-      var later=seq.filter(function(x){return x.m>month}).sort(function(a,b){return a.m-b.m})[0];
-      mode=later?later.k:'january';
-    }
-    return sessions[mode]||null;
-  }
-  function kowProjectedSeason(){
-    var max=0;
-    if(typeof officers!=='undefined')officers.forEach(function(o){
-      var m=String(o.season||'').match(/^S(\d+)$/i); if(m)max=Math.max(max,+m[1]);
-    });
-    return 'S'+(max+1);
-  }
+  function score(r,inv){var remaining=Math.max(0,r.need),affordable=inv.universal+inv.selection+(r.orvCost?Math.floor(inv.orv/r.orvCost):0),gap=Math.max(0,remaining-affordable);return (r.pct*1000)-gap;}
+  function futureSession(mode){var sessions={october:{label:'October — Rally / Garrison',types:['Rally','Garrison']},january:{label:'January — Infantry',types:['Infantry']},april:{label:'April — Tanks',types:['Tank']},july:{label:'July — Tank Destroyers',types:['Tank Destroyer']}};
+    if(mode==='next'){var month=(new Date()).getMonth(),seq=[{m:9,k:'october'},{m:0,k:'january'},{m:3,k:'april'},{m:6,k:'july'}],later=seq.filter(function(x){return x.m>month}).sort(function(a,b){return a.m-b.m})[0];mode=later?later.k:'january';}return sessions[mode]||null;}
+  function projectedSeason(){var max=0;(typeof officers!=='undefined'?officers:[]).forEach(function(o){var m=String(o.season||'').match(/^S(\d+)$/i);if(m)max=Math.max(max,+m[1]);});return 'S'+(max+1);}
   window.kowRunAdvancedPlanner=function(){
-    var inv=inventorySnapshot(), rows=savedOfficers();
-    var box=document.getElementById('kowAdvancedPlannerResults'), sum=document.getElementById('kowAdvancedPlannerSummary');
-    var mode=(document.getElementById('kowPlannerSession')||{}).value||'saved';
-    var typeChoice=(document.getElementById('kowFutureOfficerType')||{}).value||'auto';
-    if(!box||!sum)return;
-
-    // Cross-check the app's authoritative Progress state and completely remove MAXED Officers.
-    if(typeof savedOfficerProgressData==='function'){
-      var auth=savedOfficerProgressData();
-      rows=rows.map(function(r){
-        var a=auth.find(function(x){return String(x.name||'').trim().toLowerCase()===String(r.name||'').trim().toLowerCase()});
-        if(a){r.maxed=!!a.maxed;if(a.badgeShort!=null)r.need=Math.max(0,+a.badgeShort||0);if(a.percent!=null)r.pct=+a.percent||r.pct;}
-        return r;
-      });
-    }
-    rows=rows.filter(function(r){return !r.maxed && /[A-Za-z]/.test(String(r.name||''));});
-
-    var session=kowFutureSession(mode), projected=[];
-    if(mode!=='saved'){
-      var types=typeChoice==='auto'?(session?session.types:[]):[typeChoice];
-      var season=kowProjectedSeason();
-      projected=types.map(function(t){return {name:season+' '+t+' — PROJECTED',pct:0,maxed:false,badges:0,need:1600,orvCost:0,future:true,type:t};});
-      rows=rows.concat(projected);
-    }
-    if(!rows.length){
-      sum.innerHTML='<b>No non-MAXED saved Officers are available for this plan.</b> Choose a future session or save progress for an active Officer.';
-      box.innerHTML='';return;
-    }
-    rows.sort(function(a,b){if(a.future!==b.future)return a.future?1:-1;return score(b,inv)-score(a,inv)});
-    var label=mode==='saved'?'Saved Officers only':(session?session.label:'Future Officer session');
-    sum.innerHTML='<b>Planning session: '+esc(label)+'</b><br><b>Recommended next investment: '+esc(rows[0].name)+'</b><br><span class="muted">MAXED Officers are excluded. PROJECTED entries are future planning scenarios only; no unpublished Officer cost is assumed.</span>';
-    var html='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse"><thead><tr><th>Priority</th><th>Officer</th><th>Type</th><th>Status</th><th>Recommendation</th></tr></thead><tbody>';
-    rows.forEach(function(r,i){
-      var rec;
-      if(r.future)rec='Reserve resources for this '+r.type+' scenario. Exact ORV/SRV cost will be used only when published.';
-      else if(r.orvCost && Math.floor(inv.orv/r.orvCost)>0)rec='Use Officer-specific badges first, then ORV where eligible. Preserve Universal/Selection resources where practical.';
-      else rec='Use Officer-specific badges first. Use flexible Universal/Selection resources only where required.';
-      html+='<tr><td>'+(i+1)+'</td><td><b>'+esc(r.name)+'</b></td><td>'+esc(r.future?r.type:'Current')+'</td><td>'+esc(r.future?'PROJECTED':(r.pct?r.pct.toFixed(1)+'%':'Saved'))+'</td><td>'+esc(rec)+'</td></tr>';
-    });
-    html+='</tbody></table></div><p class="muted" style="margin-top:8px">Inventory detected: ORV '+inv.orv.toLocaleString()+', Universal Badges '+inv.universal.toLocaleString()+', Selection Chests '+inv.selection.toLocaleString()+'. No Inventory values have been changed.</p>';
-    box.innerHTML=html;
+    var inv=inventorySnapshot(),box=document.getElementById('kowAdvancedPlannerResults'),sum=document.getElementById('kowAdvancedPlannerSummary');if(!box||!sum)return;
+    var mode=(document.getElementById('kowPlannerSession')||{}).value||'saved',typeChoice=(document.getElementById('kowFutureOfficerType')||{}).value||'auto';
+    var includeNS=!!document.getElementById('kowPlannerIncludeNotStarted')?.checked,includeOrig=!!document.getElementById('kowPlannerIncludeOriginals')?.checked;
+    var current=plannerOfficers(includeNS,includeOrig);current.sort(function(a,b){return score(b,inv)-score(a,inv)});
+    var session=futureSession(mode),projected=[];
+    if(mode!=='saved'){var types=typeChoice==='auto'?(session?session.types:[]):[typeChoice],season=projectedSeason();projected=types.map(function(t){return {name:season+' '+t+' — PROJECTED',pct:0,status:'PROJECTED',future:true,type:t};});}
+    if(!current.length&&!projected.length){sum.innerHTML='<b>No eligible Officers are available.</b> By default the Planner shows In Progress seasonal Officers only. Use the toggles to include Not Started or Original Officers.';box.innerHTML='';return;}
+    var label=mode==='saved'?'Saved Officers only':(session?session.label:'Future Officer session'),best=current[0];
+    var decision=projected.length?(best?'Finish / assess '+best.name+' before committing flexible resources; also reserve for '+projected.map(function(x){return x.name.replace(' — PROJECTED','')}).join(' / ')+'.':'Reserve resources for '+projected.map(function(x){return x.name.replace(' — PROJECTED','')}).join(' / ')+'.'):(best?'Current priority: '+best.name+'.':'No current candidate.');
+    sum.innerHTML='<b>Planning session: '+esc(label)+'</b><br><b>Recommendation: '+esc(decision)+'</b><br><span class="muted">MAXED Officers are excluded. In Progress seasonal Officers are shown by default. PROJECTED entries use no unpublished Officer cost.</span>';
+    var rows=projected.concat(current),html='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse"><thead><tr><th>Priority</th><th>Officer</th><th>Type</th><th>Status</th><th>Recommendation</th></tr></thead><tbody>';
+    rows.forEach(function(r,i){var rec=r.future?'Reserve resources for this '+r.type+' scenario. Exact ORV/SRV cost will be used only when published.':(r.orvCost&&Math.floor(inv.orv/r.orvCost)>0?'Use Officer-specific badges first, then ORV where eligible. Preserve Universal/Selection resources where practical.':'Use Officer-specific badges first. Use flexible Universal/Selection resources only where required.');
+      html+='<tr><td>'+(i+1)+'</td><td><b>'+esc(r.name)+'</b></td><td>'+esc(r.future?r.type:(r.type||'Current'))+'</td><td>'+esc(r.future?'PROJECTED':(r.notStarted?'NOT STARTED':(r.pct.toFixed(1)+'% — IN PROGRESS')))+'</td><td>'+esc(rec)+'</td></tr>';});
+    html+='</tbody></table></div><p class="muted" style="margin-top:8px">Showing '+current.length+' current candidate'+(current.length===1?'':'s')+' and '+projected.length+' projected scenario'+(projected.length===1?'':'s')+'. Inventory detected: ORV '+inv.orv.toLocaleString()+', Universal Badges '+inv.universal.toLocaleString()+', Selection Chests '+inv.selection.toLocaleString()+'. No Inventory values have been changed.</p>';box.innerHTML=html;
   };
 })();
 </script>
