@@ -584,7 +584,7 @@ nav.bottom-nav::-webkit-scrollbar,
 
 
 <style id="v4359-test6-unified-button-system">
-/* v4.3.59 TEST 7 — one button language across the whole app.
+/* v4.3.59 TEST 8 — one button language across the whole app.
    Gold = primary action, Navy = save/commit, Gold outline = secondary/navigation, Red = destructive. */
 :root{--btn-radius:10px;--btn-gold-top:#806018;--btn-gold-bottom:#5e4512;--btn-navy-top:#202a49;--btn-navy-bottom:#10172c;--btn-red-bg:rgba(120,30,30,.18);--btn-red-line:rgba(211,95,95,.45)}
 button,.button-like,.filebtn{font-weight:700;letter-spacing:.01em}
@@ -622,13 +622,19 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
 #multiPlannerRows button[data-remove]{background:var(--btn-red-bg)!important;border-color:var(--btn-red-line)!important;color:#f0c5c5!important}
 /* Database Import CSV label should read as secondary, while Save remains navy. */
 #database .filebtn{background:rgba(213,167,47,.08)!important;color:var(--gold2)!important}
+/* Backup actions: equal sizing, visually distinct intent. */
+#backupActions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px!important}
+#backupAppData,#restoreAppDataLabel{width:100%!important;min-height:52px!important;display:flex!important;align-items:center!important;justify-content:center!important;box-sizing:border-box!important}
+#backupAppData{background:linear-gradient(180deg,var(--btn-gold-top),var(--btn-gold-bottom))!important;border:1px solid rgba(244,197,78,.62)!important;color:#fff!important}
+#restoreAppDataLabel{background:linear-gradient(180deg,#652b32,#43191e)!important;border:1px solid rgba(211,95,95,.72)!important;color:#fff!important}
+@media(max-width:700px){#backupActions{grid-template-columns:1fr!important}}
 /* Native file picker buttons in Settings are intentionally left browser-native for reliability. */
 #settings input[type=file]::file-selector-button{font-weight:600}
 /* Modal cancel/close controls should not look browser-default. */
 #quickProgressCancel,#quickProgressClose,#skillCostInfoClose{background:rgba(213,167,47,.08)!important;border:1px solid rgba(213,167,47,.50)!important;color:var(--gold2)!important;cursor:pointer}
 </style>
 </head>
-<body><div style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:6px">ENGLISH TEST VERSION — v4.3.59 TEST 7 — NOT LIVE</div>
+<body><div style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:6px">ENGLISH TEST VERSION — v4.3.59 TEST 8 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
@@ -1406,9 +1412,9 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
       <button id="openUserGuide" class="app-action-primary">📖 User Guide</button>
           <h3>Backup & Restore</h3>
       <p class="notice">Export all locally saved KoW Companion browser data, or restore a previous JSON backup.</p>
-      <div class="two">
-        <button id="backupAppData" class="app-action-secondary">⬇ Export App Backup</button>
-        <label class="button-like app-action-secondary">⬆ Restore App Backup<input id="restoreAppData" type="file" accept=".json,application/json" hidden></label>
+      <div class="two" id="backupActions">
+        <button id="backupAppData" class="app-action-primary">⬇ Export App Backup</button>
+        <label id="restoreAppDataLabel" class="button-like app-action-danger">⬆ Restore App Backup<input id="restoreAppData" type="file" accept=".json,application/json" hidden></label>
       </div>
       <div id="backupStatus" class="notice" style="margin-top:10px">No backup created yet.</div>
 </article>
@@ -3230,7 +3236,7 @@ function kowInventoryIntelligence(){
  set('invIntelBadges',fmtN(universal)+' universal + '+fmtN(chests)+' chests');set('invIntelStars',fmtN(star)+' Legendary Star value');set('invIntelXP',fmtN(xp));set('invIntelOfficerBadges',fmtN(ob));
  const s=document.getElementById('inventoryReadinessSummary');if(s)s.innerHTML=x.savedAt?'<b>Inventory saved</b><br>Last updated '+new Date(x.savedAt).toLocaleString():'<b>Inventory not yet saved.</b><br>Start here before planning upgrades.';
  const steps=[['inventory','Inventory',!!x.savedAt],['officer','Officer',true],['stars','Stars',false],['development','Development',false],['xp','XP',false],['planner','Planner',false]];
- const box=document.getElementById('guidedWorkflowSteps');if(box){const firstIncomplete=steps.findIndex(s=>!s[2]);box.innerHTML=steps.map((s,i)=>'<button type="button" class="'+(s[2]?'completed':(i===firstIncomplete?'current':''))+'" data-go-view="'+s[0]+'">'+(s[2]?'✓ ':'')+(i+1)+'. '+s[1]+'</button>').join('');}
+ const box=document.getElementById('guidedWorkflowSteps');if(box){const firstIncomplete=steps.findIndex(s=>!s[2]);const workflowIcons={inventory:'📦',officer:'👤',stars:'⭐',development:'🏅',xp:'📘',planner:'🎯'};box.innerHTML=steps.map((s,i)=>'<button type="button" class="'+(s[2]?'completed':(i===firstIncomplete?'current':''))+'" data-go-view="'+s[0]+'">'+(workflowIcons[s[0]]||'')+' '+(s[2]?'✓ ':'')+(i+1)+'. '+s[1]+'</button>').join('');}
  const next=document.getElementById('guidedNextStep');if(next)next.innerHTML=x.savedAt?'<b>Next suggested step:</b> Select an Officer and confirm their current progress.':'<b>Next suggested step:</b> Enter and Save Inventory.';
 }
 function kowOfficerReadiness(){
