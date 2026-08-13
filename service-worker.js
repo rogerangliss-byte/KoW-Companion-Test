@@ -1,4 +1,4 @@
-const CACHE='kow-english-v4.3.59-test4-ui-consistency';
+const CACHE='kow-english-v4.3.59-test6-unified-buttons';
 const ASSETS=[
   './',
   './index.html',
