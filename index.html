@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.3.59 TEST 6</title>
+<title>KoW Companion v4.3.59 TEST 7</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -61,7 +61,7 @@ input,select,button{font:inherit}input,select{width:100%;padding:11px;border:1px
 .bottom-nav{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);width:min(980px,calc(100% - 16px));display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:4px;padding:8px;border:1px solid var(--line);border-radius:16px;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);z-index:20}
 .bottom-nav button{border:0;background:transparent;color:var(--muted);padding:7px 1px;border-radius:10px;min-width:0;white-space:nowrap;font-size:.9rem}.bottom-nav button.active{background:rgba(213,167,47,.17);color:var(--gold2)}.bottom-nav span{display:block;font-size:.62rem;margin-top:3px;white-space:nowrap}
 
-/* v4.3.59 TEST 6 — Unified Button Design System */
+/* v4.3.59 TEST 7 — Unified Button Design System */
 /* Consistent app action system: gold action, navy save, outlined secondary, red destructive. */
 .app-action-primary,.app-action-save,.app-action-secondary,.app-action-danger{padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:700;letter-spacing:.01em;transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
 .app-action-primary{background:linear-gradient(180deg,#795915,#5e4512)!important;border:1px solid rgba(244,197,78,.55)!important;color:#fff!important}
@@ -584,7 +584,7 @@ nav.bottom-nav::-webkit-scrollbar,
 
 
 <style id="v4359-test6-unified-button-system">
-/* v4.3.59 TEST 6 — one button language across the whole app.
+/* v4.3.59 TEST 7 — one button language across the whole app.
    Gold = primary action, Navy = save/commit, Gold outline = secondary/navigation, Red = destructive. */
 :root{--btn-radius:10px;--btn-gold-top:#806018;--btn-gold-bottom:#5e4512;--btn-navy-top:#202a49;--btn-navy-bottom:#10172c;--btn-red-bg:rgba(120,30,30,.18);--btn-red-line:rgba(211,95,95,.45)}
 button,.button-like,.filebtn{font-weight:700;letter-spacing:.01em}
@@ -601,10 +601,17 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
 #saveOfficerProfile,#saveProgress{width:100%;margin-top:12px;padding:10px 12px}
 /* Home shortcut strip: never fall back to browser-white controls. */
 #dashboard .toolbar button[data-go-view]{background:rgba(213,167,47,.08)!important;border:1px solid rgba(213,167,47,.50)!important;color:var(--gold2)!important;padding:8px 12px}
-/* Stateful workflow buttons use the same secondary/primary family. */
-#guidedWorkflowSteps button{border-radius:var(--btn-radius)!important;background:rgba(213,167,47,.08)!important;border:1px solid rgba(213,167,47,.50)!important;color:var(--gold2)!important}
-#guidedWorkflowSteps button.completed{background:rgba(213,167,47,.18)!important;border-color:rgba(244,197,78,.72)!important;color:#fff!important}
-#guidedWorkflowSteps button.current{background:linear-gradient(180deg,var(--btn-gold-top),var(--btn-gold-bottom))!important;border-color:rgba(244,197,78,.78)!important;color:#fff!important}
+/* Guided Workflow uses the same visual button treatment as the Home shortcut row below.
+   Completion ticks and the current-step class remain logic/state markers only. */
+#guidedWorkflowSteps button,
+#guidedWorkflowSteps button.completed,
+#guidedWorkflowSteps button.current{
+  border-radius:var(--btn-radius)!important;
+  background:rgba(213,167,47,.08)!important;
+  border:1px solid rgba(213,167,47,.50)!important;
+  color:var(--gold2)!important;
+  padding:8px 12px!important;
+}
 /* Rarity filters match secondary controls, with gold selected state. */
 .inv-rarity-btn{border-radius:var(--btn-radius)!important;background:rgba(213,167,47,.08)!important;border:1px solid rgba(213,167,47,.50)!important;color:var(--gold2)!important}
 .inv-rarity-btn.active{background:linear-gradient(180deg,var(--btn-gold-top),var(--btn-gold-bottom))!important;border-color:rgba(244,197,78,.78)!important;color:#fff!important}
@@ -621,7 +628,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
 #quickProgressCancel,#quickProgressClose,#skillCostInfoClose{background:rgba(213,167,47,.08)!important;border:1px solid rgba(213,167,47,.50)!important;color:var(--gold2)!important;cursor:pointer}
 </style>
 </head>
-<body><div style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:6px">ENGLISH TEST VERSION — v4.3.59 TEST 6 — NOT LIVE</div>
+<body><div style="position:sticky;top:0;z-index:9999;background:#8b0000;color:white;text-align:center;font-weight:800;padding:6px">ENGLISH TEST VERSION — v4.3.59 TEST 7 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
@@ -1390,7 +1397,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
         <button id="refreshLatest" class="app-action-primary">Refresh Latest Version</button>
       </div>
       <h3>About</h3>
-      <p class="notice"><b>KoW Companion <span id="aboutVersion"></span> TEST 6 — NOT LIVE</b><br>Created by FireStorm (371)</p>
+      <p class="notice"><b>KoW Companion <span id="aboutVersion"></span> TEST 7 — NOT LIVE</b><br>Created by FireStorm (371)</p>
       <h3>Version Integrity</h3>
       <div id="versionIntegrity" class="notice">Checking build version consistency…</div>
 
