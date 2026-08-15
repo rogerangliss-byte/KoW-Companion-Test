@@ -1,4 +1,4 @@
-const CACHE='kow-english-v4.3.59-test9-help-table';
+const CACHE='kow-english-v4.4.0-test1-readiness-dashboard';
 const ASSETS=[
   './',
   './index.html',
