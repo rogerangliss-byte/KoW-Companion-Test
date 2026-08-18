@@ -1,7 +1,8 @@
-/* KoW Companion v4.5.0 TEST — Advanced Planning & corrected chest logic. */
+/* KoW Companion v4.5.0 TEST 2 — Advanced Planning, corrected chest logic & optimiser selector fix. */
 (function(){
 'use strict';
 const VERSION='4.5.0';
+const TEST_BUILD='TEST 2';
 const SELECTION_ELIGIBLE=new Set([
  'Katherine','Grace','Chloe','Ling','Jessica','Lilith','Angel','Sakura','Loubna','Angelica','Ophelia','Doireann',
  'S2 Natalia','S3 Sophia','S6 Emily','S6 Zoya'
@@ -22,7 +23,6 @@ function progressBadgeNeed(){
 function inventory(){
  try{return JSON.parse(localStorage.getItem('kow_central_inventory_v1')||'{}')||{}}catch(_){return {}}
 }
-function ensureOption(select,value,label){if(select&&![...select.options].some(o=>o.value===value))select.add(new Option(label,value));}
 function fixChestUI(){
  const badgeChest=$('legendaryBadgeChestHeld'), selection=$('legendarySelectionChestHeld'), mode=$('legendaryBadgeChestMode');
  if(badgeChest){const l=badgeChest.previousElementSibling;if(l&&l.tagName==='LABEL')l.textContent='Legendary Officer Badge Chests Held';}
@@ -44,7 +44,6 @@ function chooseBadgeChestRoute(need,universal,orv,cost,chests,mode,canOrv){
  if(!chests)return {badge:0,orvChests:0,generatedOrv:0};
  if(mode==='badge'||!canOrv)return {badge:chests,orvChests:0,generatedOrv:0};
  if(mode==='orv')return {badge:0,orvChests:chests,generatedOrv:chests*600};
- // Optimise: each chest is worth 1 badge or floor(600/cost) badge-equivalents via ORV.
  const viaOrv=cost>0?600/cost:0;
  if(viaOrv>1)return {badge:0,orvChests:chests,generatedOrv:chests*600};
  return {badge:chests,orvChests:0,generatedOrv:0};
@@ -86,7 +85,7 @@ function ensureSmartPlannerCard(){
  const planner=$('planner');if(!planner)return null;
  let card=$('v450SmartPlannerCard');if(card)return card;
  card=document.createElement('article');card.id='v450SmartPlannerCard';card.className='card';
- card.innerHTML='<div class="eyebrow">v4.5.0 TEST</div><h2>🧠 Smart Resource Shortfall</h2><p class="muted">Preview the selected Officer using the corrected chest rules. Inventory is never spent or changed.</p><div id="v450SmartPlannerResult" class="result-box">Select an Officer and enter Inventory.</div>';
+ card.innerHTML='<div class="eyebrow">v4.5.0 TEST 2</div><h2>🧠 Smart Resource Shortfall</h2><p class="muted">Preview the selected Officer using the corrected chest rules. Inventory is never spent or changed.</p><div id="v450SmartPlannerResult" class="result-box">Select an Officer and enter Inventory.</div>';
  const goals=[...planner.querySelectorAll('article.card')].find(x=>/Goals Planner/i.test(x.textContent||''));
  if(goals)goals.insertAdjacentElement('afterend',card);else planner.prepend(card);
  return card;
@@ -105,24 +104,36 @@ function renderSmartPlanner(){
  <b>Remaining badge shortfall: ${fmt(f.remaining)}</b><br>
  <span class="muted">Rule check: Selection Chests = 1 eligible individual Officer Badge only. Badge Chests = 1 Universal Legendary Badge or 600 ORV.</span>`;
 }
+function populateOptimiserOfficerSelect(){
+ const target=$('compareOfficerSelect'), source=$('officerSelect');
+ if(!target||!source||!source.options.length)return;
+ const current=String(source.value??'');
+ const previous=String(target.value??'');
+ const options=[...source.options].filter(o=>String(o.textContent||'').trim() && String(o.value)!==current);
+ target.innerHTML='<option value="">Select Officer</option>'+options.map(o=>`<option value="${String(o.value).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}">${String(o.textContent||'').trim().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</option>`).join('');
+ if(previous && [...target.options].some(o=>o.value===previous))target.value=previous;
+}
 function fixHelp(){
  document.querySelectorAll('#help p').forEach(p=>{
    if(/Each Legendary Officer Badge Selection Chest can be used as either/i.test(p.textContent||''))p.innerHTML='Each <b>Legendary Officer Badge Chest</b> gives either <b>1 Universal Legendary Officer Badge</b> or <b>600 ORV</b>. Each <b>Legendary Officer Badge Selection Chest</b> gives <b>1 eligible individual Officer Badge only</b> and has no ORV option.';
  });
- const heading=$('whatsNewV4329')?.querySelector('h3');if(heading)heading.textContent='✨ What’s New — v4.5.0 TEST';
+ const heading=$('whatsNewV4329')?.querySelector('h3');if(heading)heading.textContent='✨ What’s New — v4.5.0 TEST 2';
 }
 function versionUI(){
  document.title='KoW Companion v4.5.0 TEST';
  ['headerVersion','installedVersion','aboutVersion'].forEach(id=>{if($(id))$(id).textContent='v'+VERSION;});
- const integrity=$('versionIntegrity');if(integrity)integrity.innerHTML='<b>Build integrity: OK</b><br>Header, Settings and About all report v4.5.0 TEST.';
+ const banner=$('helpPortraitTestBanner');if(banner)banner.textContent='ENGLISH TEST VERSION — v4.5.0 TEST 2 — ADVANCED PLANNING & OPTIMISER FIX — NOT LIVE';
+ const integrity=$('versionIntegrity');if(integrity)integrity.innerHTML='<b>Build integrity: OK</b><br>Header, Settings and About all report v4.5.0 TEST 2.';
 }
-function refresh(){fixChestUI();renderSmartDevelopment();renderSmartPlanner();versionUI();}
+function refresh(){fixChestUI();populateOptimiserOfficerSelect();renderSmartDevelopment();renderSmartPlanner();versionUI();}
 function start(){
- fixChestUI();fixHelp();ensureSmartPlannerCard();refresh();
+ fixChestUI();fixHelp();ensureSmartPlannerCard();populateOptimiserOfficerSelect();refresh();
  ['legendaryBadgeChestHeld','legendarySelectionChestHeld','legendaryBadgeChestMode','orvHeld','universalBadgeHeld','universalEpicBadgeHeld','universalEliteBadgeHeld','badgeHeld','officerSelect'].forEach(id=>{const el=$(id);if(!el||el.dataset.v450wired)return;el.dataset.v450wired='1';el.addEventListener('input',()=>setTimeout(refresh,0));el.addEventListener('change',()=>setTimeout(refresh,0));});
- document.addEventListener('click',()=>setTimeout(refresh,25));
- const obs=new MutationObserver(()=>{clearTimeout(start._t);start._t=setTimeout(()=>{renderSmartDevelopment();renderSmartPlanner();versionUI();},30)});obs.observe(document.body,{subtree:true,childList:true});
+ const compare=$('compareOfficerSelect');if(compare&&!compare.dataset.v450wired){compare.dataset.v450wired='1';compare.addEventListener('change',()=>{try{window.buildUpgradeSummary?.()}catch(_){}});}
+ document.addEventListener('click',e=>{if(e.target?.dataset?.view==='planner')setTimeout(populateOptimiserOfficerSelect,25);setTimeout(refresh,25)});
+ setTimeout(populateOptimiserOfficerSelect,100);setTimeout(populateOptimiserOfficerSelect,400);
+ const obs=new MutationObserver(()=>{clearTimeout(start._t);start._t=setTimeout(()=>{populateOptimiserOfficerSelect();renderSmartDevelopment();renderSmartPlanner();versionUI();},30)});obs.observe(document.body,{subtree:true,childList:true});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-window.KOW_V450={smartFunding,renderSmartPlanner,renderSmartDevelopment,selectionEligible,SELECTION_ELIGIBLE};
+window.KOW_V450={smartFunding,renderSmartPlanner,renderSmartDevelopment,populateOptimiserOfficerSelect,selectionEligible,SELECTION_ELIGIBLE};
 })();
