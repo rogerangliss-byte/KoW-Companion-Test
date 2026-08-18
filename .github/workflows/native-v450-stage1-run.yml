@@ -2,8 +2,6 @@ name: Run Native v4.5 Stage 1
 
 on:
   push:
-    paths:
-      - '.github/workflows/native-v450-stage1-run.yml'
   workflow_dispatch:
 
 permissions:
@@ -32,4 +30,3 @@ jobs:
           git add -A
           git commit -m 'Integrate native v4.5 state persistence and correct chest rules'
           git push origin main
-# trigger-2
