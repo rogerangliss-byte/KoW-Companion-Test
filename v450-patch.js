@@ -9,10 +9,12 @@
   const UI_KEY='kow_ui_state_v450';
   const SUCCESS='Backup restored successfully. Officer profiles, Officer Badges Held and shared resources have been imported. The app will reload now.';
   const FIELD_IDS=['officerSearch','officerSeasonFilter','officerRoleFilter','officerRarityFilter','compareOfficer','multiSavedPlans'];
+  let startupRestoring=true;
 
   function readUI(){try{return JSON.parse(localStorage.getItem(UI_KEY)||'{}')||{}}catch{return {}}}
   function writeUI(patch){try{localStorage.setItem(UI_KEY,JSON.stringify(Object.assign(readUI(),patch)))}catch{}}
   function saveOfficerSelection(){
+    if(startupRestoring)return;
     const s=document.getElementById('officerSelect');
     if(!s||!s.options.length||s.selectedIndex<0)return;
     const opt=s.options[s.selectedIndex];
@@ -39,13 +41,13 @@
     }
     return true;
   }
-  function saveView(view){if(view)writeUI({view:view})}
+  function saveView(view){if(view&&!startupRestoring)writeUI({view:view})}
   function restoreView(){
     const view=readUI().view;if(!view)return;
     const b=document.querySelector('.bottom-nav button[data-view="'+CSS.escape(view)+'"]');
     if(b&&!b.classList.contains('active'))b.click();
   }
-  function saveField(el){if(el&&el.id)writeUI({['field_'+el.id]:el.value})}
+  function saveField(el){if(el&&el.id&&!startupRestoring)writeUI({['field_'+el.id]:el.value})}
   function restoreFields(){
     const state=readUI();
     FIELD_IDS.forEach(id=>{
@@ -90,13 +92,12 @@
   },false);
   document.addEventListener('input',function(e){if(e.target&&FIELD_IDS.includes(e.target.id))saveField(e.target)},false);
 
-  /* Save the final visible selection before a refresh/navigation as an extra guard. */
-  window.addEventListener('pagehide',saveOfficerSelection);
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveOfficerSelection()});
+  window.addEventListener('pagehide',()=>{if(!startupRestoring)saveOfficerSelection()});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&!startupRestoring)saveOfficerSelection()});
 
-  /* The native app performs additional initialisation after DOM creation. Restore only
-     after load, then once more after that initialisation has settled. This is two finite
-     passes, not polling, and prevents the native default (Liora) overwriting the saved Officer. */
+  /* Critical rule: native startup change events are not allowed to overwrite the
+     previously saved Officer with the default Liora. The persistence listeners stay
+     locked until the saved UI has been restored. */
   window.addEventListener('load',function(){
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       restoreFields();
@@ -105,8 +106,9 @@
       setTimeout(()=>{
         restoreOfficerSelection();
         restoreView();
+        startupRestoring=false;
         document.documentElement.dataset.kowUiRestored='1';
-      },180);
+      },250);
     }));
   },{once:true});
 })();
