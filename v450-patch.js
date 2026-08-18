@@ -1,34 +1,22 @@
 /* KoW Companion v4.5.0 TEST — stability layer only.
    Advanced v4.5 planner/chest changes remain disabled while the stable baseline
-   is verified. This module provides backup reliability and non-destructive UI
-   session persistence without MutationObservers or render loops. */
+   is verified. This module provides backup reliability and UI state persistence
+   without MutationObservers, polling loops or repeated DOM rebuilding. */
 (function(){
   'use strict';
-  window.KOW_V450_RUNTIME_DISABLED = true;
+  window.KOW_V450_RUNTIME_DISABLED=true;
 
   const UI_KEY='kow_ui_state_v450';
   const SUCCESS='Backup restored successfully. Officer profiles, Officer Badges Held and shared resources have been imported. The app will reload now.';
-  const FIELD_IDS=['officerSearch','officerSeasonFilter','officerRoleFilter','officerRarityFilter','compareOfficer','multiSavedPlans'];
+  const FIELD_IDS=[
+    'officerSearch','officerSeasonFilter','officerRoleFilter','officerRarityFilter','compareOfficer','multiSavedPlans',
+    'kowPlannerSession','kowPlannerSeasonFilter','kowFutureOfficerType'
+  ];
+  const CHECK_IDS=['kowPlannerIncludeNotStarted','kowPlannerIncludeOriginals'];
   let startupRestoring=true;
 
   function readUI(){try{return JSON.parse(localStorage.getItem(UI_KEY)||'{}')||{}}catch{return {}}}
   function writeUI(patch){try{localStorage.setItem(UI_KEY,JSON.stringify(Object.assign(readUI(),patch)))}catch{}}
-
-  /* This script is a classic script placed after the deferred module script in the HTML.
-     Therefore it executes before the module's init() function. Seed the empty Officer
-     selector with the previously saved Officer name so native renderOfficerOptions()
-     uses that Officer as its own 'prev' value instead of falling through to S7 Liora. */
-  (function seedOfficerBeforeNativeInit(){
-    const state=readUI();
-    const name=String(state.officerText||'').trim();
-    const s=document.getElementById('officerSelect');
-    if(!name||!s||s.options.length)return;
-    const option=document.createElement('option');
-    option.value=String(state.officerValue??'');
-    option.textContent=name;
-    option.selected=true;
-    s.appendChild(option);
-  })();
 
   function saveOfficerSelection(){
     if(startupRestoring)return;
@@ -50,55 +38,59 @@
   function restoreOfficerSelection(){
     const state=readUI(),s=document.getElementById('officerSelect');
     if(!s||!s.options.length)return false;
-    const idx=findSavedOfficer(s,state);
-    if(idx<0)return false;
-    if(s.selectedIndex!==idx){
-      s.selectedIndex=idx;
-      s.dispatchEvent(new Event('change',{bubbles:true}));
-    }
+    const idx=findSavedOfficer(s,state);if(idx<0)return false;
+    if(s.selectedIndex!==idx){s.selectedIndex=idx;s.dispatchEvent(new Event('change',{bubbles:true}));}
     return true;
   }
-  function saveView(view){if(view&&!startupRestoring)writeUI({view:view})}
+
+  function saveView(view){if(view&&!startupRestoring)writeUI({view})}
   function restoreView(){
     const view=readUI().view;if(!view)return;
     const b=document.querySelector('.bottom-nav button[data-view="'+CSS.escape(view)+'"]');
     if(b&&!b.classList.contains('active'))b.click();
   }
+
   function saveField(el){if(el&&el.id&&!startupRestoring)writeUI({['field_'+el.id]:el.value})}
-  function restoreFields(){
+  function saveCheck(el){if(el&&el.id&&!startupRestoring)writeUI({['check_'+el.id]:!!el.checked})}
+  function restoreFieldsAndChecks(){
     const state=readUI();
     FIELD_IDS.forEach(id=>{
-      const el=document.getElementById(id),key='field_'+id;
-      if(!el||state[key]===undefined)return;
+      const el=document.getElementById(id),key='field_'+id;if(!el||state[key]===undefined)return;
       const wanted=String(state[key]);
       if(el.tagName==='SELECT'&&![...el.options].some(o=>o.value===wanted))return;
-      if(el.value===wanted)return;
       el.value=wanted;
-      el.dispatchEvent(new Event(el.tagName==='INPUT'?'input':'change',{bubbles:true}));
+    });
+    CHECK_IDS.forEach(id=>{
+      const el=document.getElementById(id),key='check_'+id;if(el&&state[key]!==undefined)el.checked=!!state[key];
     });
   }
 
   function saveProgressStatusFilters(){
     if(startupRestoring)return;
-    const boxes=[...document.querySelectorAll('.progressStatusFilter')];
-    if(!boxes.length)return;
-    const state={};
-    boxes.forEach(box=>{state[box.value]=!!box.checked});
-    writeUI({progressStatusFilters:state});
+    const boxes=[...document.querySelectorAll('.progressStatusFilter')];if(!boxes.length)return;
+    const status={};boxes.forEach(box=>status[box.value]=!!box.checked);
+    writeUI({progressStatusFilters:status});
   }
   function restoreProgressStatusFilters(){
-    const saved=readUI().progressStatusFilters;
-    if(!saved||typeof saved!=='object')return;
-    const boxes=[...document.querySelectorAll('.progressStatusFilter')];
-    let changed=false;
-    boxes.forEach(box=>{
-      if(Object.prototype.hasOwnProperty.call(saved,box.value)){
-        const wanted=!!saved[box.value];
-        if(box.checked!==wanted){box.checked=wanted;changed=true;}
-      }
-    });
-    if(changed&&typeof window.renderSavedOfficerProgress==='function')window.renderSavedOfficerProgress();
+    const saved=readUI().progressStatusFilters;if(!saved||typeof saved!=='object')return false;
+    const boxes=[...document.querySelectorAll('.progressStatusFilter')];if(!boxes.length)return false;
+    boxes.forEach(box=>{if(Object.prototype.hasOwnProperty.call(saved,box.value))box.checked=!!saved[box.value];});
+    return true;
   }
+
+  /* Seed state immediately, before the native module performs its startup render.
+     This prevents HTML defaults (Liora / all Progress boxes / Planner defaults)
+     from becoming the effective state on every browser refresh. */
+  (function seedBeforeNativeInit(){
+    const state=readUI();
+    const s=document.getElementById('officerSelect');
+    const name=String(state.officerText||'').trim();
+    if(name&&s&&!s.options.length){
+      const option=document.createElement('option');option.value=String(state.officerValue??'');option.textContent=name;option.selected=true;s.appendChild(option);
+    }
+    restoreProgressStatusFilters();
+    restoreFieldsAndChecks();
+  })();
 
   async function restoreBackupFile(file){
     const payload=JSON.parse(await file.text());
@@ -116,36 +108,40 @@
   },true);
 
   document.addEventListener('change',async function(e){
-    const input=e.target;if(!input)return;
-    if(input.id==='restoreAppData'){
-      e.stopImmediatePropagation();const file=input.files&&input.files[0];if(!file)return;
+    const el=e.target;if(!el)return;
+    if(el.id==='restoreAppData'){
+      e.stopImmediatePropagation();const file=el.files&&el.files[0];if(!file)return;
       try{await restoreBackupFile(file)}catch(err){
         const msg='Backup restore failed: '+(err&&err.message?err.message:String(err));
         const status=document.getElementById('backupStatus');if(status)status.textContent=msg;
-        alert(msg);input.value='';
+        alert(msg);el.value='';
       }
       return;
     }
-    if(input.id==='officerSelect')saveOfficerSelection();
-    if(input.classList&&input.classList.contains('progressStatusFilter'))saveProgressStatusFilters();
-    if(FIELD_IDS.includes(input.id))saveField(input);
-  },false);
-  document.addEventListener('input',function(e){if(e.target&&FIELD_IDS.includes(e.target.id))saveField(e.target)},false);
+    if(el.id==='officerSelect')saveOfficerSelection();
+    if(el.classList&&el.classList.contains('progressStatusFilter'))saveProgressStatusFilters();
+    if(FIELD_IDS.includes(el.id))saveField(el);
+    if(CHECK_IDS.includes(el.id))saveCheck(el);
+  },true);
+  document.addEventListener('input',function(e){const el=e.target;if(el&&FIELD_IDS.includes(el.id))saveField(el)},true);
 
-  window.addEventListener('pagehide',()=>{if(!startupRestoring){saveOfficerSelection();saveProgressStatusFilters();}});
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&!startupRestoring){saveOfficerSelection();saveProgressStatusFilters();}});
+  function saveAllUi(){
+    if(startupRestoring)return;
+    saveOfficerSelection();saveProgressStatusFilters();
+    FIELD_IDS.forEach(id=>saveField(document.getElementById(id)));
+    CHECK_IDS.forEach(id=>saveCheck(document.getElementById(id)));
+  }
+  window.addEventListener('pagehide',saveAllUi);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveAllUi()});
 
   window.addEventListener('load',function(){
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      restoreFields();
-      restoreOfficerSelection();
-      restoreView();
-      restoreProgressStatusFilters();
+      restoreFieldsAndChecks();restoreProgressStatusFilters();restoreOfficerSelection();restoreView();
       setTimeout(()=>{
-        restoreOfficerSelection();
-        restoreView();
-        restoreProgressStatusFilters();
+        restoreFieldsAndChecks();restoreProgressStatusFilters();restoreOfficerSelection();restoreView();
         startupRestoring=false;
+        /* Re-run the native views once, after persistence is unlocked. */
+        document.querySelectorAll('.progressStatusFilter').forEach(box=>box.dispatchEvent(new Event('change',{bubbles:true})));
         document.documentElement.dataset.kowUiRestored='1';
       },250);
     }));
