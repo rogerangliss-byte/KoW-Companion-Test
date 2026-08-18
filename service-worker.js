@@ -1,5 +1,5 @@
-const CACHE='kow-english-v4.5.0-test-stability-r9';
-const STABILITY='./v450-stability-r9.js?v=20260818-r9';
+const CACHE='kow-english-v4.5.0-test-stability-r10';
+const STABILITY='./v450-stability-r10.js?v=20260818-r10';
 const ASSETS=[
   './',
   './index.html',
@@ -17,7 +17,7 @@ self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET')return;
   const url=new URL(event.request.url);
-  if(url.pathname.endsWith('/v450-patch.js')||url.pathname.endsWith('/v450-stability-r6.js')||url.pathname.endsWith('/v450-stability-r7.js')||url.pathname.endsWith('/v450-stability-r8.js')){
+  if(url.pathname.endsWith('/v450-patch.js')||url.pathname.endsWith('/v450-stability-r6.js')||url.pathname.endsWith('/v450-stability-r7.js')||url.pathname.endsWith('/v450-stability-r8.js')||url.pathname.endsWith('/v450-stability-r9.js')){
     event.respondWith(fetch(STABILITY,{cache:'no-store'}).catch(()=>caches.match(STABILITY)));
     return;
   }
