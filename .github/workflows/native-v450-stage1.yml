@@ -1,0 +1,252 @@
+name: Native v4.5 Stage 1
+
+on:
+  push:
+    paths:
+      - '.github/workflows/native-v450-stage1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Integrate native state persistence and corrected chest rules
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+
+          def rep(old,new,label):
+              global s
+              if old not in s:
+                  raise SystemExit(f'Missing expected source for {label}')
+              s=s.replace(old,new,1)
+
+          # ---------- Native UI state helpers ----------
+          marker="const $=id=>document.getElementById(id);\n"
+          insert=r'''const $=id=>document.getElementById(id);
+
+// v4.5.0 TEST — native working-state persistence.
+// Kept inside the application module so startup restores state once, without runtime patch layers.
+const UI_STATE_KEY='kow_ui_state_v450_native1';
+const PLANNER_WORKING_KEY='kow_planner_working_v450_native1';
+function getUiState(){try{return JSON.parse(localStorage.getItem(UI_STATE_KEY)||'{}')||{}}catch{return {}}}
+function saveUiState(patch){try{localStorage.setItem(UI_STATE_KEY,JSON.stringify(Object.assign(getUiState(),patch)))}catch{}}
+function saveSelectedOfficerState(){
+ const sel=$('officerSelect');
+ if(!sel||sel.selectedIndex<0)return;
+ saveUiState({officerName:String(sel.options[sel.selectedIndex]?.textContent||'').trim()});
+}
+function saveOfficerFilterState(){
+ saveUiState({officerFilters:{
+  search:$('officerSearch')?.value||'',season:$('officerSeasonFilter')?.value||'',
+  rarity:$('officerRarityFilter')?.value||'',role:$('officerRoleFilter')?.value||''
+ }});
+}
+function restoreOfficerFilterState(){
+ const f=getUiState().officerFilters||{};
+ if($('officerSearch'))$('officerSearch').value=f.search||'';
+ if($('officerSeasonFilter')&&[...$('officerSeasonFilter').options].some(o=>o.value===String(f.season||'')))$('officerSeasonFilter').value=f.season||'';
+ if($('officerRarityFilter')&&[...$('officerRarityFilter').options].some(o=>o.value===String(f.rarity||'')))$('officerRarityFilter').value=f.rarity||'';
+ if($('officerRoleFilter')&&[...$('officerRoleFilter').options].some(o=>o.value===String(f.role||'')))$('officerRoleFilter').value=f.role||'';
+}
+function saveStatusFilterState(){
+ const map=sel=>Object.fromEntries([...document.querySelectorAll(sel)].map(x=>[x.value,!!x.checked]));
+ saveUiState({progressFilters:map('.progressStatusFilter'),compareFilters:map('.compareStatusFilter')});
+}
+function restoreStatusFilterState(){
+ const st=getUiState();
+ const apply=(sel,map)=>{if(!map)return;document.querySelectorAll(sel).forEach(x=>{if(Object.prototype.hasOwnProperty.call(map,x.value))x.checked=!!map[x.value]})};
+ apply('.progressStatusFilter',st.progressFilters);apply('.compareStatusFilter',st.compareFilters);
+}
+function saveComparePickState(){
+ const names=[...document.querySelectorAll('.progressComparePick:checked')].map(x=>String(x.closest('label')?.querySelector('span')?.textContent||'').trim()).filter(Boolean);
+ saveUiState({comparePicks:names});
+}
+function restoreComparePickState(){
+ const names=new Set(getUiState().comparePicks||[]);
+ document.querySelectorAll('.progressComparePick').forEach(x=>{const n=String(x.closest('label')?.querySelector('span')?.textContent||'').trim();x.checked=names.has(n)});
+}
+function saveActiveViewState(view){if(view)saveUiState({view})}
+function restoreActiveViewState(){
+ const view=getUiState().view;if(!view)return;
+ const b=document.querySelector('.bottom-nav button[data-view="'+CSS.escape(view)+'"]');if(b)b.click();
+}
+function getPlannerWorkingState(){try{return JSON.parse(localStorage.getItem(PLANNER_WORKING_KEY)||'{}')||{}}catch{return {}}}
+function savePlannerWorkingState(){
+ try{
+  const ids=['multiPlanName','multiOrv','multiUniversal','multiChests','multiSelectionChests','multiChestMode','kowPlannerSession','kowPlannerSeasonFilter','kowFutureOfficerType','kowPlannerIncludeNotStarted','kowPlannerIncludeOriginals','scenarioSession','scenarioOfficerCount','scenarioName','scenarioYear','compareOfficerSelect'];
+  const controls={};ids.forEach(id=>{const e=$(id);if(e)controls[id]=e.type==='checkbox'?!!e.checked:String(e.value??'')});
+  localStorage.setItem(PLANNER_WORKING_KEY,JSON.stringify({controls,officers:multiPlanOfficers.map(x=>({officerIndex:+x.officerIndex||0,badgesNeeded:Math.max(0,+x.badgesNeeded||0)}))}));
+ }catch{}
+}
+function restorePlannerWorkingState(){
+ const st=getPlannerWorkingState(),controls=st.controls||{};
+ Object.entries(controls).forEach(([id,v])=>{const e=$(id);if(!e)return;if(e.type==='checkbox')e.checked=!!v;else if(e.tagName!=='SELECT'||[...e.options].some(o=>o.value===String(v)))e.value=String(v)});
+ multiPlanOfficers=Array.isArray(st.officers)&&st.officers.length?st.officers.map(x=>({officerIndex:+x.officerIndex||0,badgesNeeded:Math.max(0,+x.badgesNeeded||0)})):[{officerIndex:0,badgesNeeded:1600}];
+ renderMultiPlanner();
+}
+'''
+          rep(marker,insert,'native state helper insertion')
+
+          # Restore filters and selected Officer BEFORE normal option render.
+          rep("await loadOfficers();renderOfficerFilters();renderOfficerOptions();",
+              "await loadOfficers();renderOfficerFilters();restoreOfficerFilterState();renderOfficerOptions(getUiState().officerName||undefined);",
+              'native Officer startup restore')
+
+          # Save filters when changed.
+          rep("el.addEventListener(evt,()=>{renderOfficerOptions();calculate();populateCompareOfficers();buildUpgradeSummary()});",
+              "el.addEventListener(evt,()=>{saveOfficerFilterState();renderOfficerOptions();saveSelectedOfficerState();calculate();populateCompareOfficers();buildUpgradeSummary()});",
+              'Officer filter persistence')
+
+          # Save selected officer directly in native change handler.
+          rep("$('officerSelect').addEventListener('change',()=>{\n if(loadedOfficerProfileIndex!==null",
+              "$('officerSelect').addEventListener('change',()=>{\n saveSelectedOfficerState();\n if(loadedOfficerProfileIndex!==null",
+              'selected Officer persistence')
+
+          # Bottom-nav native handler persists view.
+          rep("document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.bottom-nav button').forEach(x=>x.classList.remove('active'));",
+              "document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{saveActiveViewState(b.dataset.view);document.querySelectorAll('.bottom-nav button').forEach(x=>x.classList.remove('active'));",
+              'view persistence')
+
+          # Multi Planner row handlers save directly, no observers/loops.
+          rep("tbody.querySelectorAll('[data-multi-officer]').forEach((el,i)=>el.onchange=()=>{multiPlanOfficers[i].officerIndex=+el.value;renderMultiPlanner();calculateMultiPlanner()});",
+              "tbody.querySelectorAll('[data-multi-officer]').forEach((el,i)=>el.onchange=()=>{multiPlanOfficers[i].officerIndex=+el.value;renderMultiPlanner();calculateMultiPlanner();savePlannerWorkingState()});",
+              'multi officer row persistence')
+          rep("tbody.querySelectorAll('[data-multi-needed]').forEach((el,i)=>el.oninput=()=>{multiPlanOfficers[i].badgesNeeded=Math.max(0,+el.value||0);calculateMultiPlanner()});",
+              "tbody.querySelectorAll('[data-multi-needed]').forEach((el,i)=>el.oninput=()=>{multiPlanOfficers[i].badgesNeeded=Math.max(0,+el.value||0);calculateMultiPlanner();savePlannerWorkingState()});",
+              'multi needed persistence')
+          rep("tbody.querySelectorAll('[data-up]').forEach((b,i)=>b.onclick=()=>{if(i){[multiPlanOfficers[i-1],multiPlanOfficers[i]]=[multiPlanOfficers[i],multiPlanOfficers[i-1]];renderMultiPlanner();calculateMultiPlanner()}});",
+              "tbody.querySelectorAll('[data-up]').forEach((b,i)=>b.onclick=()=>{if(i){[multiPlanOfficers[i-1],multiPlanOfficers[i]]=[multiPlanOfficers[i],multiPlanOfficers[i-1]];renderMultiPlanner();calculateMultiPlanner();savePlannerWorkingState()}});",
+              'multi up persistence')
+          rep("tbody.querySelectorAll('[data-down]').forEach((b,i)=>b.onclick=()=>{if(i<multiPlanOfficers.length-1){[multiPlanOfficers[i+1],multiPlanOfficers[i]]=[multiPlanOfficers[i],multiPlanOfficers[i+1]];renderMultiPlanner();calculateMultiPlanner()}});",
+              "tbody.querySelectorAll('[data-down]').forEach((b,i)=>b.onclick=()=>{if(i<multiPlanOfficers.length-1){[multiPlanOfficers[i+1],multiPlanOfficers[i]]=[multiPlanOfficers[i],multiPlanOfficers[i+1]];renderMultiPlanner();calculateMultiPlanner();savePlannerWorkingState()}});",
+              'multi down persistence')
+          rep("tbody.querySelectorAll('[data-remove]').forEach((b,i)=>b.onclick=()=>{multiPlanOfficers.splice(i,1);renderMultiPlanner();calculateMultiPlanner()});",
+              "tbody.querySelectorAll('[data-remove]').forEach((b,i)=>b.onclick=()=>{multiPlanOfficers.splice(i,1);renderMultiPlanner();calculateMultiPlanner();savePlannerWorkingState()});",
+              'multi remove persistence')
+
+          # Planner startup: restore native working state instead of forced default row.
+          rep("refreshMultiSavedPlans();\n multiPlanOfficers=[{officerIndex:0,badgesNeeded:1600}];\n renderMultiPlanner();",
+              "refreshMultiSavedPlans();\n restorePlannerWorkingState();",
+              'Planner startup restore')
+
+          rep("if($('multiAddOfficer'))$('multiAddOfficer').onclick=()=>{multiPlanOfficers.push({officerIndex:0,badgesNeeded:1600});renderMultiPlanner()};",
+              "if($('multiAddOfficer'))$('multiAddOfficer').onclick=()=>{multiPlanOfficers.push({officerIndex:0,badgesNeeded:1600});renderMultiPlanner();savePlannerWorkingState()};",
+              'Planner add persistence')
+          rep("if($('multiUseCurrent'))$('multiUseCurrent').onclick=()=>{const x=(typeof kowInvGet==='function'?kowInvGet():{});$('multiOrv').value=x.invOrv||0;$('multiUniversal').value=x.invUniversalLegendary||0;$('multiChests').value=x.invLegendaryBadgeChests||0;if($('multiSelectionChests'))$('multiSelectionChests').value=x.invLegendarySelectionChests||0;calculateMultiPlanner()};",
+              "if($('multiUseCurrent'))$('multiUseCurrent').onclick=()=>{const x=(typeof kowInvGet==='function'?kowInvGet():{});$('multiOrv').value=x.invOrv||0;$('multiUniversal').value=x.invUniversalLegendary||0;$('multiChests').value=x.invLegendaryBadgeChests||0;if($('multiSelectionChests'))$('multiSelectionChests').value=x.invLegendarySelectionChests||0;calculateMultiPlanner();savePlannerWorkingState()};",
+              'Planner use current persistence')
+          rep("['multiOrv','multiUniversal','multiChests','multiChestMode'].forEach(id=>{const el=$(id);if(el)el.addEventListener('input',calculateMultiPlanner)});",
+              "['multiPlanName','multiOrv','multiUniversal','multiChests','multiSelectionChests','multiChestMode','kowPlannerSession','kowPlannerSeasonFilter','kowFutureOfficerType','kowPlannerIncludeNotStarted','kowPlannerIncludeOriginals','scenarioSession','scenarioOfficerCount','scenarioName','scenarioYear','compareOfficerSelect'].forEach(id=>{const el=$(id);if(!el)return;const evt=(el.type==='checkbox'||el.tagName==='SELECT')?'change':'input';el.addEventListener(evt,()=>{if(id.startsWith('multi'))calculateMultiPlanner();savePlannerWorkingState()})});",
+              'Planner control persistence')
+
+          # Save Selection Chest value in named plans too.
+          rep("plans[name]={name,orv:+$('multiOrv').value||0,universal:+$('multiUniversal').value||0,chests:+$('multiChests').value||0,chestMode:$('multiChestMode').value,officers:multiPlanOfficers};",
+              "plans[name]={name,orv:+$('multiOrv').value||0,universal:+$('multiUniversal').value||0,chests:+$('multiChests').value||0,selectionChests:+$('multiSelectionChests').value||0,chestMode:$('multiChestMode').value,officers:multiPlanOfficers};",
+              'saved plan selection chests')
+          rep("$('multiPlanName').value=p.name||name;$('multiOrv').value=p.orv||0;$('multiUniversal').value=p.universal||0;$('multiChests').value=p.chests||0;$('multiChestMode').value=p.chestMode||'optimise';multiPlanOfficers=Array.isArray(p.officers)?p.officers:[];renderMultiPlanner();",
+              "$('multiPlanName').value=p.name||name;$('multiOrv').value=p.orv||0;$('multiUniversal').value=p.universal||0;$('multiChests').value=p.chests||0;if($('multiSelectionChests'))$('multiSelectionChests').value=p.selectionChests||0;$('multiChestMode').value=p.chestMode||'optimise';multiPlanOfficers=Array.isArray(p.officers)?p.officers:[];renderMultiPlanner();savePlannerWorkingState();",
+              'load saved plan selection chests')
+
+          # ---------- Progress + Compare persistence ----------
+          rep("document.addEventListener('DOMContentLoaded',()=>setTimeout(renderSavedOfficerProgress,0));",
+              "document.addEventListener('DOMContentLoaded',()=>{restoreStatusFilterState();setTimeout(renderSavedOfficerProgress,0)});",
+              'progress filter restore')
+          rep("box.dataset.compareRows=JSON.stringify(rows);",
+              "box.dataset.compareRows=JSON.stringify(rows);restoreComparePickState();",
+              'compare pick restore')
+          rep("if(all)all.onclick=()=>document.querySelectorAll('.progressComparePick').forEach(x=>x.checked=true);",
+              "if(all)all.onclick=()=>{document.querySelectorAll('.progressComparePick').forEach(x=>x.checked=true);saveComparePickState()};",
+              'compare select all persistence')
+          rep("if(clear)clear.onclick=()=>{document.querySelectorAll('.progressComparePick').forEach(x=>x.checked=false);document.getElementById('compareProgressResultsWrap').style.display='none';document.getElementById('compareProgressRecommendation').style.display='none';};",
+              "if(clear)clear.onclick=()=>{document.querySelectorAll('.progressComparePick').forEach(x=>x.checked=false);saveComparePickState();document.getElementById('compareProgressResultsWrap').style.display='none';document.getElementById('compareProgressRecommendation').style.display='none';};",
+              'compare clear persistence')
+          rep("document.querySelectorAll('.progressStatusFilter').forEach(x=>x.addEventListener('change',()=>{\n   renderSavedOfficerProgress();",
+              "document.querySelectorAll('.progressStatusFilter').forEach(x=>x.addEventListener('change',()=>{\n   saveStatusFilterState();renderSavedOfficerProgress();",
+              'progress filter save')
+          rep("document.querySelectorAll('.compareStatusFilter').forEach(x=>x.addEventListener('change',()=>{\n   renderProgressCompareChoices();",
+              "document.querySelectorAll('.compareStatusFilter').forEach(x=>x.addEventListener('change',()=>{\n   saveStatusFilterState();renderProgressCompareChoices();",
+              'compare filter save')
+          rep("document.addEventListener('DOMContentLoaded',setupProgressComparison);",
+              "document.addEventListener('DOMContentLoaded',()=>{restoreStatusFilterState();setupProgressComparison();document.addEventListener('change',e=>{if(e.target?.classList?.contains('progressComparePick'))saveComparePickState()})});",
+              'compare setup restore')
+
+          # Restore last view once native init is fully wired.
+          rep("renderSkillStrands();renderDb();calculate();populateCompareOfficers();buildUpgradeSummary();\n window.addEventListener('resize',applyResponsivePageBackground);",
+              "renderSkillStrands();renderDb();calculate();populateCompareOfficers();buildUpgradeSummary();restoreStatusFilterState();restoreComparePickState();saveSelectedOfficerState();setTimeout(restoreActiveViewState,0);\n window.addEventListener('resize',applyResponsivePageBackground);",
+              'final native UI restore')
+
+          # ---------- Correct chest rules ----------
+          old_ui='''      <div class="notice">\n        Each Selection Chest can be used as either <b>1 Universal Legendary Badge</b> or\n        <b><span id="selectionChestOrvValue">600</span> Officer Readiness Vouchers</b>.\n        The ORV value follows the highest ORV-per-badge cost in the latest published season.\n      </div>\n      <label>Use Selection Chests as</label>\n      <select id="legendaryBadgeChestMode">\n        <option value="badge">Universal Legendary Badges</option>\n        <option value="orv">Officer Readiness Vouchers</option>\n      </select>'''
+          new_ui='''      <div class="notice">\n        Each <b>Legendary Officer Badge Chest</b> can be used as either <b>1 Universal Legendary Badge</b> or <b>600 Officer Readiness Vouchers</b>. A chest cannot count as both.\n      </div>\n      <label>Use Legendary Officer Badge Chests as</label>\n      <select id="legendaryBadgeChestMode">\n        <option value="badge">Universal Legendary Badges (1 each)</option>\n        <option value="orv">Officer Readiness Vouchers (600 each)</option>\n      </select>'''
+          rep(old_ui,new_ui,'Development chest wording')
+          s=s.replace('<div class="stat"><span>ORV generated from Selection Chests</span><b id="selectionChestOrvGenerated">0</b></div>',
+                      '<div class="stat"><span>ORV generated from Legendary Officer Badge Chests</span><b id="selectionChestOrvGenerated">0</b></div>',1)
+
+          old_calc=''' const selectionChests=officerRarity(o)==='Legendary'?+$('legendaryBadgeChestHeld').value:0;\n const selectionMode=$('legendaryBadgeChestMode').value;\n const latestOrvCost=latestSeasonOrvCost();\n const selectionChestBadges=selectionMode==='badge'?selectionChests:0;\n const selectionChestOrv=selectionMode==='orv'?selectionChests*latestOrvCost:0;\n const universalBadgesAvailable=universalBadgesHeld+selectionChestBadges;'''
+          new_calc=''' const badgeChests=officerRarity(o)==='Legendary'?+$('legendaryBadgeChestHeld').value:0;\n const badgeChestMode=$('legendaryBadgeChestMode').value;\n const badgeChestBadges=badgeChestMode==='badge'?badgeChests:0;\n const badgeChestOrv=badgeChestMode==='orv'?badgeChests*600:0;\n const specificSelectionChests=officerRarity(o)==='Legendary'&&selectionChestEligibleOfficer(o)?+$('legendarySelectionChestHeld').value:0;\n const universalBadgesAvailable=universalBadgesHeld+badgeChestBadges+specificSelectionChests;'''
+          rep(old_calc,new_calc,'Development chest calculation')
+          s=s.replace(" const directOrv=+$('orvHeld').value;\n const orvHeld=directOrv+selectionChestOrv;\n $('selectionChestOrvValue').textContent=fmt(latestOrvCost);\n $('selectionChestOrvGenerated').textContent=fmt(selectionChestOrv);",
+                      " const directOrv=+$('orvHeld').value;\n const orvHeld=directOrv+badgeChestOrv;\n $('selectionChestOrvGenerated').textContent=fmt(badgeChestOrv);",1)
+
+          # Selection eligibility works against database names that include S# prefixes.
+          rep("return LEGENDARY_SELECTION_CHEST_ELIGIBLE.has(String(o?.name||o||'').trim());",
+              "return LEGENDARY_SELECTION_CHEST_ELIGIBLE.has(String(o?.name||o||'').trim().replace(/^S\\d+\\s+/i,''));",
+              'selection chest eligibility normalization')
+
+          # Optimiser counts only badge-mode ordinary chests plus eligible specific Selection Chests.
+          rep("const shared=numericText('universalBadgeHeld')+numericText('legendaryBadgeChestHeld');",
+              "const shared=numericText('universalBadgeHeld')+($('legendaryBadgeChestMode')?.value==='badge'?numericText('legendaryBadgeChestHeld'):0)+(selectionChestEligibleOfficer(o)?numericText('legendarySelectionChestHeld'):0);",
+              'Resource Optimiser chest calculation')
+
+          # Persist/apply the separate Selection Chest resource in global resource state.
+          rep("legendaryBadgeChestHeld:$('legendaryBadgeChestHeld').value,\n  legendaryBadgeChestMode:$('legendaryBadgeChestMode').value,",
+              "legendaryBadgeChestHeld:$('legendaryBadgeChestHeld').value,\n  legendarySelectionChestHeld:$('legendarySelectionChestHeld').value,\n  legendaryBadgeChestMode:$('legendaryBadgeChestMode').value,",
+              'capture selection chest resource')
+          rep("$('legendaryBadgeChestHeld').value=d.legendaryBadgeChestHeld??0;\n  $('legendaryBadgeChestMode').value=d.legendaryBadgeChestMode??'badge';",
+              "$('legendaryBadgeChestHeld').value=d.legendaryBadgeChestHeld??0;\n  $('legendarySelectionChestHeld').value=d.legendarySelectionChestHeld??0;\n  $('legendaryBadgeChestMode').value=d.legendaryBadgeChestMode??'badge';",
+              'apply selection chest resource')
+          rep("'legendaryBadgeChestHeld','legendaryBadgeChestMode','orvHeld'",
+              "'legendaryBadgeChestHeld','legendarySelectionChestHeld','legendaryBadgeChestMode','orvHeld'",
+              'autosave selection chest resource')
+          rep("['universalBadgeHeld','legendaryBadgeChestHeld','legendaryBadgeChestMode'].forEach(id=>{",
+              "['universalBadgeHeld','legendaryBadgeChestHeld','legendarySelectionChestHeld','legendaryBadgeChestMode'].forEach(id=>{",
+              'selection chest calculate wiring')
+
+          # Central Inventory bridge corrections.
+          s=s.replace("['universalLegendaryHeld','invUniversalLegendary']","['universalBadgeHeld','invUniversalLegendary']",1)
+          s=s.replace("if(sel&&x.officerBadges)kowInvField('officerBadgesHeld',x.officerBadges[sel.value]||0);",
+                      "if(sel&&x.officerBadges){const name=sel.options[sel.selectedIndex]?.textContent?.trim()||'';kowInvField('badgeHeld',x.officerBadges[name]||0);}",1)
+
+          # Help correction: Selection Chests no longer described as Universal/ORV choice.
+          s=s.replace("Each <b>Legendary Officer Badge Selection Chest</b> can be used as <b>either</b> 1 Universal Legendary Badge <b>or</b> converted to the latest-Season Officer Readiness Voucher (ORV) value. A chest cannot count as both. With the current S7 database the benchmark is <b>600 ORV per chest</b>.",
+                      "Each <b>Legendary Officer Badge Selection Chest</b> gives <b>1 specific Legendary Officer Badge</b> for an Officer currently available in that chest. It does not convert to ORV. Each <b>Legendary Officer Badge Chest</b> can instead be used as either <b>1 Universal Legendary Badge</b> or <b>600 ORV</b>.",1)
+
+          p.write_text(s,encoding='utf-8')
+          PY
+
+      - name: Sanity checks
+        run: |
+          grep -q "kow_ui_state_v450_native1" index.html
+          grep -q "restorePlannerWorkingState" index.html
+          grep -q "Officer Readiness Vouchers (600 each)" index.html
+          ! grep -q "Use Selection Chests as" index.html
+          ! grep -q "ORV generated from Selection Chests" index.html
+
+      - name: Commit native integration and remove one-shot workflow
+        run: |
+          git config user.name 'FireStorm'
+          git config user.email 'roger.angliss@gmail.com'
+          rm -f .github/workflows/native-v450-stage1.yml
+          git add -A
+          git commit -m 'Integrate native v4.5 state persistence and correct chest rules'
+          git push origin main
