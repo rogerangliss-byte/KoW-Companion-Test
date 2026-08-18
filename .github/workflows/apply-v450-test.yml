@@ -1,4 +1,4 @@
-name: Apply v4.5.0 English TEST 2
+name: Apply v4.5.0 English TEST 3
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Patch index for v4.5.0 TEST 2
+      - name: Patch index for v4.5.0 TEST 3
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -24,29 +24,28 @@ jobs:
           s = p.read_text(encoding='utf-8')
 
           s = s.replace('<title>KoW Companion v4.4.0 TEST</title>', '<title>KoW Companion v4.5.0 TEST</title>')
+          s = re.sub(r'ENGLISH TEST VERSION — v4\.5\.0 TEST [123] — [^<]+? — NOT LIVE',
+                     'ENGLISH TEST VERSION — v4.5.0 TEST 3 — STABLE OPTIMISER SELECTOR — NOT LIVE', s)
           s = s.replace('ENGLISH TEST VERSION — v4.4.0 TEST 1 — PLANNING READINESS DASHBOARD — NOT LIVE',
-                        'ENGLISH TEST VERSION — v4.5.0 TEST 2 — ADVANCED PLANNING & OPTIMISER FIX — NOT LIVE')
-          s = s.replace('ENGLISH TEST VERSION — v4.5.0 TEST 1 — ADVANCED PLANNING & CORRECT CHEST LOGIC — NOT LIVE',
-                        'ENGLISH TEST VERSION — v4.5.0 TEST 2 — ADVANCED PLANNING & OPTIMISER FIX — NOT LIVE')
+                        'ENGLISH TEST VERSION — v4.5.0 TEST 3 — STABLE OPTIMISER SELECTOR — NOT LIVE')
           s = s.replace("const APP_VERSION='4.3.59';", "const APP_VERSION='4.5.0';")
 
-          # Normalise any previous v4.5 patch cache key to one exact TEST 2 URL.
-          script = '<script src="./v450-patch.js?v=450-test2-r4"></script>'
+          script = '<script src="./v450-patch.js?v=450-test3-r1"></script>'
           s = re.sub(r'<script src="\./v450-patch\.js\?v=[^"]+"></script>', script, s)
           if script not in s:
               s = s.replace('</body>', script + '\n</body>')
 
           p.write_text(s, encoding='utf-8')
           PY
-      - name: Verify TEST 2 build identity
+      - name: Verify TEST 3 build identity
         run: |
-          grep -Fx '<script src="./v450-patch.js?v=450-test2-r4"></script>' index.html
-          grep -F 'ENGLISH TEST VERSION — v4.5.0 TEST 2 — ADVANCED PLANNING & OPTIMISER FIX — NOT LIVE' index.html
-      - name: Commit patched TEST 2 build
+          grep -Fx '<script src="./v450-patch.js?v=450-test3-r1"></script>' index.html
+          grep -F 'ENGLISH TEST VERSION — v4.5.0 TEST 3 — STABLE OPTIMISER SELECTOR — NOT LIVE' index.html
+      - name: Commit patched TEST 3 build
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'Normalize v4.5.0 English TEST 2 build'
+          git commit -m 'Activate v4.5.0 English TEST 3 build'
           git push
