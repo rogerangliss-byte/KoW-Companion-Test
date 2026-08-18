@@ -1,22 +1,44 @@
-# KoW Companion v4.5.0 TEST 1
+# KoW Companion v4.4.0 LIVEnced Multi-Officer Planning with saved Progress and Inventory.
 
-English Test environment for KoW Companion. This repository is **not Live**.
+## What's New — v4.4.0 LIVE
 
-## v4.5.0 TEST 1
-- Correct Legendary Officer Badge Chest rule: **1 Universal Legendary Officer Badge OR 600 ORV**.
-- Correct Legendary Officer Badge Selection Chest rule: **1 eligible individual Officer Badge only**; no ORV option.
-- Smart Resource Shortfall shows **Fully Funded / Partially Funded / Shortfall** and the remaining badge requirement.
-- Resource Optimiser uses the canonical Officer selector and no MutationObserver refresh loop.
-- Original Legendary Officers remain ineligible for ORV/SRV.
-- Epic and Elite rarity restrictions remain unchanged.
+- Planning Readiness Dashboard for saved future-Officer scenarios.
+- Separate Badge, Star and XP readiness percentages.
+- Overall readiness based on the limiting resource.
+- Priority Target highlighting the least-ready saved scenario.
+- Suggested Next Action based on the first resource shortfall.
+- Open in Planner shortcut for saved scenarios.
+- No saved-data migration required.
+- Future session planning for October, January, April and July.
+- Focused future reports, e.g. April — Tanks → S8 Tank — PROJECTED.
+- Season filter: All Sessions, Original, S2–S7.
+- Season + Officer Type reports, e.g. S6 + Tank.
+- Top 10 / Show all / Collapse for larger reports.
+- Projected resources for one or two future Legendary Officers.
+- ORV/SRV forecast linked to Releases percentage growth.
+- Releases includes an Open Advanced Planner shortcut.
+- MAXED Officers excluded from recommendations.
 
-## Repository cleanup
-- Removed temporary TEST 2/TEST 3 workflow rewriting.
-- Removed the separate optimiser-fix file.
-- Removed obsolete temporary planning/release files and the empty `download` file.
-- Service worker is network-first and no longer rewrites HTML.
 
-## Test rule
-Do not copy this build to English Live until the v4.5.0 feature and regression QA has been approved.
+Approved Live release of KoW Companion.
 
-See `RELEASE-v4.5.0-TEST1.md` for the test-build summary and `USER-GUIDE.md` for the full application guide.
+## v4.3.55 features
+- Officer Search, Season and Officer Type / Role filters.
+- Officer portraits loaded from the existing `officer-portraits` folder.
+- Officer Upgrade Summary.
+- Planner and Resource Optimiser.
+- Compare two Officers by Officer Readiness Voucher (ORV) cost per Officer Badge.
+- Suggested shared-resource allocation strategy.
+- Export App Backup and Restore App Backup.
+- Updated in-app Help and User Guide.
+
+## Deployment
+Upload these files to the root of the Live `KoW-Companion` repository.
+
+This package deliberately contains **no Officer portrait files**. Leave the existing `officer-portraits` folder untouched.
+
+- Corrected v4.3.36 Officer database migration so the 8 Epic and 2 Elite Officers are merged into existing 56-Officer browser databases without resetting saved progress. All Rarities now contains 66 Officers.
+
+
+## v4.3.36 Documentation
+See `USER-GUIDE.md` for the comprehensive user guide and `RELEASE-v4.3.36.md` for the full LIVE release notes.

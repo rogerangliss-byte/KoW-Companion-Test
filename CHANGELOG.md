@@ -1,13 +1,8 @@
-## v4.5.0 TEST 1
-- Consolidated v4.5 English Test planning logic into one stable module and removed the separate optimiser-fix file.
-- Legendary Officer Badge Chest corrected to: 1 Universal Legendary Officer Badge **or** 600 ORV.
-- Legendary Officer Badge Selection Chest corrected to: 1 eligible individual Officer Badge only; no ORV option and no Universal conversion.
-- Added Smart Resource Shortfall with Fully Funded / Partially Funded / Shortfall status.
-- Resource Optimiser Officer selector now uses the canonical Officer selector and no MutationObserver refresh loop.
-- Development outputs are reconciled to the corrected chest rules.
-- Removed temporary GitHub Actions patch/rebuild workflows, the empty `download` file and obsolete temporary Test planning/release files.
-- Service worker returned to a simple network-first cache with no HTML rewriting.
-- English Test only; English Live remains unchanged.
+# v4.4.0 LIVE
+- Added Planning Readiness Dashboard for saved future-Officer scenarios.
+- Added Badge, Star and XP readiness percentages and overall limiting-resource readiness.
+- Added Priority Target, Suggested Next Action and Open in Planner.
+- Updated runtime version metadata and What's New content to v4.4.0.
 
 ## v4.3.51 TEST
 - Planner: Central Inventory individual Officer Badges applied first and displayed separately.
@@ -44,18 +39,22 @@
 - Added portraits for all 8 Epic and 2 Elite Original Officers.
 - Corrected Dorothea spelling throughout published Officer data and added migration compatibility for previously saved `Dorethea` profiles.
 
+
 - Rarity flow correction: Stars and Skill Promotion information now follow the selected Officer rarity. Epic/Elite hide Legendary SRV flow; Planner labels use the matching Star rarity; Skill Promotion totals/sequences are rarity-specific.
+
 
 ### v4.3.36 TEST — Progress rarity consistency patch
 - Progress now uses each Officer's rarity-specific Promotion and Training requirements.
 - Fully MAXED profiles (5★, Level 70, unlocked, all skills Level 5, Training 180) report 100% / MAXED consistently.
 - Skill-cost summaries explicitly follow the currently selected Officer rarity.
 
+
 ### v4.3.36 TEST — Confirmed Elite badge correction
 - Elite unlock: 10 badges.
 - Elite Skills 1–16: 10,10,15,15,20,20,25,25,30,30,35,35,40,40,45,45 = 440 badges.
 - Elite Training: 100 × 180 = 18,000 badges.
 - Elite MAX total corrected to 18,450 badges.
+
 
 ### v4.3.36 TEST — Officer rarity refresh fix
 - Development now refreshes rarity-dependent text/calculations every time the selected Officer changes and whenever Develop is opened.

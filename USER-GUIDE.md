@@ -1,50 +1,13 @@
 # KoW Companion — User Guide
-## v4.5.0 TEST 1
+## v4.3.58 LIVE
 
 ### Recommended workflow
 1. **Inventory first** — enter and save all resources currently held.
 2. **Officer** — enter and save each Officer's current progress.
 3. **Progress** — verify MAXED, IN PROGRESS and NOT STARTED status.
 4. **Releases** — review the recurring schedule and future cost forecast.
-5. **Planner** — run Smart Resource Shortfall, Resource Optimiser or Advanced Multi-Officer Planning.
+5. **Planner** — run Advanced Multi-Officer Planning.
 6. Review current-versus-future readiness before spending flexible resources.
-
-## Correct Legendary chest rules
-
-### Legendary Officer Badge Chest
-Each **Legendary Officer Badge Chest** gives **either**:
-- **1 Universal Legendary Officer Badge**, or
-- **600 Officer Readiness Vouchers (ORV)**.
-
-A Badge Chest cannot count as both. **Optimise automatically** may choose the more efficient route for an eligible seasonal Legendary Officer.
-
-### Legendary Officer Badge Selection Chest
-Each **Legendary Officer Badge Selection Chest** gives **1 eligible individual Officer Badge only**.
-- It has **no ORV option**.
-- It does **not** become a Universal Legendary Badge.
-- It only applies when the selected Officer is in the current Selection Chest pool.
-
-### Officer restrictions
-- Original Legendary Officers cannot use ORV or SRV.
-- Seasonal Legendary Officers from S2 onward may use ORV/SRV where their published Officer data allows it.
-- Epic and Elite Officers use their own Universal Badges and Stars and cannot use SRV.
-
-## Smart Resource Shortfall
-The v4.5 Smart Resource Shortfall is preview-only. It applies badge resources in a controlled planning calculation and reports **Fully Funded**, **Partially Funded**, or **Shortfall**.
-
-The calculation considers:
-1. Individual Officer Badges.
-2. Eligible Legendary Officer Badge Selection Chests.
-3. Universal rarity badges.
-4. Legendary Officer Badge Chests using the selected Badge Chest strategy.
-5. ORV where the selected Officer is eligible.
-
-No Inventory is deducted by this preview.
-
-## Resource Optimiser
-Use **Compare with Officer** to compare the selected Officer with another Officer by ORV cost per Badge. The Officer selector is populated from the same canonical Officer list used by the Officer screen.
-
-Where both Officers can use ORV, favour ORV on the Officer with the lower ORV-per-Badge cost and preserve flexible Universal Legendary Badges / Legendary Officer Badge Chests for the more ORV-expensive Officer where practical.
 
 ## Advanced Multi-Officer Planning
 
@@ -60,10 +23,25 @@ Where both Officers can use ORV, favour ORV on the Officer with the lower ORV-pe
 A specific future session intentionally shows only its projected target. Example: **April — Tanks** shows **S8 Tank — PROJECTED**.
 
 ### Officer Session / Season
-Filter saved/current candidates by All Sessions, Original, S2, S3, S4, S5, S6 or S7.
+Filter saved/current candidates by:
+- All Sessions
+- Original
+- S2
+- S3
+- S4
+- S5
+- S6
+- S7
 
 ### Future Officer Type / Officer Type
-Use the session default or select Rally, Garrison, Infantry, Tank or Tank Destroyer. Season and Type can be combined, for example **S6 + Tank**.
+Use the session default or select:
+- Rally
+- Garrison
+- Infantry
+- Tank
+- Tank Destroyer
+
+Season and Type can be combined. Example: **S6 + Tank**.
 
 ### Optional toggles
 - **Include Not Started** adds eligible NOT STARTED Officers.
@@ -74,6 +52,7 @@ Use the session default or select Rally, Garrison, Infantry, Tank or Tank Destro
 Press **Analyse Planning Session**. Use **Refresh Recommendation** after changing saved Progress or Inventory. Large Saved/All reports show the Top 10 initially; use **Show all** and **Collapse** as required.
 
 ## Future Officer Planning
+
 A **PROJECTED** Officer is a planning placeholder and is not added to the published Officer database.
 
 ### Established Legendary Officer resource totals
@@ -85,15 +64,34 @@ A **PROJECTED** Officer is a planning placeholder and is not added to the publis
 The Planner compares these totals against held Inventory.
 
 ### ORV/SRV forecasts
-The Releases field **Forecast increase per Officer release (%)** controls forecast growth. Future ORV/SRV values are estimates and remain labelled **FORECAST** until published costs are known.
+The Releases field **Forecast increase per Officer release (%)** controls forecast growth. ORV/SRV future values are estimates and remain labelled **FORECAST** until published costs are known.
 
 ## Releases integration
 The Releases **Future Officer Cost Forecast** includes an **Advanced Future Officer Planning** note and **Open Advanced Planner** button.
 
+### Example: April S8 Tank
+1. Update Inventory.
+2. Review Releases forecast percentage.
+3. Open Planner.
+4. Select **April — Tanks**.
+5. Use the session default Tank type or select Tank manually.
+6. Analyse the session.
+7. Review **S8 Tank — PROJECTED** and the 1-/2-Officer resource forecast.
+
+### Example: S6 Tanks
+1. Select **Saved Officers only**.
+2. Set Officer Session / Season to **S6**.
+3. Set Officer Type to **Tank**.
+4. Choose whether to include Not Started Officers.
+5. Analyse the session.
+
 ## Important
-- Planning tools are preview-only.
-- They do not deduct Inventory.
-- They do not change saved Officer progress.
-- MAXED Officers are excluded where appropriate.
+- The Planner is preview-only.
+- It does not deduct Inventory.
+- It does not change saved Officer progress.
+- MAXED Officers are excluded.
 - Future ORV/SRV values are forecasts, not published costs.
-- This repository is **English Test only** until v4.5.0 is approved for Live.
+
+
+## v4.4.0 — Planning Readiness Dashboard
+Saved Planning Scenarios now feed a readiness dashboard showing Badge, Star and XP readiness, overall readiness, a Priority Target and a Suggested Next Action. Use Open in Planner to reload a saved scenario. Existing saved scenarios remain compatible.
