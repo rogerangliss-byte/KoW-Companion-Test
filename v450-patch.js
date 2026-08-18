@@ -13,6 +13,23 @@
 
   function readUI(){try{return JSON.parse(localStorage.getItem(UI_KEY)||'{}')||{}}catch{return {}}}
   function writeUI(patch){try{localStorage.setItem(UI_KEY,JSON.stringify(Object.assign(readUI(),patch)))}catch{}}
+
+  /* This script is a classic script placed after the deferred module script in the HTML.
+     Therefore it executes before the module's init() function. Seed the empty Officer
+     selector with the previously saved Officer name so native renderOfficerOptions()
+     uses that Officer as its own 'prev' value instead of falling through to S7 Liora. */
+  (function seedOfficerBeforeNativeInit(){
+    const state=readUI();
+    const name=String(state.officerText||'').trim();
+    const s=document.getElementById('officerSelect');
+    if(!name||!s||s.options.length)return;
+    const option=document.createElement('option');
+    option.value=String(state.officerValue??'');
+    option.textContent=name;
+    option.selected=true;
+    s.appendChild(option);
+  })();
+
   function saveOfficerSelection(){
     if(startupRestoring)return;
     const s=document.getElementById('officerSelect');
@@ -95,9 +112,6 @@
   window.addEventListener('pagehide',()=>{if(!startupRestoring)saveOfficerSelection()});
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&!startupRestoring)saveOfficerSelection()});
 
-  /* Critical rule: native startup change events are not allowed to overwrite the
-     previously saved Officer with the default Liora. The persistence listeners stay
-     locked until the saved UI has been restored. */
   window.addEventListener('load',function(){
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       restoreFields();
