@@ -1,0 +1,198 @@
+name: One-shot clean v4.5 rebuild
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/rebuild-v450-clean.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild from current English Live stable
+        run: |
+          set -euo pipefail
+          base='https://raw.githubusercontent.com/rogerangliss-byte/KoW-Companion/main'
+          for f in index.html service-worker.js README.md USER-GUIDE.md CHANGELOG.md manifest.json officers.json officers.csv; do
+            curl -fsSL "$base/$f" -o "$f"
+          done
+
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+
+          # Clean TEST identity directly in source.
+          s=s.replace('<title>KoW Companion v4.4.0</title>','<title>KoW Companion v4.5.0 TEST</title>')
+          s=s.replace("const APP_VERSION='4.4.0';","const APP_VERSION='4.5.0';")
+          banner='''<div id="englishTestBanner" style="position:sticky;top:0;z-index:99999;background:#9f1d1d;color:white;text-align:center;padding:9px 12px;font-weight:800;letter-spacing:.02em">ENGLISH TEST VERSION — v4.5.0 TEST 1 — CLEAN LIVE-BASE REBUILD — NOT LIVE</div>'''
+          if 'id="englishTestBanner"' not in s:
+              s=s.replace('<body>','<body>\n'+banner,1)
+
+          # Native v4.5 chest rules and eligibility helpers.
+          helper='''\nconst V450_SELECTION_CHEST_ELIGIBLE=new Set([
+ 'Katherine','Grace','Chloe','Ling','Jessica','Lilith','Angel','Sakura','Loubna','Angelica','Ophelia','Doireann',
+ 'S2 Natalia','S3 Sophia','S6 Emily','S6 Zoya'
+]);
+function v450SelectionChestEligible(o=currentOfficer()){
+ return !!o && V450_SELECTION_CHEST_ELIGIBLE.has(String(o.name||'').trim());
+}
+function v450BadgeChestRoute(chests,mode,o=currentOfficer()){
+ chests=Math.max(0,Number(chests)||0);
+ const seasonal=!!o&&officerRarity(o)==='Legendary'&&o.readinessEligible!==false&&String(o.season||'').toLowerCase()!=='original'&&Number(o.orv)>0;
+ if(mode==='orv'&&seasonal)return {badgeChests:0,orvChests:chests,orv:chests*600};
+ if(mode==='optimise'&&seasonal&&600/Number(o.orv)>1)return {badgeChests:0,orvChests:chests,orv:chests*600};
+ return {badgeChests:chests,orvChests:0,orv:0};
+}
+'''
+          s=s.replace('function calculate(){',helper+'\nfunction calculate(){',1)
+
+          # Correct Development labels/text in the actual HTML.
+          s=s.replace('''<div class="notice">Each <b>Legendary Officer Badge Selection Chest</b> gives <b>1 specific Legendary Officer Badge</b> for an Officer currently available in the chest. It does not convert to a Universal Legendary Badge or ORV.</div>
+      <div class="notice">
+        Each Selection Chest can be used as either <b>1 Universal Legendary Badge</b> or
+        <b><span id="selectionChestOrvValue">600</span> Officer Readiness Vouchers</b>.
+        The ORV value follows the highest ORV-per-badge cost in the latest published season.
+      </div>
+      <label>Use Selection Chests as</label>
+      <select id="legendaryBadgeChestMode">
+        <option value="badge">Universal Legendary Badges</option>
+        <option value="orv">Officer Readiness Vouchers</option>
+      </select>''','''<div class="notice">Each <b>Legendary Officer Badge Selection Chest</b> gives <b>1 eligible individual Officer Badge</b> for an Officer currently available in that chest. It has <b>no ORV option</b> and does not become a Universal Badge.</div>
+      <div class="notice">Each <b>Legendary Officer Badge Chest</b> gives either <b>1 Universal Legendary Officer Badge</b> or <b><span id="selectionChestOrvValue">600</span> Officer Readiness Vouchers (ORV)</b>. A Badge Chest cannot count as both.</div>
+      <label>Use Legendary Officer Badge Chests as</label>
+      <select id="legendaryBadgeChestMode">
+        <option value="optimise">Optimise automatically</option>
+        <option value="badge">Universal Legendary Badges (1 each)</option>
+        <option value="orv">Officer Readiness Vouchers (600 each)</option>
+      </select>''')
+          s=s.replace('<span>ORV generated from Selection Chests</span>','<span>ORV generated from Legendary Officer Badge Chests</span>')
+
+          # Replace the old mixed-up Development funding block with corrected native logic.
+          start=s.index(" const badgesHeld=+$('badgeHeld').value;")
+          end=s.index("\n let xpHeld=0;XP_DENOMS.forEach",start)
+          corrected=''' const badgesHeld=+$('badgeHeld').value;
+ const universalBadgesHeld=officerRarity(o)==='Epic'?+$('universalEpicBadgeHeld').value:officerRarity(o)==='Elite'?+$('universalEliteBadgeHeld').value:+$('universalBadgeHeld').value;
+ const badgeChests=officerRarity(o)==='Legendary'?+$('legendaryBadgeChestHeld').value:0;
+ const selectionChests=officerRarity(o)==='Legendary'?+$('legendarySelectionChestHeld').value:0;
+ const selectionChestBadges=officerRarity(o)==='Legendary'&&v450SelectionChestEligible(o)?selectionChests:0;
+ const chestMode=$('legendaryBadgeChestMode').value;
+ const chestRoute=v450BadgeChestRoute(badgeChests,chestMode,o);
+ const universalBadgesAvailable=universalBadgesHeld+chestRoute.badgeChests+selectionChestBadges;
+ const directOrv=+$('orvHeld').value;
+ const orvHeld=directOrv+chestRoute.orv;
+ $('selectionChestOrvValue').textContent='600';
+ $('selectionChestOrvGenerated').textContent=fmt(chestRoute.orv);
+ $('universalBadgesAvailable').textContent=fmt(universalBadgesAvailable);
+
+ const officerMaxBadges=maxBadgesForOfficer(o);
+ const badgesUsed=($('unlocked').checked?10:0)+skillBadgesSpent()+ +$('training').value*trainingBadgeCost(o);
+ const badgesFromOrv=readinessEligible&&o.orv>0?Math.floor(orvHeld/o.orv):0;
+ const orvRemainder=o.orv>0?orvHeld-badgesFromOrv*o.orv:orvHeld;
+ const badgeTotal=badgesUsed+badgesHeld+universalBadgesAvailable+badgesFromOrv;
+ const badgesRequired=Math.max(0,officerMaxBadges-badgeTotal);
+ const orvRequired=readinessEligible?badgesRequired*o.orv:0;
+ $('trainingLabel').textContent=$('training').value;$('badgesUsed').textContent=fmt(badgesUsed);$('badgesFromOrv').textContent=fmt(badgesFromOrv);$('orvRemainder').textContent=fmt(orvRemainder);$('badgesRequired').textContent=fmt(badgesRequired);$('orvRequired').textContent=fmt(orvRequired);$('badgeBar').style.width=pct(badgeTotal,officerMaxBadges)+'%';
+ window.KOW_V450_FUNDING={officer:o.name,needed:Math.max(0,officerMaxBadges-badgesUsed),individual:badgesHeld,selectionHeld:selectionChests,selectionEligible:v450SelectionChestEligible(o),selectionBadges:selectionChestBadges,universalHeld:universalBadgesHeld,badgeChests,badgeChestBadges:chestRoute.badgeChests,badgeChestOrv:chestRoute.orv,orvHeld:directOrv,orvBadges:badgesFromOrv,shortfall:badgesRequired};
+'''
+          s=s[:start]+corrected+s[end:]
+
+          # Add Smart Resource Shortfall card natively before Resource Optimiser.
+          smart_card='''<article class="card" id="v450SmartPlannerCard">
+      <div class="eyebrow">v4.5.0 TEST 1</div>
+      <h2>🧠 Smart Resource Shortfall</h2>
+      <p class="muted">Preview the selected Officer using corrected chest rules. Inventory is never spent or changed.</p>
+      <div id="v450SmartPlannerResult" class="result-box">Select an Officer and enter or save Inventory.</div>
+    </article>\n\n    '''
+          marker='''<article class="card">
+      <h2>🧮 Resource Optimiser — Preview</h2>'''
+          if 'id="v450SmartPlannerCard"' not in s:
+              s=s.replace(marker,smart_card+marker,1)
+
+          smart_fn='''\nfunction renderV450SmartShortfall(){
+ const box=$('v450SmartPlannerResult');if(!box)return;
+ const f=window.KOW_V450_FUNDING;if(!f){box.textContent='Select an Officer and enter or save Inventory.';return}
+ const covered=Math.max(0,f.needed-f.shortfall);
+ const status=f.shortfall===0?'✅ FULLY FUNDED':covered>0?'🟠 PARTIALLY FUNDED':'🔴 SHORTFALL';
+ const selection=f.selectionHeld?(f.selectionEligible?`${fmt(f.selectionBadges)} eligible individual Officer Badge${f.selectionBadges===1?'':'s'}`:`0 usable — ${f.officer} is not currently in the Selection Chest pool`):'0 held';
+ box.innerHTML=`<b>${status} — ${esc(f.officer)}</b><br>`+
+  `Badges needed from current progress: <b>${fmt(f.needed)}</b><br>`+
+  `Individual Officer Badges held: <b>${fmt(f.individual)}</b><br>`+
+  `Selection Chests: <b>${selection}</b><br>`+
+  `Universal Legendary Badges held: <b>${fmt(f.universalHeld)}</b><br>`+
+  `Legendary Badge Chests: <b>${fmt(f.badgeChestBadges)} used as Universal Badge${f.badgeChestBadges===1?'':'s'}${f.badgeChestOrv?` · ${fmt(f.badgeChestOrv)} ORV generated`:''}</b><br>`+
+  `ORV-funded Badges: <b>${fmt(f.orvBadges)}</b><br>`+
+  `<b>Remaining badge shortfall: ${fmt(f.shortfall)}</b><br>`+
+  `<span class="muted">Selection Chest = 1 eligible individual Officer Badge only. Badge Chest = 1 Universal Legendary Badge or 600 ORV.</span>`;
+}
+'''
+          s=s.replace('function validateDb(list=officers){',smart_fn+'\nfunction validateDb(list=officers){',1)
+          s=s.replace(" renderPlanner(o,cs,starsUsed,legendaryHeld,srvHeld,badgesUsed,badgesHeld+universalBadgesAvailable,orvHeld,xpHeld,xpRequired);"," renderPlanner(o,cs,starsUsed,legendaryHeld,srvHeld,badgesUsed,badgesHeld+universalBadgesAvailable,orvHeld,xpHeld,xpRequired);\n renderV450SmartShortfall();",1)
+
+          # Resource Optimiser uses the canonical Officer database and corrected flexible-resource wording.
+          s=s.replace("const shared=numericText('universalBadgeHeld')+numericText('legendaryBadgeChestHeld');","const shared=numericText('universalBadgeHeld')+numericText('legendaryBadgeChestHeld')+(v450SelectionChestEligible(o)?numericText('legendarySelectionChestHeld'):0);")
+          s=s.replace('Universal Legendary Badges / Selection Chests','Universal Legendary Badges / Legendary Badge Chests')
+
+          # Central Inventory bridge: use real field IDs.
+          s=s.replace("['universalLegendaryHeld','invUniversalLegendary']","['universalBadgeHeld','invUniversalLegendary']")
+          s=s.replace("kowInvField('officerBadgesHeld',x.officerBadges[sel.value]||0)","kowInvField('badgeHeld',x.officerBadges[sel.selectedOptions?.[0]?.textContent?.trim()]||0)")
+
+          # Help corrections.
+          s=s.replace('''<p>Each <b>Legendary Officer Badge Selection Chest</b> can be used as <b>either</b> 1 Universal Legendary Badge <b>or</b> converted to the latest-Season Officer Readiness Voucher (ORV) value. A chest cannot count as both. With the current S7 database the benchmark is <b>600 ORV per chest</b>.</p>''','''<p>Each <b>Legendary Officer Badge Chest</b> can be used as <b>either</b> 1 Universal Legendary Badge <b>or</b> <b>600 Officer Readiness Vouchers (ORV)</b>. A Badge Chest cannot count as both.</p><p>Each <b>Legendary Officer Badge Selection Chest</b> gives <b>1 eligible individual Officer Badge only</b>. It has no ORV option and does not become a Universal Badge.</p>''')
+          s=s.replace('<h3 style="margin-top:0">✨ What’s New — v4.4.0 LIVE</h3>','<h3 style="margin-top:0">✨ What’s New — v4.5.0 TEST 1</h3>',1)
+
+          # Ensure no external patch architecture remains.
+          s=re.sub(r'\n?<script src="\./v450-[^"]+"></script>','',s)
+
+          p.write_text(s,encoding='utf-8')
+
+          # Clean service worker: Live network-first behaviour, TEST cache only, no HTML transformation.
+          sw=Path('service-worker.js').read_text(encoding='utf-8')
+          sw=re.sub(r"const CACHE='[^']+';","const CACHE='kow-english-v4.5.0-test1-clean';",sw,1)
+          Path('service-worker.js').write_text(sw,encoding='utf-8')
+
+          # Test documentation based on Live docs plus concise v4.5 additions.
+          add='''\n\n## v4.5.0 TEST 1 — Clean Live-base rebuild\n- Rebuilt directly from the current English Live stable application.\n- Legendary Officer Badge Chest: 1 Universal Legendary Officer Badge OR 600 ORV.\n- Legendary Officer Badge Selection Chest: 1 eligible individual Officer Badge only; no ORV option.\n- Native Smart Resource Shortfall planning added.\n- Resource Optimiser uses the canonical Officer database selector.\n- Temporary v4.5 runtime patches/workflow rewriting removed.\n'''
+          for fn in ('README.md','USER-GUIDE.md','CHANGELOG.md'):
+              q=Path(fn);q.write_text(q.read_text(encoding='utf-8').rstrip()+add+'\n',encoding='utf-8')
+
+          Path('RELEASE-v4.5.0-TEST1.md').write_text('''# KoW Companion v4.5.0 TEST 1\n\nClean rebuild from English Live stable.\n\n## Corrected chest rules\n- Legendary Officer Badge Chest: 1 Universal Legendary Officer Badge OR 600 ORV.\n- Legendary Officer Badge Selection Chest: 1 eligible individual Officer Badge only; no ORV option.\n\n## New planning features\n- Smart Resource Shortfall with Fully Funded / Partially Funded / Shortfall status.\n- Correct individual badge, Selection Chest, Universal Badge, Badge Chest and ORV handling.\n- Resource Optimiser populated from the canonical Officer database.\n\nTEST only — not for Live publication until approved.\n''',encoding='utf-8')
+          PY
+
+          # Remove today's temporary/fix-on-fix artefacts and obsolete test notes.
+          rm -f v450-patch.js v450-optimiser-officer-fix.js download V4.5.0-PLAN.md RELEASE-v4.4.0-TEST1.md
+          rm -f .github/workflows/rebuild-v450-clean.yml
+
+      - name: Verify clean native TEST build
+        run: |
+          set -euo pipefail
+          grep -F 'ENGLISH TEST VERSION — v4.5.0 TEST 1 — CLEAN LIVE-BASE REBUILD — NOT LIVE' index.html
+          grep -F "const APP_VERSION='4.5.0';" index.html
+          grep -F 'Smart Resource Shortfall' index.html
+          grep -F '600 Officer Readiness Vouchers (ORV)' index.html
+          grep -F '1 eligible individual Officer Badge' index.html
+          ! grep -q 'v450-patch.js' index.html
+          ! grep -q 'v450-optimiser-officer-fix.js' index.html
+          ! grep -q 'transformHtml' service-worker.js
+          test ! -e v450-patch.js
+          test ! -e v450-optimiser-officer-fix.js
+          test ! -e .github/workflows/apply-v450-test.yml
+          test ! -e .github/workflows/rebuild-v450-clean.yml
+
+      - name: Commit clean rebuild
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Rebuild v4.5.0 TEST 1 cleanly from English Live stable'
+          git push
