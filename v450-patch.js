@@ -78,6 +78,28 @@
     });
   }
 
+  function saveProgressStatusFilters(){
+    if(startupRestoring)return;
+    const boxes=[...document.querySelectorAll('.progressStatusFilter')];
+    if(!boxes.length)return;
+    const state={};
+    boxes.forEach(box=>{state[box.value]=!!box.checked});
+    writeUI({progressStatusFilters:state});
+  }
+  function restoreProgressStatusFilters(){
+    const saved=readUI().progressStatusFilters;
+    if(!saved||typeof saved!=='object')return;
+    const boxes=[...document.querySelectorAll('.progressStatusFilter')];
+    let changed=false;
+    boxes.forEach(box=>{
+      if(Object.prototype.hasOwnProperty.call(saved,box.value)){
+        const wanted=!!saved[box.value];
+        if(box.checked!==wanted){box.checked=wanted;changed=true;}
+      }
+    });
+    if(changed&&typeof window.renderSavedOfficerProgress==='function')window.renderSavedOfficerProgress();
+  }
+
   async function restoreBackupFile(file){
     const payload=JSON.parse(await file.text());
     if(!payload||!payload.localStorage||typeof payload.localStorage!=='object')throw new Error('Invalid KoW Companion backup file.');
@@ -105,21 +127,24 @@
       return;
     }
     if(input.id==='officerSelect')saveOfficerSelection();
+    if(input.classList&&input.classList.contains('progressStatusFilter'))saveProgressStatusFilters();
     if(FIELD_IDS.includes(input.id))saveField(input);
   },false);
   document.addEventListener('input',function(e){if(e.target&&FIELD_IDS.includes(e.target.id))saveField(e.target)},false);
 
-  window.addEventListener('pagehide',()=>{if(!startupRestoring)saveOfficerSelection()});
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&!startupRestoring)saveOfficerSelection()});
+  window.addEventListener('pagehide',()=>{if(!startupRestoring){saveOfficerSelection();saveProgressStatusFilters();}});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&!startupRestoring){saveOfficerSelection();saveProgressStatusFilters();}});
 
   window.addEventListener('load',function(){
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       restoreFields();
       restoreOfficerSelection();
       restoreView();
+      restoreProgressStatusFilters();
       setTimeout(()=>{
         restoreOfficerSelection();
         restoreView();
+        restoreProgressStatusFilters();
         startupRestoring=false;
         document.documentElement.dataset.kowUiRestored='1';
       },250);
