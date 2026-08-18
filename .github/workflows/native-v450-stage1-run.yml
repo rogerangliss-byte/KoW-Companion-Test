@@ -1,0 +1,34 @@
+name: Run Native v4.5 Stage 1
+
+on:
+  push:
+    paths:
+      - '.github/workflows/native-v450-stage1-run.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply native integration
+        run: python3 .github/native_stage1.py
+      - name: Sanity checks
+        run: |
+          grep -q "kow_ui_state_v450_native1" index.html
+          grep -q "restorePlannerWorkingState" index.html
+          grep -q "Officer Readiness Vouchers (600 each)" index.html
+          ! grep -q "Use Selection Chests as" index.html
+      - name: Commit and remove one-shot files
+        run: |
+          git config user.name 'FireStorm'
+          git config user.email 'roger.angliss@gmail.com'
+          rm -f .github/native_stage1.py .github/workflows/native-v450-stage1.yml .github/workflows/native-v450-stage1-run.yml
+          git add -A
+          git commit -m 'Integrate native v4.5 state persistence and correct chest rules'
+          git push origin main
