@@ -1,4 +1,4 @@
-name: Apply v4.5.0 English Test
+name: Apply v4.5.0 English TEST 2
 
 on:
   push:
@@ -14,24 +14,46 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Patch index for v4.5.0 Test
+      - name: Patch index for v4.5.0 TEST 2
         run: |
           python - <<'PY'
           from pathlib import Path
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
-          s=s.replace('<title>KoW Companion v4.4.0 TEST</title>','<title>KoW Companion v4.5.0 TEST</title>')
-          s=s.replace('ENGLISH TEST VERSION — v4.4.0 TEST 1 — PLANNING READINESS DASHBOARD — NOT LIVE','ENGLISH TEST VERSION — v4.5.0 TEST 1 — ADVANCED PLANNING & CORRECT CHEST LOGIC — NOT LIVE')
-          s=s.replace("const APP_VERSION='4.3.59';","const APP_VERSION='4.5.0';")
-          if 'v450-patch.js?v=450-test1' not in s:
-              s=s.replace('</body>','<script src="./v450-patch.js?v=450-test1"></script>\n</body>')
-          p.write_text(s,encoding='utf-8')
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          # Keep one authoritative visible TEST 2 identity in the physical index.html.
+          s = s.replace('<title>KoW Companion v4.4.0 TEST</title>', '<title>KoW Companion v4.5.0 TEST</title>')
+          s = s.replace('ENGLISH TEST VERSION — v4.4.0 TEST 1 — PLANNING READINESS DASHBOARD — NOT LIVE',
+                        'ENGLISH TEST VERSION — v4.5.0 TEST 2 — ADVANCED PLANNING & OPTIMISER FIX — NOT LIVE')
+          s = s.replace('ENGLISH TEST VERSION — v4.5.0 TEST 1 — ADVANCED PLANNING & CORRECT CHEST LOGIC — NOT LIVE',
+                        'ENGLISH TEST VERSION — v4.5.0 TEST 2 — ADVANCED PLANNING & OPTIMISER FIX — NOT LIVE')
+
+          # Keep the internal application version aligned.
+          s = s.replace("const APP_VERSION='4.3.59';", "const APP_VERSION='4.5.0';")
+
+          # Force a genuinely new browser asset URL for the TEST 2 patch.
+          for old in (
+              'v450-patch.js?v=450-test1',
+              'v450-patch.js?v=450-test2',
+              'v450-patch.js?v=450-test2-r2',
+          ):
+              s = s.replace(old, 'v450-patch.js?v=450-test2-r3')
+
+          if 'v450-patch.js?v=450-test2-r3' not in s:
+              s = s.replace('</body>', '<script src="./v450-patch.js?v=450-test2-r3"></script>\n</body>')
+
+          p.write_text(s, encoding='utf-8')
           PY
-      - name: Commit patched build
+      - name: Verify TEST 2 build identity
+        run: |
+          grep -F 'v4.5.0 TEST 2 — ADVANCED PLANNING & OPTIMISER FIX — NOT LIVE' index.html
+          grep -F 'v450-patch.js?v=450-test2-r3' index.html
+      - name: Commit patched TEST 2 build
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'Activate v4.5.0 English Test build'
+          git commit -m 'Activate v4.5.0 English TEST 2 build'
           git push
