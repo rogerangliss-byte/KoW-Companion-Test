@@ -1,8 +1,8 @@
-/* KoW Companion v4.5.0 TEST 2 — Advanced Planning, corrected chest logic & optimiser selector fix. */
+/* KoW Companion v4.5.0 TEST 3 — Advanced Planning, corrected chest logic & stable optimiser selector. */
 (function(){
 'use strict';
 const VERSION='4.5.0';
-const TEST_BUILD='TEST 2';
+const TEST_BUILD='TEST 3';
 const SELECTION_ELIGIBLE=new Set([
  'Katherine','Grace','Chloe','Ling','Jessica','Lilith','Angel','Sakura','Loubna','Angelica','Ophelia','Doireann',
  'S2 Natalia','S3 Sophia','S6 Emily','S6 Zoya'
@@ -29,7 +29,12 @@ function fixChestUI(){
  if(selection){const l=selection.previousElementSibling;if(l&&l.tagName==='LABEL')l.textContent='Legendary Officer Badge Selection Chests Held';}
  if(mode){
    const l=mode.previousElementSibling;if(l&&l.tagName==='LABEL')l.textContent='Use Legendary Officer Badge Chests as';
-   mode.innerHTML='<option value="optimise">Optimise automatically</option><option value="badge">Universal Legendary Badges (1 each)</option><option value="orv">Officer Readiness Vouchers (600 each)</option>';
+   if(!mode.dataset.v450options){
+     const previous=mode.value||'optimise';
+     mode.innerHTML='<option value="optimise">Optimise automatically</option><option value="badge">Universal Legendary Badges (1 each)</option><option value="orv">Officer Readiness Vouchers (600 each)</option>';
+     if([...mode.options].some(o=>o.value===previous))mode.value=previous;
+     mode.dataset.v450options='1';
+   }
  }
  const badNotice=[...document.querySelectorAll('#development .notice')].find(x=>/Each Selection Chest can be used as either/i.test(x.textContent||''));
  if(badNotice)badNotice.innerHTML='Each <b>Legendary Officer Badge Chest</b> gives either <b>1 Universal Legendary Officer Badge</b> or <b>600 Officer Readiness Vouchers (ORV)</b>. The Smart Planner can choose the more useful route.';
@@ -73,19 +78,14 @@ function renderSmartDevelopment(){
  const f=smartFunding();
  const selText=f.selectionChests?(f.eligibleSelection?`${fmt(f.selectionUsed)} used as individual ${f.name} Badges`:`0 usable — ${f.name||'selected Officer'} is not currently in the Selection Chest pool`):'0 held';
  const chestText=f.chests?`${fmt(f.chestBadgeUsed)} used as Universal Badges${f.route.orvChests?` · ${fmt(f.route.orvChests)} converted to ${fmt(f.route.generatedOrv)} ORV`:''}`:'0 held';
- box.innerHTML=`<b>v4.5 Smart Badge Funding — ${f.name||'Select an Officer'}</b><br>
- Individual Officer Badges: <b>${fmt(f.individual)}</b><br>
- Selection Chests: <b>${selText}</b><br>
- Universal ${rarity()} Badges used: <b>${fmt(f.universalUsed)}</b><br>
- Legendary Badge Chests: <b>${chestText}</b><br>
- ORV-funded Badges: <b>${fmt(f.orvBadgeUsed)}</b>${f.canOrv?` at ${fmt(f.cost)} ORV/Badge`:''}<br>
- <b>${f.remaining===0?'✅ Fully Funded':'⚠️ Shortfall: '+fmt(f.remaining)+' Officer Badges'}</b>`;
+ const html=`<b>v4.5 Smart Badge Funding — ${f.name||'Select an Officer'}</b><br>Individual Officer Badges: <b>${fmt(f.individual)}</b><br>Selection Chests: <b>${selText}</b><br>Universal ${rarity()} Badges used: <b>${fmt(f.universalUsed)}</b><br>Legendary Badge Chests: <b>${chestText}</b><br>ORV-funded Badges: <b>${fmt(f.orvBadgeUsed)}</b>${f.canOrv?` at ${fmt(f.cost)} ORV/Badge`:''}<br><b>${f.remaining===0?'✅ Fully Funded':'⚠️ Shortfall: '+fmt(f.remaining)+' Officer Badges'}</b>`;
+ if(box.innerHTML!==html)box.innerHTML=html;
 }
 function ensureSmartPlannerCard(){
  const planner=$('planner');if(!planner)return null;
  let card=$('v450SmartPlannerCard');if(card)return card;
  card=document.createElement('article');card.id='v450SmartPlannerCard';card.className='card';
- card.innerHTML='<div class="eyebrow">v4.5.0 TEST 2</div><h2>🧠 Smart Resource Shortfall</h2><p class="muted">Preview the selected Officer using the corrected chest rules. Inventory is never spent or changed.</p><div id="v450SmartPlannerResult" class="result-box">Select an Officer and enter Inventory.</div>';
+ card.innerHTML='<div class="eyebrow">v4.5.0 TEST 3</div><h2>🧠 Smart Resource Shortfall</h2><p class="muted">Preview the selected Officer using the corrected chest rules. Inventory is never spent or changed.</p><div id="v450SmartPlannerResult" class="result-box">Select an Officer and enter Inventory.</div>';
  const goals=[...planner.querySelectorAll('article.card')].find(x=>/Goals Planner/i.test(x.textContent||''));
  if(goals)goals.insertAdjacentElement('afterend',card);else planner.prepend(card);
  return card;
@@ -94,45 +94,44 @@ function renderSmartPlanner(){
  ensureSmartPlannerCard();const box=$('v450SmartPlannerResult');if(!box)return;const f=smartFunding();
  const status=f.remaining===0?'✅ FULLY FUNDED':f.covered>0?'🟠 PARTIALLY FUNDED':'🔴 SHORTFALL';
  const selectionRule=f.selectionChests?(f.eligibleSelection?`${fmt(f.selectionUsed)} Selection Chest${f.selectionUsed===1?'':'s'} allocated directly to ${f.name}.`:`Selection Chests held, but ${f.name} is not in the current eligible pool.`):'No Selection Chests allocated.';
- box.innerHTML=`<b>${status} — ${f.name||'Selected Officer'}</b><br>
- Required Officer Badges from current progress: <b>${fmt(f.need)}</b><br>
- Individual Officer Badges: <b>${fmt(f.individual)}</b><br>
- ${selectionRule}<br>
- Universal badges allocated: <b>${fmt(f.universalUsed)}</b><br>
- Legendary Badge Chest allocation: <b>${fmt(f.chestBadgeUsed)} badge route</b>${f.route.orvChests?` · <b>${fmt(f.route.orvChests)} ORV route (${fmt(f.route.generatedOrv)} ORV)</b>`:''}<br>
- ORV-funded badges: <b>${fmt(f.orvBadgeUsed)}</b><br>
- <b>Remaining badge shortfall: ${fmt(f.remaining)}</b><br>
- <span class="muted">Rule check: Selection Chests = 1 eligible individual Officer Badge only. Badge Chests = 1 Universal Legendary Badge or 600 ORV.</span>`;
+ const html=`<b>${status} — ${f.name||'Selected Officer'}</b><br>Required Officer Badges from current progress: <b>${fmt(f.need)}</b><br>Individual Officer Badges: <b>${fmt(f.individual)}</b><br>${selectionRule}<br>Universal badges allocated: <b>${fmt(f.universalUsed)}</b><br>Legendary Badge Chest allocation: <b>${fmt(f.chestBadgeUsed)} badge route</b>${f.route.orvChests?` · <b>${fmt(f.route.orvChests)} ORV route (${fmt(f.route.generatedOrv)} ORV)</b>`:''}<br>ORV-funded badges: <b>${fmt(f.orvBadgeUsed)}</b><br><b>Remaining badge shortfall: ${fmt(f.remaining)}</b><br><span class="muted">Rule check: Selection Chests = 1 eligible individual Officer Badge only. Badge Chests = 1 Universal Legendary Badge or 600 ORV.</span>`;
+ if(box.innerHTML!==html)box.innerHTML=html;
 }
 function populateOptimiserOfficerSelect(){
  const target=$('compareOfficerSelect'), source=$('officerSelect');
  if(!target||!source||!source.options.length)return;
  const current=String(source.value??'');
  const previous=String(target.value??'');
- const options=[...source.options].filter(o=>String(o.textContent||'').trim() && String(o.value)!==current);
- target.innerHTML='<option value="">Select Officer</option>'+options.map(o=>`<option value="${String(o.value).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}">${String(o.textContent||'').trim().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</option>`).join('');
+ const desired=[...source.options].filter(o=>String(o.textContent||'').trim() && String(o.value)!==current).map(o=>({value:String(o.value),text:String(o.textContent||'').trim()}));
+ const signature=JSON.stringify([current,desired]);
+ if(target.dataset.v450signature===signature)return;
+ const frag=document.createDocumentFragment();
+ frag.appendChild(new Option('Select Officer',''));
+ desired.forEach(o=>frag.appendChild(new Option(o.text,o.value)));
+ target.replaceChildren(frag);
+ target.dataset.v450signature=signature;
  if(previous && [...target.options].some(o=>o.value===previous))target.value=previous;
 }
 function fixHelp(){
  document.querySelectorAll('#help p').forEach(p=>{
    if(/Each Legendary Officer Badge Selection Chest can be used as either/i.test(p.textContent||''))p.innerHTML='Each <b>Legendary Officer Badge Chest</b> gives either <b>1 Universal Legendary Officer Badge</b> or <b>600 ORV</b>. Each <b>Legendary Officer Badge Selection Chest</b> gives <b>1 eligible individual Officer Badge only</b> and has no ORV option.';
  });
- const heading=$('whatsNewV4329')?.querySelector('h3');if(heading)heading.textContent='✨ What’s New — v4.5.0 TEST 2';
+ const heading=$('whatsNewV4329')?.querySelector('h3');if(heading)heading.textContent='✨ What’s New — v4.5.0 TEST 3';
 }
 function versionUI(){
  document.title='KoW Companion v4.5.0 TEST';
  ['headerVersion','installedVersion','aboutVersion'].forEach(id=>{if($(id))$(id).textContent='v'+VERSION;});
- const banner=$('helpPortraitTestBanner');if(banner)banner.textContent='ENGLISH TEST VERSION — v4.5.0 TEST 2 — ADVANCED PLANNING & OPTIMISER FIX — NOT LIVE';
- const integrity=$('versionIntegrity');if(integrity)integrity.innerHTML='<b>Build integrity: OK</b><br>Header, Settings and About all report v4.5.0 TEST 2.';
+ const banner=$('helpPortraitTestBanner');if(banner)banner.textContent='ENGLISH TEST VERSION — v4.5.0 TEST 3 — STABLE OPTIMISER SELECTOR — NOT LIVE';
+ const integrity=$('versionIntegrity');if(integrity)integrity.innerHTML='<b>Build integrity: OK</b><br>Header, Settings and About all report v4.5.0 TEST 3.';
 }
-function refresh(){fixChestUI();populateOptimiserOfficerSelect();renderSmartDevelopment();renderSmartPlanner();versionUI();}
+function refresh(){fixChestUI();renderSmartDevelopment();renderSmartPlanner();versionUI();}
 function start(){
  fixChestUI();fixHelp();ensureSmartPlannerCard();populateOptimiserOfficerSelect();refresh();
- ['legendaryBadgeChestHeld','legendarySelectionChestHeld','legendaryBadgeChestMode','orvHeld','universalBadgeHeld','universalEpicBadgeHeld','universalEliteBadgeHeld','badgeHeld','officerSelect'].forEach(id=>{const el=$(id);if(!el||el.dataset.v450wired)return;el.dataset.v450wired='1';el.addEventListener('input',()=>setTimeout(refresh,0));el.addEventListener('change',()=>setTimeout(refresh,0));});
+ ['legendaryBadgeChestHeld','legendarySelectionChestHeld','legendaryBadgeChestMode','orvHeld','universalBadgeHeld','universalEpicBadgeHeld','universalEliteBadgeHeld','badgeHeld','officerSelect'].forEach(id=>{const el=$(id);if(!el||el.dataset.v450wired)return;el.dataset.v450wired='1';el.addEventListener('input',()=>setTimeout(refresh,0));el.addEventListener('change',()=>{if(id==='officerSelect')setTimeout(populateOptimiserOfficerSelect,0);setTimeout(refresh,0);});});
  const compare=$('compareOfficerSelect');if(compare&&!compare.dataset.v450wired){compare.dataset.v450wired='1';compare.addEventListener('change',()=>{try{window.buildUpgradeSummary?.()}catch(_){}});}
- document.addEventListener('click',e=>{if(e.target?.dataset?.view==='planner')setTimeout(populateOptimiserOfficerSelect,25);setTimeout(refresh,25)});
- setTimeout(populateOptimiserOfficerSelect,100);setTimeout(populateOptimiserOfficerSelect,400);
- const obs=new MutationObserver(()=>{clearTimeout(start._t);start._t=setTimeout(()=>{populateOptimiserOfficerSelect();renderSmartDevelopment();renderSmartPlanner();versionUI();},30)});obs.observe(document.body,{subtree:true,childList:true});
+ document.addEventListener('click',e=>{if(e.target?.dataset?.view==='planner')setTimeout(()=>{populateOptimiserOfficerSelect();refresh();},25);});
+ setTimeout(()=>{populateOptimiserOfficerSelect();refresh();},100);
+ setTimeout(()=>{populateOptimiserOfficerSelect();refresh();},400);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 window.KOW_V450={smartFunding,renderSmartPlanner,renderSmartDevelopment,populateOptimiserOfficerSelect,selectionEligible,SELECTION_ELIGIBLE};
