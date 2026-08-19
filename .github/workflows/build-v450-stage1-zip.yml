@@ -1,0 +1,58 @@
+name: Build v4.5 Stage 1 Upload ZIP
+
+on:
+  push:
+    paths:
+      - '.github/workflows/build-v450-stage1-zip.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+actions:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fix clean-baseline spacing in integration script
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('.github/native_stage1.py')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace("$('legendaryBadgeChestHeld').value=d.legendaryBadgeChestHeld??0;\\n  $('legendaryBadgeChestMode').value=d.legendaryBadgeChestMode??'badge';",
+                      "$('legendaryBadgeChestHeld').value=d.legendaryBadgeChestHeld??0;\\n $('legendaryBadgeChestMode').value=d.legendaryBadgeChestMode??'badge';")
+          p.write_text(s,encoding='utf-8')
+          PY
+
+      - name: Apply native Stage 1 integration
+        run: python3 .github/native_stage1.py
+
+      - name: Sanity checks
+        run: |
+          grep -q "kow_ui_state_v450_native1" index.html
+          grep -q "restorePlannerWorkingState" index.html
+          grep -q "Officer Readiness Vouchers (600 each)" index.html
+          grep -q "legendarySelectionChestHeld" index.html
+          ! grep -q "Use Selection Chests as" index.html
+
+      - name: Prepare upload package
+        run: |
+          rm -rf upload-package
+          mkdir upload-package
+          cp index.html upload-package/
+          cp CNAME manifest.json service-worker.js officers-default.csv README.md USER-GUIDE.md CHANGELOG.md RELEASE-v4.5.0-TEST1.md upload-package/ 2>/dev/null || true
+          printf '%s\n' 'KoW Companion v4.5.0 TEST — Stage 1 native integration' 'Upload/replace these files in the KoW-Companion-Test repository root. Leave officer-portraits and background images untouched.' > upload-package/UPLOAD-INSTRUCTIONS.txt
+          cd upload-package
+          zip -r ../KoW-Companion-v4.5.0-TEST-Stage1-Upload.zip .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: KoW-Companion-v4.5.0-TEST-Stage1-Upload
+          path: KoW-Companion-v4.5.0-TEST-Stage1-Upload.zip
+          if-no-files-found: error
