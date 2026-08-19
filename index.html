@@ -999,19 +999,17 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
       <input type="number" id="legendarySelectionChestHeld" min="0" step="1" value="0">
       <div class="notice">Each <b>Legendary Officer Badge Selection Chest</b> gives <b>1 specific Legendary Officer Badge</b> for an Officer currently available in the chest. It does not convert to a Universal Legendary Badge or ORV.</div>
       <div class="notice">
-        Each Selection Chest can be used as either <b>1 Universal Legendary Badge</b> or
-        <b><span id="selectionChestOrvValue">600</span> Officer Readiness Vouchers</b>.
-        The ORV value follows the highest ORV-per-badge cost in the latest published season.
+        Each <b>Legendary Officer Badge Chest</b> can be used as either <b>1 Universal Legendary Badge</b> or <b>600 Officer Readiness Vouchers</b>. A chest cannot count as both.
       </div>
-      <label>Use Selection Chests as</label>
+      <label>Use Legendary Officer Badge Chests as</label>
       <select id="legendaryBadgeChestMode">
-        <option value="badge">Universal Legendary Badges</option>
-        <option value="orv">Officer Readiness Vouchers</option>
+        <option value="badge">Universal Legendary Badges (1 each)</option>
+        <option value="orv">Officer Readiness Vouchers (600 each)</option>
       </select>
       <label>Officer Readiness Vouchers (ORV) Held</label><input id="orvHeld" type="number" min="0" step="1" inputmode="numeric" value="0">
       <div class="stat"><span>Badges used</span><b id="badgesUsed">0</b></div>
       <div class="stat"><span>Universal Legendary Badges available</span><b id="universalBadgesAvailable">0</b></div>
-      <div class="stat"><span>ORV generated from Selection Chests</span><b id="selectionChestOrvGenerated">0</b></div>
+      <div class="stat"><span>ORV generated from Legendary Officer Badge Chests</span><b id="selectionChestOrvGenerated">0</b></div>
       <div class="stat"><span>Badges from held Officer Readiness Vouchers (ORV)</span><b id="badgesFromOrv">0</b></div>
       <div class="stat"><span>Officer Readiness Vouchers (ORV) remaining after whole badges</span><b id="orvRemainder">0</b></div>
       <div class="stat"><span>Badges required</span><b id="badgesRequired">1,600</b></div>
@@ -1415,7 +1413,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
       <h3>4. Development</h3>
       <p>Enter unlock status, the four independent Skill Strand levels and Training Level. Development uses the relevant saved Inventory resources when calculating what is available for the selected Officer.</p>
       <p>Each <b>Universal Legendary Badge</b> is worth <b>1 Officer Badge</b> for a Legendary Officer.</p>
-      <p>Each <b>Legendary Officer Badge Selection Chest</b> can be used as <b>either</b> 1 Universal Legendary Badge <b>or</b> converted to the latest-Season Officer Readiness Voucher (ORV) value. A chest cannot count as both. With the current S7 database the benchmark is <b>600 ORV per chest</b>.</p>
+      <p>Each <b>Legendary Officer Badge Selection Chest</b> gives <b>1 specific Legendary Officer Badge</b> for an Officer currently available in that chest. It does not convert to ORV. Each <b>Legendary Officer Badge Chest</b> can instead be used as either <b>1 Universal Legendary Badge</b> or <b>600 ORV</b>.</p>
 
       <h3>5. XP</h3>
       <p>Enter current and target Officer Level. Saved XP Book quantities from Inventory are used to calculate XP held, XP required and the remaining shortfall.</p>
@@ -1595,6 +1593,62 @@ const XP_DENOMS=[50,100,500,1000,5000,10000,20000,50000];
 const MAX_STAR=98000,MAX_BADGES=1600,MAX_XP=199646700;
 let officers=[],skills=Array(16).fill(false);
 const $=id=>document.getElementById(id);
+
+// v4.5.0 TEST — native working-state persistence.
+const UI_STATE_KEY='kow_ui_state_v450_native1';
+const PLANNER_WORKING_KEY='kow_planner_working_v450_native1';
+function getUiState(){try{return JSON.parse(localStorage.getItem(UI_STATE_KEY)||'{}')||{}}catch{return {}}}
+function saveUiState(patch){try{localStorage.setItem(UI_STATE_KEY,JSON.stringify(Object.assign(getUiState(),patch)))}catch{}}
+function saveSelectedOfficerState(){
+ const sel=$('officerSelect');if(!sel||sel.selectedIndex<0)return;
+ saveUiState({officerName:String(sel.options[sel.selectedIndex]?.textContent||'').trim()});
+}
+function saveOfficerFilterState(){
+ saveUiState({officerFilters:{search:$('officerSearch')?.value||'',season:$('officerSeasonFilter')?.value||'',rarity:$('officerRarityFilter')?.value||'',role:$('officerRoleFilter')?.value||''}});
+}
+function restoreOfficerFilterState(){
+ const f=getUiState().officerFilters||{};
+ if($('officerSearch'))$('officerSearch').value=f.search||'';
+ if($('officerSeasonFilter')&&[...$('officerSeasonFilter').options].some(o=>o.value===String(f.season||'')))$('officerSeasonFilter').value=f.season||'';
+ if($('officerRarityFilter')&&[...$('officerRarityFilter').options].some(o=>o.value===String(f.rarity||'')))$('officerRarityFilter').value=f.rarity||'';
+ if($('officerRoleFilter')&&[...$('officerRoleFilter').options].some(o=>o.value===String(f.role||'')))$('officerRoleFilter').value=f.role||'';
+}
+function saveStatusFilterState(){
+ const map=sel=>Object.fromEntries([...document.querySelectorAll(sel)].map(x=>[x.value,!!x.checked]));
+ saveUiState({progressFilters:map('.progressStatusFilter'),compareFilters:map('.compareStatusFilter')});
+}
+function restoreStatusFilterState(){
+ const st=getUiState();
+ const apply=(sel,map)=>{if(!map)return;document.querySelectorAll(sel).forEach(x=>{if(Object.prototype.hasOwnProperty.call(map,x.value))x.checked=!!map[x.value]})};
+ apply('.progressStatusFilter',st.progressFilters);apply('.compareStatusFilter',st.compareFilters);
+}
+function saveComparePickState(){
+ const names=[...document.querySelectorAll('.progressComparePick:checked')].map(x=>String(x.closest('label')?.querySelector('span')?.textContent||'').trim()).filter(Boolean);
+ saveUiState({comparePicks:names});
+}
+function restoreComparePickState(){
+ const names=new Set(getUiState().comparePicks||[]);
+ document.querySelectorAll('.progressComparePick').forEach(x=>{const n=String(x.closest('label')?.querySelector('span')?.textContent||'').trim();x.checked=names.has(n)});
+}
+function saveActiveViewState(view){if(view)saveUiState({view})}
+function restoreActiveViewState(){
+ const view=getUiState().view;if(!view)return;
+ const b=document.querySelector('.bottom-nav button[data-view="'+CSS.escape(view)+'"]');if(b)b.click();
+}
+function getPlannerWorkingState(){try{return JSON.parse(localStorage.getItem(PLANNER_WORKING_KEY)||'{}')||{}}catch{return {}}}
+function savePlannerWorkingState(){
+ try{
+  const ids=['multiPlanName','multiOrv','multiUniversal','multiChests','multiSelectionChests','multiChestMode','kowPlannerSession','kowPlannerSeasonFilter','kowFutureOfficerType','kowPlannerIncludeNotStarted','kowPlannerIncludeOriginals','scenarioSession','scenarioOfficerCount','scenarioName','scenarioYear','compareOfficerSelect'];
+  const controls={};ids.forEach(id=>{const e=$(id);if(e)controls[id]=e.type==='checkbox'?!!e.checked:String(e.value??'')});
+  localStorage.setItem(PLANNER_WORKING_KEY,JSON.stringify({controls,officers:multiPlanOfficers.map(x=>({officerIndex:+x.officerIndex||0,badgesNeeded:Math.max(0,+x.badgesNeeded||0)}))}));
+ }catch{}
+}
+function restorePlannerWorkingState(){
+ const st=getPlannerWorkingState(),controls=st.controls||{};
+ Object.entries(controls).forEach(([id,v])=>{const e=$(id);if(!e)return;if(e.type==='checkbox')e.checked=!!v;else if(e.tagName!=='SELECT'||[...e.options].some(o=>o.value===String(v)))e.value=String(v)});
+ multiPlanOfficers=Array.isArray(st.officers)&&st.officers.length?st.officers.map(x=>({officerIndex:+x.officerIndex||0,badgesNeeded:Math.max(0,+x.badgesNeeded||0)})):[{officerIndex:0,badgesNeeded:1600}];
+ renderMultiPlanner();
+}
 
 function getSkillStrandLevels(){
  const levels=[];
@@ -1981,16 +2035,15 @@ function calculate(){
 
  const badgesHeld=+$('badgeHeld').value;
  const universalBadgesHeld=officerRarity(o)==='Epic'?+$('universalEpicBadgeHeld').value:officerRarity(o)==='Elite'?+$('universalEliteBadgeHeld').value:+$('universalBadgeHeld').value;
- const selectionChests=officerRarity(o)==='Legendary'?+$('legendaryBadgeChestHeld').value:0;
- const selectionMode=$('legendaryBadgeChestMode').value;
- const latestOrvCost=latestSeasonOrvCost();
- const selectionChestBadges=selectionMode==='badge'?selectionChests:0;
- const selectionChestOrv=selectionMode==='orv'?selectionChests*latestOrvCost:0;
- const universalBadgesAvailable=universalBadgesHeld+selectionChestBadges;
+ const badgeChests=officerRarity(o)==='Legendary'?+$('legendaryBadgeChestHeld').value:0;
+ const badgeChestMode=$('legendaryBadgeChestMode').value;
+ const badgeChestBadges=badgeChestMode==='badge'?badgeChests:0;
+ const badgeChestOrv=badgeChestMode==='orv'?badgeChests*600:0;
+ const specificSelectionChests=officerRarity(o)==='Legendary'&&selectionChestEligibleOfficer(o)?+$('legendarySelectionChestHeld').value:0;
+ const universalBadgesAvailable=universalBadgesHeld+badgeChestBadges+specificSelectionChests;
  const directOrv=+$('orvHeld').value;
- const orvHeld=directOrv+selectionChestOrv;
- $('selectionChestOrvValue').textContent=fmt(latestOrvCost);
- $('selectionChestOrvGenerated').textContent=fmt(selectionChestOrv);
+ const orvHeld=directOrv+badgeChestOrv;
+ $('selectionChestOrvGenerated').textContent=fmt(badgeChestOrv);
  $('universalBadgesAvailable').textContent=fmt(universalBadgesAvailable);
 
  const officerMaxBadges=maxBadgesForOfficer(o);
@@ -2143,6 +2196,7 @@ function captureGlobalResources(){
   universalBadgeHeld:$('universalBadgeHeld').value,
   universalEpicBadgeHeld:$('universalEpicBadgeHeld').value,universalEliteBadgeHeld:$('universalEliteBadgeHeld').value,
   legendaryBadgeChestHeld:$('legendaryBadgeChestHeld').value,
+  legendarySelectionChestHeld:$('legendarySelectionChestHeld').value,
   legendaryBadgeChestMode:$('legendaryBadgeChestMode').value,
   orvHeld:$('orvHeld').value,
   xp:{},
@@ -2162,7 +2216,8 @@ function applyGlobalResources(d){
  $('universalBadgeHeld').value=d.universalBadgeHeld??0;
  $('universalEpicBadgeHeld').value=d.universalEpicBadgeHeld??0;$('universalEliteBadgeHeld').value=d.universalEliteBadgeHeld??0;
  $('legendaryBadgeChestHeld').value=d.legendaryBadgeChestHeld??0;
- $('legendaryBadgeChestMode').value=d.legendaryBadgeChestMode??'badge';
+  $('legendarySelectionChestHeld').value=d.legendarySelectionChestHeld??0;
+  $('legendaryBadgeChestMode').value=d.legendaryBadgeChestMode??'badge';
  $('orvHeld').value=d.orvHeld??0;
  XP_DENOMS.forEach(v=>$('xp'+v).value=d.xp?.[v]??0);
 }
@@ -2415,7 +2470,7 @@ function buildUpgradeSummary(){
  Officer XP remaining: <b>${xpNeed.toLocaleString()}</b>`;
 
  if(opt){
-  const shared=numericText('universalBadgeHeld')+numericText('legendaryBadgeChestHeld');
+  const shared=numericText('universalBadgeHeld')+($('legendaryBadgeChestMode')?.value==='badge'?numericText('legendaryBadgeChestHeld'):0)+(selectionChestEligibleOfficer(o)?numericText('legendarySelectionChestHeld'):0);
   const usable=Math.min(shared,badgeNeed);
   let comparison='';
 
@@ -2539,18 +2594,18 @@ function renderMultiPlanner(){
     <td><button data-up title="Move up">↑</button> <button data-down title="Move down">↓</button> <button data-remove title="Remove">×</button></td>
    </tr>`;
  }).join('');
- tbody.querySelectorAll('[data-multi-officer]').forEach((el,i)=>el.onchange=()=>{multiPlanOfficers[i].officerIndex=+el.value;renderMultiPlanner();calculateMultiPlanner()});
- tbody.querySelectorAll('[data-multi-needed]').forEach((el,i)=>el.oninput=()=>{multiPlanOfficers[i].badgesNeeded=Math.max(0,+el.value||0);calculateMultiPlanner()});
- tbody.querySelectorAll('[data-up]').forEach((b,i)=>b.onclick=()=>{if(i){[multiPlanOfficers[i-1],multiPlanOfficers[i]]=[multiPlanOfficers[i],multiPlanOfficers[i-1]];renderMultiPlanner();calculateMultiPlanner()}});
- tbody.querySelectorAll('[data-down]').forEach((b,i)=>b.onclick=()=>{if(i<multiPlanOfficers.length-1){[multiPlanOfficers[i+1],multiPlanOfficers[i]]=[multiPlanOfficers[i],multiPlanOfficers[i+1]];renderMultiPlanner();calculateMultiPlanner()}});
- tbody.querySelectorAll('[data-remove]').forEach((b,i)=>b.onclick=()=>{multiPlanOfficers.splice(i,1);renderMultiPlanner();calculateMultiPlanner()});
+ tbody.querySelectorAll('[data-multi-officer]').forEach((el,i)=>el.onchange=()=>{multiPlanOfficers[i].officerIndex=+el.value;renderMultiPlanner();calculateMultiPlanner();savePlannerWorkingState()});
+ tbody.querySelectorAll('[data-multi-needed]').forEach((el,i)=>el.oninput=()=>{multiPlanOfficers[i].badgesNeeded=Math.max(0,+el.value||0);calculateMultiPlanner();savePlannerWorkingState()});
+ tbody.querySelectorAll('[data-up]').forEach((b,i)=>b.onclick=()=>{if(i){[multiPlanOfficers[i-1],multiPlanOfficers[i]]=[multiPlanOfficers[i],multiPlanOfficers[i-1]];renderMultiPlanner();calculateMultiPlanner();savePlannerWorkingState()}});
+ tbody.querySelectorAll('[data-down]').forEach((b,i)=>b.onclick=()=>{if(i<multiPlanOfficers.length-1){[multiPlanOfficers[i+1],multiPlanOfficers[i]]=[multiPlanOfficers[i],multiPlanOfficers[i+1]];renderMultiPlanner();calculateMultiPlanner();savePlannerWorkingState()}});
+ tbody.querySelectorAll('[data-remove]').forEach((b,i)=>b.onclick=()=>{multiPlanOfficers.splice(i,1);renderMultiPlanner();calculateMultiPlanner();savePlannerWorkingState()});
  calculateMultiPlanner();
 }
 
 // v4.3.50 Selection Chest eligibility is maintained explicitly by release pair.
 const LEGENDARY_SELECTION_CHEST_ELIGIBLE = new Set(["Katherine", "Grace", "Chloe", "Ling", "Jessica", "Lilith", "Angel", "Sakura", "Loubna", "Angelica", "Ophelia", "Doireann", "Natalia", "Sophia", "Edward", "Helene", "Nadia", "Vera", "Marsha", "Tanya", "Emily", "Zoya"]);
 function selectionChestEligibleOfficer(o){
-  return LEGENDARY_SELECTION_CHEST_ELIGIBLE.has(String(o?.name||o||'').trim());
+  return LEGENDARY_SELECTION_CHEST_ELIGIBLE.has(String(o?.name||o||'').trim().replace(/^S\d+\s+/i,''));
 }
 function calculateMultiPlanner(){
  const rows=[...document.querySelectorAll('#multiPlannerRows tr')];
@@ -2608,11 +2663,11 @@ function refreshMultiSavedPlans(selectName=''){
 }
 function saveMultiPlan(){
  const name=String($('multiPlanName').value||'').trim();if(!name){alert('Enter a plan name.');return}
- const plans=getMultiPlans();plans[name]={name,orv:+$('multiOrv').value||0,universal:+$('multiUniversal').value||0,chests:+$('multiChests').value||0,chestMode:$('multiChestMode').value,officers:multiPlanOfficers};
+ const plans=getMultiPlans();plans[name]={name,orv:+$('multiOrv').value||0,universal:+$('multiUniversal').value||0,chests:+$('multiChests').value||0,selectionChests:+$('multiSelectionChests').value||0,chestMode:$('multiChestMode').value,officers:multiPlanOfficers};
  localStorage.setItem('kow_multi_plans_v430',JSON.stringify(plans));refreshMultiSavedPlans(name);alert('Plan saved.');
 }
 function loadMultiPlan(name){
- const p=getMultiPlans()[name];if(!p)return;$('multiPlanName').value=p.name||name;$('multiOrv').value=p.orv||0;$('multiUniversal').value=p.universal||0;$('multiChests').value=p.chests||0;$('multiChestMode').value=p.chestMode||'optimise';multiPlanOfficers=Array.isArray(p.officers)?p.officers:[];renderMultiPlanner();
+ const p=getMultiPlans()[name];if(!p)return;$('multiPlanName').value=p.name||name;$('multiOrv').value=p.orv||0;$('multiUniversal').value=p.universal||0;$('multiChests').value=p.chests||0;if($('multiSelectionChests'))$('multiSelectionChests').value=p.selectionChests||0;$('multiChestMode').value=p.chestMode||'optimise';multiPlanOfficers=Array.isArray(p.officers)?p.officers:[];renderMultiPlanner();savePlannerWorkingState();
 }
 function deleteMultiPlan(){
  const name=$('multiSavedPlans').value;if(!name)return;const plans=getMultiPlans();delete plans[name];localStorage.setItem('kow_multi_plans_v430',JSON.stringify(plans));refreshMultiSavedPlans();alert('Saved plan deleted.');
@@ -2764,13 +2819,14 @@ function updateFutureOfficerForecast(){
  $('forecastNote').innerHTML=`<b>${labels[steps]}</b><br>Planning estimate using ${($('forecastGrowth').value||20)}% growth per Officer release from the latest known 600 ORV / 300 SRV release. For ${fmt(badges)} badges and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
 }
 async function init(){
- await loadOfficers();renderOfficerFilters();renderOfficerOptions();
+ await loadOfficers();renderOfficerFilters();restoreOfficerFilterState();renderOfficerOptions(getUiState().officerName||undefined);
  ['officerSearch','officerSeasonFilter','officerRarityFilter','officerRoleFilter'].forEach(id=>{
   const el=$(id);if(!el)return;
   const evt=id==='officerSearch'?'input':'change';
-  el.addEventListener(evt,()=>{renderOfficerOptions();calculate();populateCompareOfficers();buildUpgradeSummary()});
+  el.addEventListener(evt,()=>{saveOfficerFilterState();renderOfficerOptions();saveSelectedOfficerState();calculate();populateCompareOfficers();buildUpgradeSummary()});
  });
  $('officerSelect').addEventListener('change',()=>{
+ saveSelectedOfficerState();
  if(loadedOfficerProfileIndex!==null && loadedOfficerProfileIndex!==+$('officerSelect').value)saveOfficerProfile(true,loadedOfficerProfileIndex);
  updateOfficerExperience();
  loadOfficerProfile($('officerSelect').value);
@@ -2797,7 +2853,7 @@ async function init(){
   el.addEventListener('change',renderSkillStrands);
  });
  // Shared resources are also persisted automatically.
- ['ls1','ls2','ls3','es1','es2','es3','bs1','bs2','bs3','srvHeld','universalBadgeHeld','universalEpicBadgeHeld','universalEliteBadgeHeld','legendaryBadgeChestHeld','legendaryBadgeChestMode','orvHeld'].forEach(id=>{
+ ['ls1','ls2','ls3','es1','es2','es3','bs1','bs2','bs3','srvHeld','universalBadgeHeld','universalEpicBadgeHeld','universalEliteBadgeHeld','legendaryBadgeChestHeld','legendarySelectionChestHeld','legendaryBadgeChestMode','orvHeld'].forEach(id=>{
   const el=$(id); if(!el)return;
   el.addEventListener('input',()=>{clearTimeout(officerAutoSaveTimer);officerAutoSaveTimer=setTimeout(saveGlobalResources,250)});
   el.addEventListener('change',()=>{clearTimeout(officerAutoSaveTimer);officerAutoSaveTimer=setTimeout(saveGlobalResources,250)});
@@ -2849,7 +2905,7 @@ function renderReleases(){
  $('releaseCalendar').innerHTML=html;
 }
 renderReleases();
-document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.bottom-nav button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.view).classList.add('active');if(b.dataset.view==='database')renderDb();if(b.dataset.view==='dashboard'){if(typeof updateSmartDashboard==='function')updateSmartDashboard();}if(b.dataset.view==='progress'){renderSavedOfficerProgress();renderProgressCompareChoices();}if(b.dataset.view==='development'){calculate();renderSkillStrands();updateSkillRarityNotice(currentOfficer());updateSkillCostSummaries();}});
+document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{saveActiveViewState(b.dataset.view);document.querySelectorAll('.bottom-nav button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.view).classList.add('active');if(b.dataset.view==='database')renderDb();if(b.dataset.view==='dashboard'){if(typeof updateSmartDashboard==='function')updateSmartDashboard();}if(b.dataset.view==='progress'){renderSavedOfficerProgress();renderProgressCompareChoices();}if(b.dataset.view==='development'){calculate();renderSkillStrands();updateSkillRarityNotice(currentOfficer());updateSkillCostSummaries();}});
  $('openUserGuide').onclick=()=>{document.querySelectorAll('.bottom-nav button').forEach(x=>x.classList.toggle('active',x.dataset.view==='help'));document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));$('help').classList.add('active');window.scrollTo({top:0,behavior:'smooth'});};
 
  $('saveProgress').onclick=saveProgress;
@@ -2863,15 +2919,14 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
  $('dbRestore').onclick=()=>{if(confirm('Restore default officer database?')){officers=clone(window.KOW_PUBLISHED_OFFICERS||DEFAULT_OFFICERS).map(normalizeOfficer).filter(o=>o.name);saveOfficers();renderDb();renderOfficerFilters();renderOfficerOptions('S7 Liora');calculate()}};
 
 
- if($('multiAddOfficer'))$('multiAddOfficer').onclick=()=>{multiPlanOfficers.push({officerIndex:0,badgesNeeded:1600});renderMultiPlanner()};
- if($('multiUseCurrent'))$('multiUseCurrent').onclick=()=>{const x=(typeof kowInvGet==='function'?kowInvGet():{});$('multiOrv').value=x.invOrv||0;$('multiUniversal').value=x.invUniversalLegendary||0;$('multiChests').value=x.invLegendaryBadgeChests||0;if($('multiSelectionChests'))$('multiSelectionChests').value=x.invLegendarySelectionChests||0;calculateMultiPlanner()};
+ if($('multiAddOfficer'))$('multiAddOfficer').onclick=()=>{multiPlanOfficers.push({officerIndex:0,badgesNeeded:1600});renderMultiPlanner();savePlannerWorkingState()};
+ if($('multiUseCurrent'))$('multiUseCurrent').onclick=()=>{const x=(typeof kowInvGet==='function'?kowInvGet():{});$('multiOrv').value=x.invOrv||0;$('multiUniversal').value=x.invUniversalLegendary||0;$('multiChests').value=x.invLegendaryBadgeChests||0;if($('multiSelectionChests'))$('multiSelectionChests').value=x.invLegendarySelectionChests||0;calculateMultiPlanner();savePlannerWorkingState()};
  if($('multiSavePlan'))$('multiSavePlan').onclick=saveMultiPlan;
  if($('multiDeletePlan'))$('multiDeletePlan').onclick=deleteMultiPlan;
  if($('multiSavedPlans'))$('multiSavedPlans').onchange=e=>loadMultiPlan(e.target.value);
- ['multiOrv','multiUniversal','multiChests','multiChestMode'].forEach(id=>{const el=$(id);if(el)el.addEventListener('input',calculateMultiPlanner)});
+ ['multiPlanName','multiOrv','multiUniversal','multiChests','multiSelectionChests','multiChestMode','kowPlannerSession','kowPlannerSeasonFilter','kowFutureOfficerType','kowPlannerIncludeNotStarted','kowPlannerIncludeOriginals','scenarioSession','scenarioOfficerCount','scenarioName','scenarioYear','compareOfficerSelect'].forEach(id=>{const el=$(id);if(!el)return;const evt=(el.type==='checkbox'||el.tagName==='SELECT')?'change':'input';el.addEventListener(evt,()=>{if(id.startsWith('multi'))calculateMultiPlanner();savePlannerWorkingState()})});
  refreshMultiSavedPlans();
- multiPlanOfficers=[{officerIndex:0,badgesNeeded:1600}];
- renderMultiPlanner();
+ restorePlannerWorkingState();
 
 
  ['forecastRelease','forecastGrowth','forecastBadges','forecastStarValue'].forEach(id=>{
@@ -2951,10 +3006,10 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{docume
   });
  }
 
- ['universalBadgeHeld','legendaryBadgeChestHeld','legendaryBadgeChestMode'].forEach(id=>{
+ ['universalBadgeHeld','legendaryBadgeChestHeld','legendarySelectionChestHeld','legendaryBadgeChestMode'].forEach(id=>{
   const el=$(id);if(el)el.addEventListener(id==='legendaryBadgeChestMode'?'change':'input',calculate);
  });
- renderSkillStrands();renderDb();calculate();populateCompareOfficers();buildUpgradeSummary();
+ renderSkillStrands();renderDb();calculate();populateCompareOfficers();buildUpgradeSummary();restoreStatusFilterState();restoreComparePickState();saveSelectedOfficerState();setTimeout(restoreActiveViewState,0);
  window.addEventListener('resize',applyResponsivePageBackground);
  if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'));
 }
@@ -3083,7 +3138,7 @@ function renderSavedOfficerProgress(){
    <td class="${r.maxed?'status-ready':r.notStarted?'':'status-progress'}">${r.status}</td>
  </tr>`).join(''):`<tr><td colspan="9" class="muted">No saved Officers match the selected status filters.</td></tr>`;
 }
-document.addEventListener('DOMContentLoaded',()=>setTimeout(renderSavedOfficerProgress,0));
+document.addEventListener('DOMContentLoaded',()=>{restoreStatusFilterState();setTimeout(renderSavedOfficerProgress,0)});
 function compareStatusAllowed(r){
  const boxes=[...document.querySelectorAll('.compareStatusFilter')];
  if(!boxes.length)return true;
@@ -3105,7 +3160,7 @@ function renderProgressCompareChoices(){
    String(a.name).localeCompare(String(b.name))
  );
  box.innerHTML=rows.length?rows.map((r,i)=>`<label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #4a3a12;border-radius:8px"><input type="checkbox" class="progressComparePick" value="${i}"> <span>${esc(r.name)}</span></label>`).join(''):'No saved Officer profiles.';
- box.dataset.compareRows=JSON.stringify(rows);
+ box.dataset.compareRows=JSON.stringify(rows);restoreComparePickState();
 }
 function runProgressComparison(){
  const box=document.getElementById('compareProgressChoices');
@@ -3157,17 +3212,17 @@ function setupProgressComparison(){
  const all=document.getElementById('compareProgressSelectAll');
  const clear=document.getElementById('compareProgressClear');
  const run=document.getElementById('compareProgressRun');
- if(all)all.onclick=()=>document.querySelectorAll('.progressComparePick').forEach(x=>x.checked=true);
- if(clear)clear.onclick=()=>{document.querySelectorAll('.progressComparePick').forEach(x=>x.checked=false);document.getElementById('compareProgressResultsWrap').style.display='none';document.getElementById('compareProgressRecommendation').style.display='none';};
+ if(all)all.onclick=()=>{document.querySelectorAll('.progressComparePick').forEach(x=>x.checked=true);saveComparePickState()};
+ if(clear)clear.onclick=()=>{document.querySelectorAll('.progressComparePick').forEach(x=>x.checked=false);saveComparePickState();document.getElementById('compareProgressResultsWrap').style.display='none';document.getElementById('compareProgressRecommendation').style.display='none';};
  if(run)run.onclick=runProgressComparison;
 }
-document.addEventListener('DOMContentLoaded',setupProgressComparison);
+document.addEventListener('DOMContentLoaded',()=>{restoreStatusFilterState();setupProgressComparison();document.addEventListener('change',e=>{if(e.target?.classList?.contains('progressComparePick'))saveComparePickState()})});
 document.addEventListener('DOMContentLoaded',()=>{
  document.querySelectorAll('.progressStatusFilter').forEach(x=>x.addEventListener('change',()=>{
-   renderSavedOfficerProgress();
+   saveStatusFilterState();renderSavedOfficerProgress();
  }));
  document.querySelectorAll('.compareStatusFilter').forEach(x=>x.addEventListener('change',()=>{
-   renderProgressCompareChoices();
+   saveStatusFilterState();renderProgressCompareChoices();
    const wrap=document.getElementById('compareProgressResultsWrap');
    const rec=document.getElementById('compareProgressRecommendation');
    if(wrap)wrap.style.display='none';
@@ -3425,9 +3480,9 @@ function kowInvField(id,v){const e=document.getElementById(id);if(e){e.value=Mat
 function kowInvList(m){const e=document.getElementById('invOfficerList');if(!e)return;const a=Object.entries(m||{}).filter(x=>+x[1]>0);e.innerHTML=a.length?a.map(x=>'<div><b>'+x[0]+'</b>: '+x[1]+'</div>').join(''):'No individual Officer Badges entered.';}
 function kowInvLoad(){const x=kowInvGet();KOW_INV_IDS.forEach(id=>{const e=document.getElementById(id);if(e)e.value=+x[id]||0});const s=document.getElementById('inventorySavedStatus');if(s)s.textContent=x.savedAt?'Last saved: '+new Date(x.savedAt).toLocaleString():'Inventory not yet saved.';kowInvList(x.officerBadges);return x;}
 function kowInvApply(x){
- [['orvHeld','invOrv'],['multiOrv','invOrv'],['srvHeld','invSrv'],['universalLegendaryHeld','invUniversalLegendary'],['multiUniversal','invUniversalLegendary'],['legendaryBadgeChestHeld','invLegendaryBadgeChests'],['multiChests','invLegendaryBadgeChests'],['legendarySelectionChestHeld','invLegendarySelectionChests'],['multiSelectionChests','invLegendarySelectionChests']].forEach(a=>kowInvField(a[0],x[a[1]]));
+ [['orvHeld','invOrv'],['multiOrv','invOrv'],['srvHeld','invSrv'],['universalBadgeHeld','invUniversalLegendary'],['multiUniversal','invUniversalLegendary'],['legendaryBadgeChestHeld','invLegendaryBadgeChests'],['multiChests','invLegendaryBadgeChests'],['legendarySelectionChestHeld','invLegendarySelectionChests'],['multiSelectionChests','invLegendarySelectionChests']].forEach(a=>kowInvField(a[0],x[a[1]]));
  [50,100,500,1000,5000,10000,20000,50000].forEach(v=>kowInvField('xp'+v,x['invXp'+v]));
- const sel=document.getElementById('officerSelect');if(sel&&x.officerBadges)kowInvField('officerBadgesHeld',x.officerBadges[sel.value]||0);
+ const sel=document.getElementById('officerSelect');if(sel&&x.officerBadges){const name=sel.options[sel.selectedIndex]?.textContent?.trim()||'';kowInvField('badgeHeld',x.officerBadges[name]||0);}
  try{calculate()}catch(e){}
 }
 function kowInvSave(){const old=kowInvGet(),x={officerBadges:old.officerBadges||{},savedAt:new Date().toISOString()};KOW_INV_IDS.forEach(id=>x[id]=Math.max(0,+document.getElementById(id)?.value||0));localStorage.setItem(KOW_INV_KEY,JSON.stringify(x));kowInvApply(x);kowInvLoad();}
