@@ -1,2 +1,0 @@
-KoW Companion v4.5.0 TEST — Stage 1 native integration
-Extract this ZIP and upload/replace these files in the KoW-Companion-Test repository root. Leave officer-portraits and background images untouched.
