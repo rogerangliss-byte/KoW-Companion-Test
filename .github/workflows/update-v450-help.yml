@@ -1,0 +1,146 @@
+name: Update v4.5 Help Documentation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/update-v450-help.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Update in-app Help and User Guide
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          start=s.index('<section id="help" class="view">')
+          end=s.index('<section id="releases" class="view">', start)
+          help_html='''<section id="help" class="view">
+  <article class="card">
+    <h2>❓ Help & Instructions</h2>
+    <div class="card" style="margin-bottom:16px">
+      <h3 style="margin-top:0">✨ What’s New — v4.5.0 TEST</h3>
+      <div class="notice"><b>v4.5.0 TEST improves planning accuracy and refresh persistence, corrects Legendary chest rules, updates Inventory order, and extends Planner/Resource Optimiser testing before Live.</b></div>
+
+      <h4>Native working-state persistence</h4>
+      <p>A normal browser refresh should now retain the selected Officer, current page, Officer filters, Progress filters, Compare selections, Planner working rows and resource fields, Advanced Planner options, future-scenario fields and Resource Optimiser comparison Officer.</p>
+      <p>Saved Officer profiles, saved plans and Central Inventory remain separate from this temporary working-interface state.</p>
+
+      <h4>Correct Legendary chest rules</h4>
+      <ul>
+        <li><b>Legendary Officer Badge Chest:</b> each chest may be used as either <b>1 Universal Legendary Badge</b> or <b>600 Officer Readiness Vouchers (ORV)</b>. It cannot count as both.</li>
+        <li><b>Legendary Officer Badge Selection Chest:</b> each chest gives <b>1 specific Legendary Officer Badge</b> for an Officer currently available in that chest. It does not convert to ORV or a Universal Badge.</li>
+      </ul>
+
+      <h4>Resource Optimiser — Preview</h4>
+      <p>Select a second Officer in <b>Compare with Officer</b> to compare badge efficiency and ORV cost per badge where applicable. The Optimiser is preview-only and does not spend or alter saved resources.</p>
+
+      <h4>Multi-Officer Upgrade Planner</h4>
+      <p>The Planner supports named plans, multiple priority rows, per-Officer badge requirements, shared ORV, Universal Legendary Badges, Badge Chests, Selection Chests and selectable Badge Chest strategy.</p>
+      <p>Planner results are preview-only and do not deduct Inventory.</p>
+
+      <h4>Central Inventory order</h4>
+      <p>Inventory follows the approved game-reference <b>Order in List</b>, not spreadsheet row position:</p>
+      <ol>
+        <li>Legendary Officer Badge Chest</li>
+        <li>Legendary Officer Badge Selection Chest</li>
+        <li>Officer Readiness Vouchers (ORV)</li>
+        <li>Star Readiness Vouchers (SRV)</li>
+        <li>Universal Legendary Officer Badges</li>
+        <li>Universal Epic Officer Badges</li>
+        <li>Universal Elite Officer Badges</li>
+        <li>Individual Officer Badges in approved Order in List</li>
+        <li>Elite Stars I, II and III</li>
+        <li>Epic Stars I, II and III</li>
+        <li>Legendary Stars I, II and III</li>
+        <li>Officer XP Books</li>
+      </ol>
+      <p>The obsolete/non-game <b>50 XP Book</b> has been removed. Supported XP Book denominations are <b>100, 500, 1,000, 5,000, 10,000, 20,000 and 50,000 XP</b>.</p>
+
+      <h4>Progress and Compare</h4>
+      <p>Officer Progress continues to classify Officers as <b>MAXED</b>, <b>IN PROGRESS</b> or <b>NOT STARTED</b>. Shared Inventory does not artificially increase saved Officer progress percentage.</p>
+
+      <h4>Officer rarity badge totals</h4>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr><th>Rarity</th><th>Unlock</th><th>Skills</th><th>Training</th><th>Total to MAX</th></tr></thead>
+        <tbody>
+          <tr><td>Legendary</td><td>10</td><td>690</td><td>900</td><td><b>1,600</b></td></tr>
+          <tr><td>Epic</td><td>10</td><td>440</td><td>4,500</td><td><b>4,950</b></td></tr>
+          <tr><td>Elite</td><td>10</td><td>440</td><td>18,000</td><td><b>18,450</b></td></tr>
+        </tbody>
+      </table>
+      <p>Original Legendary Officers cannot use ORV/SRV seasonal conversion routes. Epic and Elite Officers use their own rarity-specific Stars and badge logic.</p>
+
+      <h4>Existing v4.4.0 planning features retained</h4>
+      <ul>
+        <li>Planning Readiness Dashboard with Badge, Star and XP readiness.</li>
+        <li>Priority Target and Suggested Next Action.</li>
+        <li>Future-session planning for October, January, April and July.</li>
+        <li>Season and Officer Type reports.</li>
+        <li>Projected future Legendary Officer resources and ORV/SRV forecasting.</li>
+        <li>MAXED Officers excluded from recommendations where appropriate.</li>
+      </ul>
+
+      <h4>Recommended workflow</h4>
+      <ol>
+        <li><b>Inventory:</b> enter and Save Inventory.</li>
+        <li><b>Officer:</b> enter each Officer’s current Stars, Level, Skills, Training and Officer-specific resources.</li>
+        <li><b>Progress:</b> verify MAXED / IN PROGRESS / NOT STARTED.</li>
+        <li><b>Releases:</b> review recurring release schedule and forecast assumptions.</li>
+        <li><b>Planner:</b> analyse current and future Officer requirements.</li>
+        <li><b>Backup:</b> export a backup before destructive QA or major changes.</li>
+      </ol>
+
+      <h4>Pre-Live QA checklist</h4>
+      <ul>
+        <li>App loads with no flicker, pulsing or freezes.</li>
+        <li>All tabs navigate normally on desktop and mobile/tablet.</li>
+        <li>Selected Officer and filters survive refresh.</li>
+        <li>Progress and Compare selections survive refresh.</li>
+        <li>Planner rows, Officer choices and badge requirements survive refresh.</li>
+        <li>Resource Optimiser Officer selection survives refresh.</li>
+        <li>Badge Chest calculations use either Badge or ORV mode, never both.</li>
+        <li>Selection Chests provide one eligible specific Officer Badge only and never ORV.</li>
+        <li>Original Legendary Officers do not incorrectly use ORV/SRV.</li>
+        <li>Inventory appears in approved Order in List.</li>
+        <li>No 50 XP Book appears anywhere.</li>
+        <li>Save Inventory, Export App Backup and Restore App Backup all work correctly.</li>
+        <li>Restored data survives reload.</li>
+        <li>Version header, Settings, About and Version Integrity consistently report <b>v4.5.0 TEST</b>.</li>
+        <li>The red Test banner remains visible.</li>
+      </ul>
+
+      <div class="notice"><b>TEST BUILD — NOT LIVE.</b> Complete this QA checklist before promotion to the English Live repository.</div>
+    </div>
+  </article>
+</section>
+'''
+          s=s[:start]+help_html+s[end:]
+          p.write_text(s,encoding='utf-8')
+
+          guide='''# KoW Companion — User Guide\n## v4.5.0 TEST — NOT LIVE\n\nKoW Companion is an Officer development, Inventory, Progress and planning companion for Kiss of War. This guide covers the v4.5.0 English Test build being validated before Live promotion.\n\n## Recommended workflow\n1. **Inventory first** — enter and save all resources currently held.\n2. **Officer** — enter and save each Officer's current progress.\n3. **Progress** — verify MAXED, IN PROGRESS and NOT STARTED status.\n4. **Releases** — review recurring schedule and future-cost forecast.\n5. **Planner** — run Multi-Officer and Advanced Planning.\n6. **Backup** — export a backup before destructive QA or major changes.\n\n## v4.5.0 changes\n### Working-state persistence\nNormal browser refresh should retain selected Officer, current tab, Officer filters, Progress filters, Compare selections, Planner working rows/resource fields, Advanced Planner choices, future-scenario fields and Resource Optimiser comparison Officer.\n\n### Legendary chest rules\n- **Legendary Officer Badge Chest:** 1 chest = either 1 Universal Legendary Badge or 600 ORV. Never both.\n- **Legendary Officer Badge Selection Chest:** 1 chest = 1 specific eligible Legendary Officer Badge. No ORV conversion and no Universal Badge conversion.\n\n### Central Inventory\nInventory follows the approved **Order in List** sequence. The 50 XP Book has been removed. Supported XP Book denominations are 100, 500, 1,000, 5,000, 10,000, 20,000 and 50,000 XP.\n\n### Resource Optimiser\nUse **Compare with Officer** to compare badge efficiency and ORV-per-badge cost where applicable. Preview only; no resources are spent.\n\n### Multi-Officer Upgrade Planner\nBuild a priority list of Officers, enter per-Officer badge requirements, and preview shared-resource allocation using ORV, Universal Legendary Badges, Badge Chests and Selection Chests. Named plans can be saved separately from temporary working-state persistence.\n\n## Progress\nOfficer Progress classifies Officers as **MAXED**, **IN PROGRESS** or **NOT STARTED** based on saved Officer progress. Shared Inventory does not artificially increase an Officer's saved progress percentage.\n\n## Confirmed badge totals\n| Rarity | Unlock | Skills | Training | Total to MAX |\n|---|---:|---:|---:|---:|\n| Legendary | 10 | 690 | 900 | **1,600** |\n| Epic | 10 | 440 | 4,500 | **4,950** |\n| Elite | 10 | 440 | 18,000 | **18,450** |\n\nOriginal Legendary Officers cannot use ORV/SRV seasonal conversion routes. Epic and Elite Officers use their own rarity-specific Stars and badge logic.\n\n## Advanced Planning retained from v4.4.0\n- Planning Readiness Dashboard with Badge, Star and XP readiness.\n- Priority Target and Suggested Next Action.\n- Future planning sessions for October, January, April and July.\n- Season and Officer Type filters.\n- Future Legendary Officer resource projections.\n- ORV/SRV forecast linked to Releases growth assumptions.\n- MAXED Officers excluded from recommendations where appropriate.\n\n## Backup and Restore\nUse **Settings → Export App Backup** before destructive QA. Restore App Backup should import Officer profiles, individual Officer Badges, shared Inventory and saved app data, then survive reload.\n\n## Pre-Live QA\nVerify no flicker/freezes; all tabs navigate; selected Officer and filters survive refresh; Progress/Compare/Planner state survives refresh; chest rules are correct; Inventory order is correct; no 50 XP Book is shown; Inventory Save works; backup/restore works; classifications remain correct; all version reporting says **v4.5.0 TEST**; and the red Test banner remains visible.\n\n---\n**Created by FireStorm (371)**\n'''
+          Path('USER-GUIDE.md').write_text(guide,encoding='utf-8')
+          PY
+      - name: Validate v4.5 Help documentation
+        run: |
+          grep -q "What’s New — v4.5.0 TEST" index.html
+          grep -q "Legendary Officer Badge Selection Chest" index.html
+          grep -q "50 XP Book" index.html
+          grep -q "v4.5.0 TEST — NOT LIVE" USER-GUIDE.md
+      - name: Commit and remove one-shot workflow
+        run: |
+          git config user.name 'FireStorm'
+          git config user.email 'roger.angliss@gmail.com'
+          rm -f .github/workflows/update-v450-help.yml
+          git add index.html USER-GUIDE.md .github/workflows/update-v450-help.yml
+          git commit -m 'Update in-app Help and User Guide for v4.5.0 TEST'
+          git push origin main
