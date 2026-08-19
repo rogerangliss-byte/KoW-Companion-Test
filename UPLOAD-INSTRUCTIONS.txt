@@ -1,7 +1,7 @@
-KoW Companion v4.5.0 TEST — Stage 1 + Updated Inventory Order
+KoW Companion v4.5.0 TEST — Documentation Update
 
-Upload/replace these files in the ROOT of KoW-Companion-Test.
-Do not remove officer-portraits or the background image files.
-
-Inventory follows Inventory List(1).xlsx "Order in List" 1–89.
-50 XP Book has been removed because it is not an in-game XP Book denomination.
+1. Extract this ZIP.
+2. Upload/replace these root files in KoW-Companion-Test.
+3. Leave the existing officer-portraits folder and background image files untouched.
+4. Wait for GitHub Pages deployment to complete.
+5. Refresh the Test site and review Help & Instructions before Live approval.

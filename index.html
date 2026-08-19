@@ -1199,199 +1199,78 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
     <article class="card">
       <h2>❓ Help & Instructions</h2>
 
-<div class="card" id="whatsNewV4329" style="margin-bottom:16px">
-  <h3 style="margin-top:0">✨ What’s New — v4.4.0 LIVE</h3>
-  <div class="notice">
-    <b>v4.4.0 LIVE adds the Planning Readiness Dashboard, turning saved future-Officer scenarios into clear Badge, Star and XP readiness percentages with a priority target and suggested next action.</b>
-  </div>
-  <h4>Planning Readiness Dashboard</h4>
+<div class="card" id="whatsNewV450" style="margin-bottom:16px">
+  <h3 style="margin-top:0">✨ What’s New — v4.5.0 TEST</h3>
+  <div class="notice"><b>TEST BUILD — NOT LIVE.</b> v4.5.0 is based on the stable v4.4.0 English Live application and focuses on accurate planning, corrected Legendary chest rules, persistent working state and a clearer Central Inventory.</div>
+
+  <h4>💾 Native working-state persistence</h4>
+  <p>A normal browser refresh should keep the working interface where you left it instead of returning key controls to defaults.</p>
   <ul>
-    <li><b>Badge, Star and XP readiness</b> shown separately for each saved planning scenario.</li>
-    <li><b>Overall readiness</b> is based on the limiting resource, so the weakest area is immediately visible.</li>
-    <li><b>Priority Target</b> highlights the saved scenario that needs the most attention.</li>
-    <li><b>Suggested Next Action</b> identifies whether to prioritise badge equivalents, Star value or XP.</li>
-    <li><b>Open in Planner</b> reloads the saved scenario directly into the existing Future Officer planning controls.</li>
-    <li>The dashboard uses the existing saved Planning Scenario format, so <b>no saved-data migration is required</b>.</li>
+    <li>Selected Officer and current app tab/page.</li>
+    <li>Officer Search, Season, Rarity and Role filters.</li>
+    <li>Officer Progress MAXED / IN PROGRESS / NOT STARTED filters.</li>
+    <li>Compare Officer Progress filters and selected Officers.</li>
+    <li>Multi-Officer Planner rows, Officer selections, badge requirements and working resource fields.</li>
+    <li>Advanced Planner/session selections, future scenario fields and Resource Optimiser comparison Officer.</li>
+  </ul>
+  <p>Saved Officer profiles, saved plans and Central Inventory remain separate from this temporary working-interface state.</p>
+
+  <h4>📦 Correct Legendary chest rules</h4>
+  <ul>
+    <li><b>Legendary Officer Badge Chest:</b> each chest can be used as <b>either 1 Universal Legendary Badge or 600 Officer Readiness Vouchers (ORV)</b>. It cannot count as both.</li>
+    <li><b>Legendary Officer Badge Selection Chest:</b> each chest gives <b>1 specific Legendary Officer Badge</b> for an Officer currently available in the Selection Chest pool. It does <b>not</b> convert to ORV or a Universal Legendary Badge.</li>
+    <li>Original Legendary Officers remain ineligible for ORV/SRV seasonal conversion routes.</li>
   </ul>
 
-  
-<h3>📘 v4.3.58 — Advanced Planning & Future Officer Forecasting Guide</h3>
+  <h4>🧮 Resource Optimiser — Preview</h4>
+  <p>Select a second Officer under <b>Compare with Officer</b> to compare badge efficiency, including ORV cost per Officer Badge where applicable. The Optimiser is preview-only and does not spend or alter saved resources.</p>
 
-<h4>What’s New in v4.3.58</h4>
-<p>v4.3.58 expands KoW Companion from single-Officer resource tracking into advanced multi-Officer and future-session planning. It links your saved Officer progress, shared Inventory, recurring release schedule and projected future Officer costs so you can decide whether to finish current Officers or preserve resources for future releases.</p>
-<ul>
-  <li><b>Advanced Multi-Officer Planning</b> with saved Officer analysis.</li>
-  <li><b>Future Officer Planning</b> using recurring October, January, April and July release sessions.</li>
-  <li><b>Future Officer Type</b> selection for Rally, Garrison, Infantry, Tank and Tank Destroyer.</li>
-  <li><b>Officer Session / Season filtering</b> for All Sessions, Original and S2–S7.</li>
-  <li><b>Combined Season + Type reports</b>, for example S6 + Tank.</li>
-  <li><b>Focused future-session reports</b>: April — Tanks shows only S8 Tank — PROJECTED.</li>
-  <li><b>Projected S8 resources</b> for one or two future Legendary Officers.</li>
-  <li><b>ORV/SRV forecasts</b> linked to the Releases forecast growth setting.</li>
-  <li><b>Inventory-aware readiness</b> using ORV, SRV, Universal Badges, Selection Chests, Stars and XP Books.</li>
-  <li><b>Top 10 compact results</b> for larger Saved/All reports, with Show all and Collapse.</li>
-  <li><b>Releases → Planner shortcut</b> for Advanced Future Officer Planning.</li>
-  <li><b>MAXED Officers excluded</b> from Advanced Planner recommendations.</li>
-</ul>
+  <h4>👥 Multi-Officer Upgrade Planner</h4>
+  <p>Create a priority list of Officers and preview how shared badge resources could be allocated without changing normal saved Inventory. The Planner supports named plans, multiple Officer rows, per-Officer badge requirements, priority/order controls, ORV, Universal Legendary Badges, Badge Chests, Selection Chests and selectable Badge Chest strategy.</p>
 
-<h4>Recommended Flow</h4>
-<ol>
-  <li><b>Inventory first:</b> enter and save the resources you currently hold.</li>
-  <li><b>Officer:</b> enter each Officer’s current progress and save the Officer profile.</li>
-  <li><b>Progress:</b> confirm Officers are correctly shown as MAXED, IN PROGRESS or NOT STARTED.</li>
-  <li><b>Releases:</b> review the recurring release schedule and set the forecast increase percentage.</li>
-  <li><b>Planner:</b> run Advanced Multi-Officer Planning using the session, season and type filters required.</li>
-  <li><b>Review the forecast:</b> compare current candidates with projected future resource requirements before committing flexible resources.</li>
-</ol>
+  <h4>📋 Central Inventory order</h4>
+  <p>The Inventory now follows the approved <b>Order in List</b> sequence rather than spreadsheet row order:</p>
+  <ol>
+    <li>Legendary Officer Badge Chest</li>
+    <li>Legendary Officer Badge Selection Chest</li>
+    <li>Officer Readiness Voucher (ORV)</li>
+    <li>Star Readiness Voucher (SRV)</li>
+    <li>Legendary Officer Badge</li>
+    <li>Epic Officer Badge</li>
+    <li>Elite Officer Badge</li>
+    <li>Individual Officer Badges in the approved numbered order</li>
+    <li>Elite Stars I–III</li>
+    <li>Epic Stars I–III</li>
+    <li>Legendary Stars I–III</li>
+    <li>XP Books: 100, 500, 1,000, 5,000, 10,000, 20,000 and 50,000</li>
+  </ol>
+  <p>The non-game <b>50 XP Book</b> entry has been removed.</p>
 
-<h4>1. Prepare Inventory</h4>
-<p>Advanced Planning uses the same shared resource information as the rest of the app. Before running a report, update Inventory with your current ORV, SRV, Universal Legendary Badges, Legendary Officer Badge Selection Chests, Star resources and XP Books. XP is calculated from the quantities entered for each XP Book denomination.</p>
-<p>The Planner is <b>preview-only</b>. Running or refreshing a recommendation does not spend, deduct or change Inventory.</p>
+  <h4>📊 Progress and Compare</h4>
+  <p>Officer Progress continues to classify Officers as <b>MAXED</b>, <b>IN PROGRESS</b> or <b>NOT STARTED</b>. Shared Inventory does not artificially increase an Officer's saved progress percentage. Compare Officer Progress uses actual saved Officer progress.</p>
 
-<h4>2. Save Officer Progress</h4>
-<p>For each Officer you want included in current-Officer planning, open the Officer page, enter the Officer’s current Stars, Level, Skills, Training and Officer-specific resources, then save the profile. Advanced Planning reads the same Progress information used by the Progress screen.</p>
-<p><b>MAXED Officers are always excluded</b> from Advanced Planner recommendations because no further development resources are required for them.</p>
+  <h4>🏅 Confirmed Officer Badge totals</h4>
+  <ul>
+    <li><b>Legendary:</b> 10 unlock + 690 Skills + 900 Training = <b>1,600 badges to MAX</b>.</li>
+    <li><b>Epic:</b> 10 unlock + 440 Skills + 4,500 Training = <b>4,950 badges to MAX</b>.</li>
+    <li><b>Elite:</b> 10 unlock + 440 Skills + 18,000 Training = <b>18,450 badges to MAX</b>.</li>
+  </ul>
 
-<h4>3. Planning Session</h4>
-<p>The <b>Planning session</b> selector controls the overall purpose of the report:</p>
-<ul>
-  <li><b>Saved Officers only</b> — analyse eligible saved/current Officers only.</li>
-  <li><b>All Officer sessions</b> — combine projected future Officer scenarios with eligible saved/current Officers.</li>
-  <li><b>Next Officer session</b> — plan for the next recurring future release session.</li>
-  <li><b>October — Rally / Garrison</b> — focused future Rally/Garrison planning.</li>
-  <li><b>January — Infantry</b> — focused future Infantry planning.</li>
-  <li><b>April — Tanks</b> — focused future Tank planning.</li>
-  <li><b>July — Tank Destroyers</b> — focused future Tank Destroyer planning.</li>
-</ul>
-<p>When a <b>specific future session</b> is selected, the results intentionally show only that projected future Officer scenario. For example, <b>April — Tanks</b> shows <b>S8 Tank — PROJECTED</b>. Use <b>All Officer sessions</b> when you want projected Officers and saved/current Officers in the same report.</p>
+  <h4>🧭 v4.4.0 planning retained</h4>
+  <p>Planning Readiness Dashboard, Badge/Star/XP readiness, Priority Target, Suggested Next Action, future October/January/April/July sessions, Season + Officer Type reports, projected future Legendary resources, ORV/SRV forecasting and MAXED-Officer exclusions remain available.</p>
 
-<h4>4. Officer Session / Season Filter</h4>
-<p>The <b>Officer Session / Season</b> filter narrows the saved/current Officer side of a report. Available choices are All Sessions, Original, S2, S3, S4, S5, S6 and S7.</p>
-<p>Example: choose <b>Saved Officers only → S6 → Tank</b> to analyse eligible saved S6 Tank Officers only.</p>
-
-<h4>5. Future Officer Type</h4>
-<p><b>All applicable types / session default</b> uses the Officer type expected for the selected recurring release session. You can override it with Rally, Garrison, Infantry, Tank or Tank Destroyer.</p>
-<p>The type selector also works with the Season filter for saved/current reports. This enables focused reports such as <b>S6 + Tank</b> or <b>S7 + Infantry</b>.</p>
-
-<h4>6. Include Not Started / Include Original Officers</h4>
-<p><b>Include Not Started</b> adds eligible Officers that are marked NOT STARTED. Leave it off when you only want active development candidates.</p>
-<p><b>Include Original Officers</b> allows Original Officers to be included where relevant. Original Officers remain subject to their own resource eligibility rules and should not be treated as seasonal ORV/SRV Officers.</p>
-
-<h4>7. Analyse Planning Session</h4>
-<p>Select the required options and press <b>Analyse Planning Session</b>. The summary explains the active session/filter combination and the recommendation. <b>Refresh Recommendation</b> recalculates the report using the latest saved Progress and Inventory.</p>
-<p>For larger Saved Officers or All Sessions reports, the Planner displays the <b>Top 10</b> results initially. Use <b>Show all</b> to display the full report and <b>Collapse</b> to return to the compact view.</p>
-
-<h4>8. Understanding PROJECTED Officers</h4>
-<p>A row such as <b>S8 Tank — PROJECTED</b> is a planning placeholder, not a published Officer record. It allows resources to be reserved before the actual Officer details are known. The projection does not add an unpublished Officer to the Officer Database and does not assume that forecast ORV/SRV costs are confirmed.</p>
-
-<h4>9. Projected S8 Resource Requirement</h4>
-<p>For projected Legendary Officers, the Planner shows resource requirements for both <b>one Officer</b> and <b>two Officers</b>.</p>
-<table style="width:100%;border-collapse:collapse">
-<thead><tr><th>Scenario</th><th>Badges</th><th>Star value</th><th>XP</th></tr></thead>
-<tbody>
-<tr><td>1 projected Legendary Officer</td><td>1,600</td><td>98,000</td><td>199,646,700</td></tr>
-<tr><td>2 projected Legendary Officers</td><td>3,200</td><td>196,000</td><td>399,293,400</td></tr>
-</tbody>
-</table>
-<p>The Planner compares these requirements with held resources and reports the expected readiness or shortfall for badges, Stars and XP.</p>
-
-<h4>10. ORV/SRV Forecasts</h4>
-<p>The Releases page field <b>Forecast increase per Officer release (%)</b> controls projected cost growth. The default shown by the app is a percentage, not a fixed number of ORV/SRV.</p>
-<p>Future ORV/SRV figures are labelled <b>FORECAST</b>. They are estimates derived from the latest published cost baseline and the selected percentage/release distance. When actual future Officer costs are published, the published values should replace the forecast.</p>
-
-<h4>11. Releases → Advanced Planner</h4>
-<p>The <b>Future Officer Cost Forecast</b> section on Releases includes an <b>Advanced Future Officer Planning</b> note and an <b>Open Advanced Planner</b> button. Use it after reviewing a future release forecast to move directly to the Planner and compare the projected release against your saved resources.</p>
-
-<h4>12. Example — Planning for April S8 Tanks</h4>
-<ol>
-  <li>Update and save Inventory.</li>
-  <li>Review Releases and confirm the forecast percentage.</li>
-  <li>Open Advanced Planner.</li>
-  <li>Select <b>April — Tanks</b>.</li>
-  <li>Leave Future Officer Type on the session default, or select Tank manually.</li>
-  <li>Run <b>Analyse Planning Session</b>.</li>
-  <li>The focused result shows <b>S8 Tank — PROJECTED</b>.</li>
-  <li>Review the one-Officer and two-Officer badge, Star, XP, ORV and SRV forecast.</li>
-</ol>
-
-<h4>13. Example — S6 Tank Development Report</h4>
-<ol>
-  <li>Select <b>Saved Officers only</b>.</li>
-  <li>Select <b>S6</b> under Officer Session / Season.</li>
-  <li>Select <b>Tank</b> as Officer Type.</li>
-  <li>Choose whether to include Not Started Officers.</li>
-  <li>Press <b>Analyse Planning Session</b>.</li>
-</ol>
-<p>The result contains only eligible S6 Tank candidates matching those settings.</p>
-
-<h4>Important Forecasting Notes</h4>
-<ul>
-  <li>PROJECTED future Officers are planning scenarios only.</li>
-  <li>ORV/SRV forecasts are estimates until actual costs are published.</li>
-  <li>Inventory and saved Officer progress are never automatically spent by the Planner.</li>
-  <li>MAXED Officers are intentionally excluded.</li>
-  <li>Use Saved Officers only for current development decisions; use All Officer sessions for current-versus-future comparison; use a specific future session for a focused future-release report.</li>
-</ul>
-
-<h4>🔎 Focused Session, Season & Type Filtering</h4>
-<p><b>New in this build:</b> specific future sessions now show only their selected projected Officer (for example April — Tanks → S8 Tank — PROJECTED); Saved/All reports use a Top 10 view with Show all / Collapse; Officer Session / Season filtering supports All, Original and S2–S7; Season and Officer Type can be combined for reports such as S6 + Tank; projected S8 planning includes one- and two-Officer resource requirements; Releases links directly to Advanced Planner; and future ORV/SRV costs remain clearly identified as forecasts.</p>
-<h4>🔗 Planner Integration & Releases Link</h4>
-<p>The Advanced Planner now receives saved Progress, Officer database data, XP Books and shared Inventory through an explicit bridge from the main app module. This resolves the module-scope issue that prevented Saved Officers and XP held from appearing in Advanced Planning. The Releases Future Officer Cost Forecast now also includes a note and direct <b>Open Advanced Planner</b> button.</p>
-<h4>🔧 Progress, XP & Inventory Integration</h4>
-<p>The Advanced Planner now reads current Officer candidates from the exact same <b>Progress</b> data source used by the Progress screen, and reads XP Books and shared resources from the exact same global resource store used by the XP and Inventory calculations. This fixes Saved Officers / All Sessions candidate detection and projected XP readiness.</p>
-<h4>🛠 Saved/All Sessions & ORV/SRV Forecasting</h4>
-<p>Saved Officers and All Officer Sessions now use the actual saved profile store. MAXED Officers remain excluded. The Projected S8 Resource Requirement now shows ORV and SRV forecasts derived from the Releases percentage growth setting, and the Releases input label now explicitly shows <b>(%)</b> for clarity.</p>
-<h4>🔮 Saved Officers & S8 Resource Forecast</h4>
-<p>Saved Officers mode now reads actual saved Officer profiles correctly. The Advanced Planner also shows projected resource requirements for one and two future S8 Legendary Officers, including 1,600 / 3,200 badges, 98,000 / 196,000 Star value, and 199,646,700 / 399,293,400 XP. ORV and SRV amounts are explicitly labelled FORECAST until S8 costs are published.</p>
-<h4>🧭 Saved Officers & Session Scope</h4>
-<p>Advanced Planning now uses only genuinely saved Officer profiles for current candidates. Planning Session can be set to Saved Officers only, All Officer sessions, Next Officer session, or a specific recurring Officer session. Include Not Started and Include Original Officers remain optional toggles. MAXED Officers remain excluded, and future scenarios are projected as S8+ Officer types without assuming unpublished ORV/SRV costs.</p>
-<h4>🎯 Focused Advanced Planner</h4>
-  <p>Advanced Planning now excludes MAXED Officers, shows In Progress seasonal Officers by default, adds optional Not Started and Original Officer toggles, corrects future projections to the next database season (S8 with the current S7 database), and places PROJECTED scenarios prominently in the comparison.</p>
-  <h4>🔭 Future Session & Officer Type Planning</h4>
-<p>Advanced Multi-Officer Planning can now select a future Officer session and a specific future Officer Type: Tank, Tank Destroyer, Infantry, Rally or Garrison. Session defaults can be overridden manually. Future entries are clearly marked PROJECTED, MAXED Officers are excluded, and the Home Officer Readiness card includes an Open Officer Progress shortcut.</p>
-<h4>🧠 Officer Readiness Intelligence</h4>
-  <p>The Home screen now analyses the selected Officer against saved Inventory and shows <b>Ready / Shortfall</b> for Unlock, Next Star, 5★, Skills, Training, Level 70 XP and MAX Officer. Guided Workflow steps are clickable and take you directly to each stage.</p>
-  <h4>🧭 Guided Workflow & Inventory Intelligence</h4>
-  <p>The Home screen now guides users through the recommended Inventory-first workflow and shows the next suggested step. A new Inventory Readiness panel summarises saved badge resources, Star value, XP and individual Officer Badges. Smart Dashboard shortcut buttons take you directly to the relevant calculator.</p>
-  <h4>📦 New Central Inventory</h4>
-  <p>Enter your shared resources once in <b>Inventory</b> and press <b>Save Inventory</b>. The saved values are then available throughout the app instead of being re-entered for each Officer.</p>
-  <p>Inventory includes ORV, SRV, Universal Legendary/Epic/Elite Badges, Legendary Officer Badge Chests and Selection Chests, rarity-specific Stars, XP Books, and individual Officer Badges. Individual Officer Badge quantities are stored separately for each Officer.</p>
-  <p><b>Recommended starting point:</b> update and save Inventory first so the Officer, Stars, Development, XP and Planner calculations can work from the resources you actually hold.</p>
-
-  <h4>📊 Officer Progress</h4>
-  <p>Officers are automatically classified as <b>MAXED</b>, <b>IN PROGRESS</b>, or <b>NOT STARTED</b>. The main Progress filters and Compare Officer Progress filters work independently.</p>
-  <p><b>New in v4.3.50 LIVE:</b> Officer Rarity now supports <b>Legendary (Gold)</b>, <b>Epic (Purple)</b> and <b>Elite (Blue)</b>. Training costs are 5 / 25 / 100 badges per point respectively. Epic and Elite Original Officers are included, with multi-role filtering. Skill Strand unlocking remains identical for every rarity.</p>
-
-  <h4>🔎 Compare Officer Progress</h4>
-  <p>Compare saved Officers in Season order. You can compare Not Started and In Progress Officers even when the main Officer Progress table is filtered differently.</p>
-
-  <h4>✏️ Edit Officer Progress</h4>
-  <p>The Officer tab now has <b>Edit Officer Progress</b>, allowing you to enter the key Officer-specific values in one place: Current Star Level, Current Officer Level, Officer Unlocked, Skill Strands and Training Level.</p>
-
-  <h4>⭐ MAX Officer</h4>
-  <p>Use <b>MAX Officer</b> to set the selected Officer to <b>5★, Level 70, Unlocked, all four Skill Strands at Level 5, and Training Level 180</b>.</p>
-
-  <h4>✅ Automatic Unlock</h4>
-  <p>Setting an Officer above Level 0 automatically selects <b>Officer unlocked</b>, reducing the chance of missing the unlock status.</p>
-
-  <h4>🎚 Exact Training Level</h4>
-  <p>Training can now be entered as an exact number from <b>0–180</b> as well as using the slider.</p>
-
-  <h4>🧩 Four Independent Skill Strands</h4>
-  <p>Each Officer has four independent Skill Strands. Strand availability follows Current Star Level: <b>0★ = Strand 1</b>, <b>1★ = Strands 1–2</b>, <b>2★ = Strands 1–3</b>, and <b>3★+ = all four strands</b>. Level 1 is free when each strand unlocks, and available strands can be advanced separately to Level 5.</p>
-
-  <p>The 16 paid skill increases share one badge-cost sequence, regardless of which strand is increased:</p>
-  <div class="notice"><b>10, 10, 15, 15, 30, 30, 40, 40, 45, 45, 50, 50, 75, 75, 80, 80</b></div>
-  <p>All 16 paid skill increases cost <b>690 Officer Badges</b> in total.</p>
-
-  <h4>ℹ️ Skill Cost Information</h4>
-  <p>The Development screen now shows <b>Next Cost</b>, <b>badges used / 690</b>, and <b>badges remaining</b>. Select the <b>i</b> button to view the full cost sequence and current strand information.</p>
-
-  <h4>🎨 Skill Progress Colours</h4>
-  <p><b>Gold</b> means that skill level has been reached. <b>Black/dark</b> means an available skill level has not yet been reached. <b>Grey</b> means the strand is not yet available at the Officer’s current Star Level. Locked strands show the Star requirement.</p>
-
-  <h4>💾 Improved Saving & Synchronisation</h4>
-  <p>Progress saved through Edit Officer Progress is written back to the Officer profile so the Officer, Stars, Develop, XP and Progress views stay synchronised.</p>
+  <h4>✅ Pre-Live QA checklist</h4>
+  <ul>
+    <li>App loads without flicker, pulsing or freezes and all tabs navigate normally.</li>
+    <li>Selected Officer, Progress filters, Compare selections and Planner working state survive refresh.</li>
+    <li>Badge Chest mode uses Badge <b>or</b> ORV route, never both.</li>
+    <li>Selection Chests give one eligible specific Officer Badge only and never ORV.</li>
+    <li>Inventory appears in the approved Order in List and no 50 XP Book appears anywhere.</li>
+    <li>Inventory Save works and feeds the rest of the app.</li>
+    <li>Export App Backup and Restore App Backup work, and restored data survives reload.</li>
+    <li>Version header, Settings, About and Version Integrity all report <b>v4.5.0 TEST</b>.</li>
+    <li>The red TEST / NOT LIVE banner remains visible.</li>
+  </ul>
 </div>
 
       <div class="notice"><b>Recommended workflow:</b> start with <b>Inventory</b> and save the resources you currently hold, then work through <b>Officer → Stars → Development → XP → Planner → Save Progress</b>. Use <b>Backup & Restore</b> in Settings before major changes or when you want a portable copy of locally saved app data.</div>
