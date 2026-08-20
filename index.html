@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.5.0 TEST</title>
+<title>KoW Companion v4.6.0 TEST</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -520,6 +520,9 @@ html.ios-safari{
   #help table td{padding:6px 2px !important}
 }
 
+
+/* v4.6.0 TEST — Upgrade Targets & Recommendations */
+.v460-target-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.v460-target-result{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:rgba(0,0,0,.28)}.v460-target-result strong{color:var(--gold2)}@media(max-width:760px){.v460-target-grid{grid-template-columns:1fr}}
 </style>
 <script>
 (function(){
@@ -1427,6 +1430,20 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
       <div id="backupStatus" class="notice" style="margin-top:10px">No backup created yet.</div>
 </article>
   </section>
+
+<div class="card wide" id="v460UpgradeTargetsCard">
+  <div class="eyebrow">v4.6.0 TEST</div>
+  <h2>🎯 Upgrade Targets & Recommendations</h2>
+  <p class="notice">Choose a target for the currently selected Officer. This first v4.6.0 test build compares the saved current position with your target and gives a clear next-step recommendation. It does not spend or alter Inventory.</p>
+  <div class="v460-target-grid">
+    <div><label>Target Level</label><input id="v460TargetLevel" type="number" min="1" max="70" value="70"></div>
+    <div><label>Target Stars</label><select id="v460TargetStars"><option value="1">1★</option><option value="2">2★</option><option value="3">3★</option><option value="4">4★</option><option value="5" selected>5★</option></select></div>
+    <div><label>Target Training</label><input id="v460TargetTraining" type="number" min="0" max="180" value="180"></div>
+    <div><label>Target</label><select id="v460TargetMode"><option value="custom">Custom target</option><option value="max" selected>MAX Officer</option></select></div>
+  </div>
+  <button class="primary app-action-primary" id="v460CalculateTarget" type="button">Calculate Target Recommendation</button>
+  <div class="v460-target-result" id="v460TargetResult"><strong>Ready:</strong> select an Officer and calculate a target.</div>
+</div>
 </main>
 
 <nav class="bottom-nav">
@@ -3890,5 +3907,5 @@ window.kowRenderPlanningReadiness=render;
 })();
 </script>
 
-</body>
+\n<script>\n// v4.6.0 TEST — Upgrade Targets & Recommendations (non-destructive milestone 1)\n(function(){\n function n(v,d){v=Number(v);return Number.isFinite(v)?v:d;}\n function selectedOfficerName(){\n   const candidates=['officerSelect','officer','officerName','selectedOfficer'];\n   for(const id of candidates){const e=document.getElementById(id);if(e&&e.value)return e.options&&e.selectedIndex>=0?e.options[e.selectedIndex].text:e.value;}\n   const h=document.querySelector('#officerView h2,#officerView h3');return h?h.textContent.trim():'Selected Officer';\n }\n function currentValue(ids,fallback){for(const id of ids){const e=document.getElementById(id);if(e&&e.value!==undefined&&e.value!=='')return n(e.value,fallback);}return fallback;}\n function calc(){\n   const mode=document.getElementById('v460TargetMode').value;\n   if(mode==='max'){document.getElementById('v460TargetLevel').value=70;document.getElementById('v460TargetStars').value=5;document.getElementById('v460TargetTraining').value=180;}\n   const tl=n(document.getElementById('v460TargetLevel').value,70), ts=n(document.getElementById('v460TargetStars').value,5), tt=n(document.getElementById('v460TargetTraining').value,180);\n   const cl=currentValue(['officerLevel','level','currentLevel'],0), cs=currentValue(['starLevel','stars','officerStars'],0), ct=currentValue(['training','trainingLevel','officerTraining'],0);\n   const dl=Math.max(0,tl-cl), ds=Math.max(0,ts-cs), dt=Math.max(0,tt-ct);\n   let rec=[]; if(dl)rec.push(dl+' Officer level'+(dl===1?'':'s')); if(ds)rec.push(ds+' Star level'+(ds===1?'':'s')); if(dt)rec.push(dt+' Training stage'+(dt===1?'':'s'));\n   const ready=!rec.length;\n   document.getElementById('v460TargetResult').innerHTML='<strong>'+selectedOfficerName()+'</strong><br>Current detected position: Level '+cl+' · '+cs+'★ · Training '+ct+'<br>Target: Level '+tl+' · '+ts+'★ · Training '+tt+'<br><strong>Recommendation:</strong> '+(ready?'Target already achieved.':'Develop '+rec.join(', ')+'. Inventory-aware resource recommendations will be added in the next v4.6.0 milestone.');\n }\n function init(){const b=document.getElementById('v460CalculateTarget');if(!b)return;b.addEventListener('click',calc);document.getElementById('v460TargetMode').addEventListener('change',function(){if(this.value==='max'){document.getElementById('v460TargetLevel').value=70;document.getElementById('v460TargetStars').value=5;document.getElementById('v460TargetTraining').value=180;}});}\n if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();\n})();\n</script>\n</body>
 </html>
