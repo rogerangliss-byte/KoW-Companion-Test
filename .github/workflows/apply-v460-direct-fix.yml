@@ -17,70 +17,131 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Patch v4.6.0 files
+
+      - name: Apply robust v4.6.0 repair
         shell: bash
         run: |
           set -euo pipefail
           python3 <<'PY'
           from pathlib import Path
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
-          s=s.replace('ENGLISH TEST — v4.5.0 — NOT LIVE','ENGLISH TEST — v4.6.0 — NOT LIVE')
-          s=s.replace("const APP_VERSION='4.5.0';","const APP_VERSION='4.6.0';")
-          marker='async function loadOfficers(){'
-          assert marker in s, 'loadOfficers marker missing'
-          if 'KOW_OFFICER_DATA_VERSION_URL' not in s:
-              block="""
-const KOW_OFFICER_DATA_VERSION_URL='https://raw.githubusercontent.com/rogerangliss-byte/KoW-Companion-Test/main/officer-data-version.json';
-const KOW_OFFICER_DATA_URL='https://raw.githubusercontent.com/rogerangliss-byte/KoW-Companion-Test/main/officers.json';
-window.KOW_OFFICER_DATA_STATUS={state:'not-checked',dataVersion:'bundled',publishedAt:null,officerCount:null,source:'Bundled fallback'};
-async function fetchDynamicOfficerData(){
-  let manifest=null;
-  try{const vr=await fetch(KOW_OFFICER_DATA_VERSION_URL+'?t='+Date.now(),{cache:'no-store'});if(vr.ok)manifest=await vr.json();}catch(e){}
-  const dataVersion=String(manifest?.dataVersion||Date.now());
-  try{
-    const response=await fetch(KOW_OFFICER_DATA_URL+'?v='+encodeURIComponent(dataVersion)+'&t='+Date.now(),{cache:'no-store'});
-    if(!response.ok)throw new Error('Officer data request failed');
-    const data=await response.json();
-    if(!Array.isArray(data)||!data.length)throw new Error('Officer data is empty');
-    window.KOW_OFFICER_DATA_STATUS={state:'global',dataVersion,publishedAt:manifest?.publishedAt||null,officerCount:data.length,source:'Global Officer data — English Test'};
-    return data;
-  }catch(e){window.KOW_OFFICER_DATA_STATUS={state:'fallback',dataVersion:'bundled',publishedAt:null,officerCount:null,source:'Bundled/local fallback',error:String(e?.message||e)};return null;}
-}
-function renderOfficerDataStatus(){
-  const box=document.getElementById('officerDataStatus');if(!box)return;
-  const st=window.KOW_OFFICER_DATA_STATUS||{};
-  const when=st.publishedAt?new Date(st.publishedAt).toLocaleString():'—';
-  box.innerHTML=`<b>Officer data:</b> ${st.state==='global'?'✅ Global data loaded':'⚠️ Fallback data in use'}<br>`+`<b>Data version:</b> ${String(st.dataVersion||'—')}<br>`+`<b>Officers:</b> ${st.officerCount??'—'}<br>`+`<b>Published:</b> ${when}<br><span class="muted">${String(st.source||'')}</span>`;
-}
-"""
-              s=s.replace(marker,block+'\n'+marker,1)
-          old="const response=await fetch('./officers.json?v=435-live-comprehensive-docs',{cache:'no-store'});"
-          if old in s:
-              s=s.replace(old,"const dynamicData=await fetchDynamicOfficerData();\n   const response=dynamicData ? {ok:true,json:async()=>dynamicData} : await fetch('./officers.json?v=460-dynamic-fallback',{cache:'no-store'});",1)
-          assert 'const dynamicData=await fetchDynamicOfficerData();' in s, 'dynamic fetch not installed'
-          if 'id="officerDataStatus"' not in s:
-              sm='<h3>App Updates</h3>'
-              assert sm in s, 'settings marker missing'
-              s=s.replace(sm,'<h3>Global Officer Data</h3>\n      <div id="officerDataStatus" class="notice">Checking global Officer data…</div>\n      <p class="notice">v4.6.0 TEST loads published Officer data independently of the main app build. New Officer releases can be published by updating <b>officers.json</b> and <b>officer-data-version.json</b> without changing calculation code.</p>\n      '+sm,1)
-          if 'await loadOfficers();renderOfficerDataStatus();renderOfficerFilters();' not in s:
-              s=s.replace('await loadOfficers();renderOfficerFilters();','await loadOfficers();renderOfficerDataStatus();renderOfficerFilters();',1)
-          p.write_text(s,encoding='utf-8')
-          sw=Path('service-worker.js')
-          t=sw.read_text(encoding='utf-8').replace('kow-english-test-v4.5.0-clean-live-baseline-1','kow-english-test-v4.6.0-test1')
-          sw.write_text(t,encoding='utf-8')
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          # Visible TEST identity. These replacements are deliberately independent
+          # of the application's internal Officer loader implementation.
+          s = s.replace('ENGLISH TEST — v4.5.0 — NOT LIVE', 'ENGLISH TEST — v4.6.0 — NOT LIVE')
+          s = s.replace('Officer Companion v4.5.0', 'Officer Companion v4.6.0')
+          s = re.sub(r"const\s+APP_VERSION\s*=\s*['\"]4\.5\.0['\"]\s*;", "const APP_VERSION='4.6.0';", s, count=1)
+
+          # Install a loader shim before </head>. It does not depend on the name or
+          # formatting of loadOfficers(). Any request for officers.json is routed
+          # through the version manifest and cache-busted automatically.
+          marker = 'KOW_V460_DYNAMIC_OFFICER_SHIM'
+          if marker not in s:
+              shim = r'''
+<script id="KOW_V460_DYNAMIC_OFFICER_SHIM">
+(() => {
+  const manifestUrl = './officer-data-version.json';
+  const originalFetch = window.fetch.bind(window);
+  let manifestPromise = null;
+  window.KOW_OFFICER_DATA_STATUS = window.KOW_OFFICER_DATA_STATUS || {
+    state:'checking', dataVersion:'checking', publishedAt:null,
+    officerCount:null, source:'English Test dynamic Officer data'
+  };
+
+  async function getManifest(){
+    if(!manifestPromise){
+      manifestPromise = originalFetch(manifestUrl + '?t=' + Date.now(), {cache:'no-store'})
+        .then(r => r.ok ? r.json() : null).catch(() => null);
+    }
+    return manifestPromise;
+  }
+
+  window.fetch = async function(input, init){
+    try{
+      const raw = typeof input === 'string' ? input : (input && input.url) || '';
+      if(/(^|\/)officers\.json(?:[?#]|$)/i.test(raw)){
+        const m = await getManifest();
+        const version = String((m && (m.dataVersion || m.version)) || 'v460');
+        const url = './officers.json?v=' + encodeURIComponent(version) + '&t=' + Date.now();
+        const response = await originalFetch(url, Object.assign({}, init || {}, {cache:'no-store'}));
+        if(response.ok){
+          try{
+            const clone = response.clone();
+            const data = await clone.json();
+            window.KOW_OFFICER_DATA_STATUS = {
+              state:'global', dataVersion:version,
+              publishedAt:(m && m.publishedAt) || null,
+              officerCount:Array.isArray(data) ? data.length : null,
+              source:'Global Officer data — English Test'
+            };
+            window.dispatchEvent(new CustomEvent('kow-officer-data-status'));
+          }catch(e){}
+        }
+        return response;
+      }
+    }catch(e){}
+    return originalFetch(input, init);
+  };
+
+  function renderStatus(){
+    const st = window.KOW_OFFICER_DATA_STATUS || {};
+    let box = document.getElementById('officerDataStatus');
+    if(!box){
+      const headings = Array.from(document.querySelectorAll('h3'));
+      const anchor = headings.find(h => /app updates/i.test(h.textContent || ''));
+      if(!anchor) return;
+      const title = document.createElement('h3');
+      title.textContent = 'Global Officer Data';
+      box = document.createElement('div');
+      box.id = 'officerDataStatus';
+      box.className = 'notice';
+      anchor.parentNode.insertBefore(title, anchor);
+      anchor.parentNode.insertBefore(box, anchor);
+    }
+    const when = st.publishedAt ? new Date(st.publishedAt).toLocaleString() : '—';
+    box.innerHTML = '<b>Officer data:</b> ' + (st.state === 'global' ? '✅ Global data loaded' : '⏳ Checking global data') + '<br>' +
+      '<b>Data version:</b> ' + String(st.dataVersion || '—') + '<br>' +
+      '<b>Officers:</b> ' + String(st.officerCount ?? '—') + '<br>' +
+      '<b>Published:</b> ' + when + '<br><span class="muted">' + String(st.source || '') + '</span>';
+  }
+  document.addEventListener('DOMContentLoaded', () => setTimeout(renderStatus, 250));
+  window.addEventListener('kow-officer-data-status', renderStatus);
+})();
+</script>
+'''
+              if '</head>' not in s:
+                  raise SystemExit('No </head> marker found')
+              s = s.replace('</head>', shim + '\n</head>', 1)
+
+          p.write_text(s, encoding='utf-8')
+
+          sw = Path('service-worker.js')
+          t = sw.read_text(encoding='utf-8')
+          t = re.sub(r"const CACHE='[^']*';", "const CACHE='kow-english-test-v4.6.0-dynamic-officers-1';", t, count=1)
+          sw.write_text(t, encoding='utf-8')
           PY
-          grep -q "const APP_VERSION='4.6.0';" index.html
+
           grep -q 'ENGLISH TEST — v4.6.0 — NOT LIVE' index.html
-          grep -q 'KOW_OFFICER_DATA_VERSION_URL' index.html
-          grep -q 'id="officerDataStatus"' index.html
-          grep -q 'kow-english-test-v4.6.0-test1' service-worker.js
-      - name: Commit repaired Test build
+          grep -q 'KOW_V460_DYNAMIC_OFFICER_SHIM' index.html
+          grep -q 'officer-data-version.json' index.html
+          grep -q 'Global Officer Data' index.html
+          grep -q 'kow-english-test-v4.6.0-dynamic-officers-1' service-worker.js
+          test -f officer-data-version.json
+          test -f officers.json
+
+      - name: Commit repaired v4.6.0 Test build
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'FireStorm Build Bot'
           git config user.email 'actions@users.noreply.github.com'
           git add index.html service-worker.js officer-data-version.json
-          git commit -m 'Repair v4.6.0 TEST dynamic Officer data integration'
-          git push origin main
+          if git diff --cached --quiet; then
+            echo 'No application changes required.'
+          else
+            git commit -m 'Repair v4.6.0 TEST and dynamic Officer data loader'
+            git push origin main
+          fi
