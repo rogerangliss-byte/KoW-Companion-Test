@@ -1,0 +1,114 @@
+name: Apply v4.6.0 Dynamic Officer Data once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-v460-dynamic-officer-data-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Integrate dynamic Officer data loader
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+
+          s=s.replace('ENGLISH TEST — v4.5.0 — NOT LIVE','ENGLISH TEST — v4.6.0 — NOT LIVE')
+          s=s.replace("const APP_VERSION='4.5.0';","const APP_VERSION='4.6.0';")
+
+          marker='async function loadOfficers(){'
+          if 'KOW_OFFICER_DATA_VERSION_URL' not in s:
+              block=r'''
+const KOW_OFFICER_DATA_VERSION_URL='https://raw.githubusercontent.com/rogerangliss-byte/KoW-Companion-Test/main/officer-data-version.json';
+const KOW_OFFICER_DATA_URL='https://raw.githubusercontent.com/rogerangliss-byte/KoW-Companion-Test/main/officers.json';
+window.KOW_OFFICER_DATA_STATUS={state:'not-checked',dataVersion:'bundled',publishedAt:null,officerCount:null,source:'Bundled fallback'};
+async function fetchDynamicOfficerData(){
+  let manifest=null;
+  try{
+    const vr=await fetch(KOW_OFFICER_DATA_VERSION_URL+'?t='+Date.now(),{cache:'no-store'});
+    if(vr.ok)manifest=await vr.json();
+  }catch(e){}
+  const dataVersion=String(manifest?.dataVersion||Date.now());
+  try{
+    const response=await fetch(KOW_OFFICER_DATA_URL+'?v='+encodeURIComponent(dataVersion)+'&t='+Date.now(),{cache:'no-store'});
+    if(!response.ok)throw new Error('Officer data request failed');
+    const data=await response.json();
+    if(!Array.isArray(data)||!data.length)throw new Error('Officer data is empty');
+    window.KOW_OFFICER_DATA_STATUS={
+      state:'global',
+      dataVersion,
+      publishedAt:manifest?.publishedAt||null,
+      officerCount:data.length,
+      source:'Global Officer data — English Test'
+    };
+    return data;
+  }catch(e){
+    window.KOW_OFFICER_DATA_STATUS={state:'fallback',dataVersion:'bundled',publishedAt:null,officerCount:null,source:'Bundled/local fallback',error:String(e?.message||e)};
+    return null;
+  }
+}
+function renderOfficerDataStatus(){
+  const box=document.getElementById('officerDataStatus');if(!box)return;
+  const st=window.KOW_OFFICER_DATA_STATUS||{};
+  const when=st.publishedAt?new Date(st.publishedAt).toLocaleString():'—';
+  box.innerHTML=`<b>Officer data:</b> ${st.state==='global'?'✅ Global data loaded':'⚠️ Fallback data in use'}<br>`+
+    `<b>Data version:</b> ${String(st.dataVersion||'—')}<br>`+
+    `<b>Officers:</b> ${st.officerCount??'—'}<br>`+
+    `<b>Published:</b> ${when}<br>`+
+    `<span class="muted">${String(st.source||'')}</span>`;
+}
+'''
+              s=s.replace(marker,block+'\n'+marker,1)
+
+          old="""  try{\n   const response=await fetch('./officers.json?v=435-live-comprehensive-docs',{cache:'no-store'});\n   if(response.ok){\n     const data=await response.json();\n     if(Array.isArray(data)&&data.length){"""
+          new="""  try{\n   const dynamicData=await fetchDynamicOfficerData();\n   const response=dynamicData ? {ok:true,json:async()=>dynamicData} : await fetch('./officers.json?v=460-dynamic-fallback',{cache:'no-store'});\n   if(response.ok){\n     const data=await response.json();\n     if(Array.isArray(data)&&data.length){"""
+          if old not in s:
+              raise SystemExit('Expected loadOfficers fetch block not found')
+          s=s.replace(old,new,1)
+
+          if 'id="officerDataStatus"' not in s:
+              settings_marker='<h3>App Updates</h3>'
+              status_html='''<h3>Global Officer Data</h3>\n      <div id="officerDataStatus" class="notice">Checking global Officer data…</div>\n      <p class="notice">v4.6.0 TEST can load published Officer data independently of the main app build. New Officer releases can therefore be published by updating <b>officers.json</b> and <b>officer-data-version.json</b>, without changing the calculation code.</p>\n      '''
+              s=s.replace(settings_marker,status_html+settings_marker,1)
+
+          s=s.replace('await loadOfficers();renderOfficerFilters();','await loadOfficers();renderOfficerDataStatus();renderOfficerFilters();',1)
+          s=s.replace("document.addEventListener('DOMContentLoaded',syncVersionUI);","document.addEventListener('DOMContentLoaded',syncVersionUI);\ndocument.addEventListener('DOMContentLoaded',()=>setTimeout(renderOfficerDataStatus,150));",1)
+
+          p.write_text(s,encoding='utf-8')
+
+      - name: Verify integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q "const APP_VERSION='4.6.0';" index.html
+          grep -q 'ENGLISH TEST — v4.6.0 — NOT LIVE' index.html
+          grep -q 'KOW_OFFICER_DATA_VERSION_URL' index.html
+          grep -q 'fetchDynamicOfficerData' index.html
+          grep -q 'id="officerDataStatus"' index.html
+          test -f officer-data-version.json
+
+      - name: Commit and remove one-time workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'FireStorm Build Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git rm .github/workflows/apply-v460-dynamic-officer-data-once.yml
+          git add index.html officer-data-version.json
+          git commit -m 'v4.6.0 TEST dynamic Officer data updates'
+          git pull --rebase origin main
+          git push origin main
