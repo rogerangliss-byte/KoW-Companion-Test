@@ -1,4 +1,4 @@
-const CACHE='kow-english-test-v4.5.0-clean-live-baseline-1';
+const CACHE='kow-english-test-v4.6.0-dynamic-officer-data-1';
 self.addEventListener('install',event=>{self.skipWaiting();});
 self.addEventListener('activate',event=>{
   event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
