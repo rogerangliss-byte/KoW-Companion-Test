@@ -1,6 +1,7 @@
 name: v4.6.0 source correction once
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - '.github/workflows/v460-source-fix-once.yml'
