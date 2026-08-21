@@ -8,10 +8,9 @@ layout: null
  | replace: '✨ What’s New — v4.5.0 TEST', '✨ What’s New — v4.6.0 TEST'
  | replace: 'v4.5.0 is based on the stable v4.4.0 English Live application and focuses on accurate planning, corrected Legendary chest rules, persistent working state and a clearer Central Inventory.', 'v4.6.0 is based on the stable v4.5.0 English Live application and adds Upgrade Targets & Recommendations plus Dynamic Officer Data while retaining the stable planning, Inventory, Progress, backup and Officer development features.'
  | replace: 'Version header, Settings, About and Version Integrity all report <b>v4.5.0 TEST</b>.', 'Version header, Settings, About and Version Integrity all report <b>v4.6.0 TEST</b>.'
+ | replace: '<title>KoW Companion v4.5.0 TEST</title>', '<title>KoW Companion v4.6.0 TEST</title>'
  | replace: "document.title='KoW Companion v4.3.55';", "document.title='KoW Companion v4.6.0 TEST';"
- | replace: './officers.json?v=435-live-comprehensive-docs', './officers.json?dynamic=v460'
- | replace: "['starLevel','stars','officerStars']", "['currentStar','starLevel','stars','officerStars']"
- | replace: '<h3>App Updates</h3>', '<h3>Global Officer Data</h3><div id="officerDataStatus" class="notice">Checking global Officer data…</div><h3>App Updates</h3>'
- | replace: "b.addEventListener('click',calc);", "/* legacy target click handler disabled in v4.6.0 */"
- | replace: '</body>', '<script src="./v460-target-recommendation-v2.js?v=20260821-MODE-FIX-3"></script><script src="./v460-global-data.js?v=20260821-SELECTED-OFFICER-FIX-1"></script><script src="./v460-database-newest-first.js?v=20260821-DB-ORDER-2"></script></body>'
+ | replace: './officers.json?v=435-live-comprehensive-docs', './officers.json?v=460-dynamic'
+ | replace: '<script type="module">', '<script>'
+ | replace: '</body>', '<script src="./v460-features.js?v=460-clean-1"></script></body>'
 }}
