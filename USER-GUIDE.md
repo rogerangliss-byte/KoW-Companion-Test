@@ -1,7 +1,7 @@
 # KoW Companion — User Guide
-## v4.5.0 TEST — NOT LIVE
+## v4.6.0 TEST — NOT LIVE
 
-This guide describes the English v4.5.0 Test build. The red TEST banner must remain visible until the build is approved for Live.
+This guide describes the English v4.6.0 Test build. The red TEST banner must remain visible until the build is approved for Live.
 
 ## Recommended workflow
 1. **Inventory** — enter and save all resources currently held.
@@ -11,9 +11,24 @@ This guide describes the English v4.5.0 Test build. The red TEST banner must rem
 5. **XP** — confirm current Officer Level and held XP Books.
 6. **Progress** — verify MAXED / IN PROGRESS / NOT STARTED classifications.
 7. **Planner** — preview current and future upgrade decisions.
-8. **Backup** — export a backup before destructive testing or major changes.
+8. **Upgrade Targets** — compare the selected Officer's current position with a chosen target.
+9. **Backup** — export a backup before destructive testing or major changes.
 
-## v4.5.0 working-state persistence
+## v4.6.0 Upgrade Targets & Recommendations
+The v4.6.0 Test build adds a non-destructive target calculator. Set a target Level, Star level and Training level, or choose **MAX Officer**. The result compares the currently detected Officer position with the target and identifies the remaining development gap.
+
+This first milestone does **not** spend or alter Inventory. Inventory-aware target recommendations can be expanded after this test milestone is validated.
+
+## Dynamic Officer Data
+Officer release data is separated from core application code using:
+- `officers.json` — the published Officer dataset;
+- `officer-data-version.json` — dataset version, Officer count and publication information.
+
+Settings shows **Global Officer Data** so the current dataset can be checked. The Officer list is loaded with no-store caching, allowing a future Officer-data publication to appear without requiring a full core-code release.
+
+When a new Officer set is released, the controlled process is: update the Test dataset and manifest, verify the new Officers/costs/roles/portraits/chest eligibility, then publish the approved dataset to the relevant Live environment.
+
+## Working-state persistence
 A normal browser refresh should preserve the active working interface rather than returning key controls to defaults. This includes the selected Officer, current tab, Officer filters, Progress filters, Compare filters/selections, Multi-Officer Planner rows and working values, Advanced Planner selections, future scenario fields and Resource Optimiser comparison Officer.
 
 This working-state persistence is separate from saved Officer profiles, saved plans and Central Inventory.
@@ -75,7 +90,7 @@ Level 1 is free when a strand becomes available.
 ## Officer Progress and Compare
 Progress classifies Officers as **MAXED**, **IN PROGRESS** or **NOT STARTED**. Shared resources do not increase the Officer's saved progress percentage.
 
-The main Progress filters and Compare Officer Progress filters are independent. Compare selections should survive a normal browser refresh in v4.5.0 Test.
+The main Progress filters and Compare Officer Progress filters are independent. Compare selections should survive a normal browser refresh.
 
 ## Resource Optimiser — Preview
 The Resource Optimiser compares the selected Officer with a second Officer and can highlight ORV efficiency where both Officers are eligible.
@@ -85,16 +100,7 @@ The Optimiser is **preview-only**. It does not spend resources or alter saved In
 ## Multi-Officer Upgrade Planner
 Build a priority list of Officers and preview how shared resources could cover their remaining badge requirements.
 
-The working Planner supports:
-- named plans;
-- multiple Officer rows;
-- per-Officer badge requirements;
-- row priority/order controls;
-- ORV;
-- Universal Legendary Badges;
-- Legendary Officer Badge Chests;
-- Legendary Officer Badge Selection Chests; and
-- Badge Chest route/strategy selection.
+The working Planner supports named plans, multiple Officer rows, per-Officer badge requirements, row priority/order controls, ORV, Universal Legendary Badges, Legendary Officer Badge Chests, Legendary Officer Badge Selection Chests and Badge Chest route/strategy selection.
 
 The Planner is preview-only and does not deduct Inventory.
 
@@ -115,7 +121,7 @@ The v4.4.0 Planning Readiness Dashboard remains available. Saved scenarios show 
 ## Backup & Restore
 Use **Settings → Export App Backup** to create a portable backup of locally saved app data.
 
-Restore should import Officer profiles, individual Officer Badges and shared Inventory and then reload the app. Always test a known-good backup before promoting v4.5.0 to Live.
+Restore should import Officer profiles, individual Officer Badges and shared Inventory and then reload the app. Always test a known-good backup before promoting v4.6.0 to Live.
 
 ## Pre-Live QA
 Before Live promotion verify:
@@ -134,7 +140,9 @@ Before Live promotion verify:
 - Inventory Save works globally;
 - Export and Restore Backup work;
 - restored data survives reload;
-- version reporting is consistently v4.5.0 TEST; and
+- Upgrade Targets remains non-destructive;
+- Global Officer Data reports the current dataset;
+- version reporting is consistently **v4.6.0 TEST**; and
 - the red TEST / NOT LIVE banner remains visible.
 
 ---
