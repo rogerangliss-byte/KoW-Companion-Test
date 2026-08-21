@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Correct v4.6.0 source and retire runtime rewrite
+      - name: Correct v4.6.0 source
         shell: bash
         run: |
           python3 - <<'PY'
@@ -25,7 +25,6 @@ jobs:
 
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
-
           s=re.sub(r'ENGLISH TEST\s*—\s*v4\.5\.0\s*—\s*NOT LIVE', 'ENGLISH TEST — v4.6.0 — NOT LIVE', s)
           s=s.replace('Officer Companion v4.5.0','Officer Companion v4.6.0')
           s=re.sub(r"const\s+APP_VERSION\s*=\s*['\"]4\.5\.0['\"]\s*;", "const APP_VERSION='4.6.0';", s)
@@ -33,7 +32,6 @@ jobs:
           s=s.replace('KoW Companion v4.5.0','KoW Companion v4.6.0')
           s=s.replace('Version header, Settings, About and Version Integrity all report <b>v4.5.0 TEST</b>.','Version header, Settings, About and Version Integrity all report <b>v4.6.0 TEST</b>.')
           s=s.replace('<title>KoW Companion v4.5.0 TEST</title>','<title>KoW Companion v4.6.0 TEST</title>')
-
           p.write_text(s,encoding='utf-8')
 
           sw=Path('service-worker.js')
@@ -52,14 +50,11 @@ self.addEventListener('fetch',event=>{
   }).catch(()=>caches.match(req).then(r=>r||caches.match('./index.html'))));
 });
 """,encoding='utf-8')
-
-          wf=Path('.github/workflows/v460-source-fix-once.yml')
-          if wf.exists(): wf.unlink()
           PY
 
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html service-worker.js .github/workflows/v460-source-fix-once.yml
+          git add index.html service-worker.js
           if git diff --cached --quiet; then
             echo 'No source changes required.'
             exit 0
