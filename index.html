@@ -11,6 +11,7 @@ layout: null
  | replace: '<title>KoW Companion v4.5.0 TEST</title>', '<title>KoW Companion v4.6.0 TEST</title>'
  | replace: "document.title='KoW Companion v4.3.55';", "document.title='KoW Companion v4.6.0 TEST';"
  | replace: './officers.json?v=435-live-comprehensive-docs', './officers.json?v=460-dynamic'
+ | replace: "officers.push({name:'New Officer'", "officers.unshift({name:'New Officer'"
  | replace: '<script type="module">', '<script>'
- | replace: '</body>', '<script src="./v460-features.js?v=460-clean-1"></script></body>'
+ | replace: '</body>', '<script src="./v460-features.js?v=460-clean-2"></script></body>'
 }}
