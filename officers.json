@@ -1,4 +1,13 @@
 [
+    {
+    "name": "S8 Test",
+    "season": "S8",
+    "role": "Garrison",
+    "orv": 999,
+    "srv": 999,
+    "notes": "Garrison",
+    "rarity": "Legendary"
+  },
   {
     "name": "S7 Roisin",
     "season": "S7",
