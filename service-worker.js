@@ -1,4 +1,4 @@
-const CACHE='kow-english-test-v4.6.0-clean-2';
+const CACHE='kow-english-test-v4.6.0-clean-3';
 self.addEventListener('install',event=>{self.skipWaiting();});
 self.addEventListener('activate',event=>{
   event.waitUntil(
