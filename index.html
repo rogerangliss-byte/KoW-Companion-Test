@@ -12,6 +12,9 @@ layout: null
  | replace: "document.title='KoW Companion v4.3.55';", "document.title='KoW Companion v4.6.0 TEST';"
  | replace: './officers.json?v=435-live-comprehensive-docs', './officers.json?v=460-dynamic'
  | replace: "officers.push({name:'New Officer'", "officers.unshift({name:'New Officer'"
- | replace: '<script type="module">', '<script>'
- | replace: '</body>', '<script src="./v460-features.js?v=460-clean-3"></script><script src="./planner-season-sync.js?v=460-season-sync-1"></script></body>'
+ | replace: '<script type="module">', '<script>window.KOW_PORTRAIT_SESSION_VERSION=Date.now();'
+ | replace: "dash.src=candidates[next]+'?v=4213';", "dash.src=candidates[next]+'?pv='+window.KOW_PORTRAIT_SESSION_VERSION;"
+ | replace: "dash.src=candidates[0]+'?v=4213';", "dash.src=candidates[0]+'?pv='+window.KOW_PORTRAIT_SESSION_VERSION;"
+ | replace: "img.src=candidates[index]+'?v=4213';", "img.src=candidates[index]+'?pv='+window.KOW_PORTRAIT_SESSION_VERSION;"
+ | replace: '</body>', '<script src="./v460-features.js?v=460-clean-4"></script><script src="./planner-season-sync.js?v=460-season-sync-1"></script></body>'
 }}
