@@ -1,10 +1,19 @@
 [
     {
+    "name": "S8 Test1",
+    "season": "S8",
+    "role": "Rally",
+    "orv": 1000,
+    "srv": 500,
+    "notes": "Rally",
+    "rarity": "Legendary"
+  },
+    {
     "name": "S8 Test",
     "season": "S8",
     "role": "Garrison",
-    "orv": 999,
-    "srv": 999,
+    "orv": 1000,
+    "srv": 500,
     "notes": "Garrison",
     "rarity": "Legendary"
   },
