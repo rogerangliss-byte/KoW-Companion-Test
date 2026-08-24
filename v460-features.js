@@ -42,6 +42,49 @@
     }
   }
 
+  async function syncOfficerOrderFromPublishedFile(){
+    if(typeof officers==='undefined'||!Array.isArray(officers))return false;
+    try{
+      const r=await fetch('./officers.json?t='+Date.now(),{cache:'no-store'});
+      if(!r.ok)throw new Error('officers.json unavailable');
+      const data=await r.json();
+      if(!Array.isArray(data)||!data.length)return false;
+
+      const selected=(typeof currentOfficer==='function'&&currentOfficer())?.name||'';
+      const currentByName=new Map(officers.map(o=>[String(o.name||'').trim().toLowerCase(),o]));
+      const publishedNames=new Set();
+      const ordered=[];
+
+      data.forEach(raw=>{
+        const pub=typeof normalizeOfficer==='function'?normalizeOfficer(raw):raw;
+        const key=String(pub?.name||'').trim().toLowerCase();
+        if(!key||publishedNames.has(key))return;
+        publishedNames.add(key);
+        const existing=currentByName.get(key);
+        ordered.push(existing?Object.assign({},existing,pub):pub);
+      });
+
+      // Keep any browser-only/custom Officers after the authoritative published list.
+      officers.forEach(o=>{
+        const key=String(o?.name||'').trim().toLowerCase();
+        if(key&&!publishedNames.has(key))ordered.push(o);
+      });
+
+      officers=ordered;
+      window.KOW_PUBLISHED_OFFICERS=data.map(o=>typeof normalizeOfficer==='function'?normalizeOfficer(o):o);
+      if(typeof saveOfficers==='function')saveOfficers();
+      if(typeof renderDb==='function')renderDb();
+      if(typeof renderOfficerFilters==='function')renderOfficerFilters();
+      if(typeof renderOfficerOptions==='function')renderOfficerOptions(selected||ordered[0]?.name||'');
+      if(typeof calculate==='function'&&ordered.length)calculate();
+      if(typeof kowSyncPlannerSeasons==='function')kowSyncPlannerSeasons();
+      return true;
+    }catch(e){
+      console.warn('v4.6.0 officer ordering sync failed',e);
+      return false;
+    }
+  }
+
   function placeTargets(){
     const card=byId('v460UpgradeTargetsCard');
     const officer=byId('officer');
@@ -235,5 +278,10 @@
   // completed so these clean v4.6.0 handlers are the final handlers in control.
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});
   else install();
-  window.addEventListener('load',()=>{install();setTimeout(install,250);setTimeout(install,1000);},{once:true});
+  window.addEventListener('load',()=>{
+    install();
+    setTimeout(install,250);
+    setTimeout(install,1000);
+    setTimeout(syncOfficerOrderFromPublishedFile,1200);
+  },{once:true});
 })();
