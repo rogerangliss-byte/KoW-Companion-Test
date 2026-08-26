@@ -3110,6 +3110,9 @@ document.addEventListener('DOMContentLoaded',()=>{
  box.style.gap='10px';
  const levels=getSkillStrandLevels();
  const quickStars=Number(q('quickStarLevel')?.value??q('currentStar')?.value??0);
+ const quickLevel=Number(q('quickOfficerLevel')?.value??q('currentLevel')?.value??1);
+ const autoUnlocked=(quickStars>0 || quickLevel>1);
+ if(q('quickUnlocked') && autoUnlocked) q('quickUnlocked').checked=true;
  const quickUnlocked=!!(q('quickUnlocked')?.checked??q('unlocked')?.checked);
 
  for(let strand=0;strand<4;strand++){
@@ -3170,12 +3173,6 @@ document.addEventListener('DOMContentLoaded',()=>{
  // - Any Star progress (>0★) or Officer Level >1 automatically unlocks.
  // - Once unlocked: 0★=Strand 1, 1★=Strands 1-2, 2★=1-3, 3★+=1-4.
  function syncQuickUnlockAndStrands(){
-   const stars=Math.max(0,Math.min(5,Number(q('quickStarLevel')?.value)||0));
-   const level=Math.max(0,Math.min(70,Number(q('quickOfficerLevel')?.value)||0));
-   // Any recorded Officer progress means the Officer is unlocked.
-   if((stars>0 || level>1) && q('quickUnlocked') && !q('quickUnlocked').checked){
-     q('quickUnlocked').checked=true;
-   }
    buildQuickSkills();
  }
  function openQuickProgress(){
@@ -3216,8 +3213,9 @@ document.addEventListener('DOMContentLoaded',()=>{
    alert(`${o?officerDisplayName(o):'Officer'} progress saved.`);
  }
  q('quickProgressBtn')?.addEventListener('click',openQuickProgress);
+ q('quickStarLevel')?.addEventListener('input',syncQuickUnlockAndStrands);
  q('quickStarLevel')?.addEventListener('change',syncQuickUnlockAndStrands);
- q('quickUnlocked')?.addEventListener('change',buildQuickSkills);
+ q('quickUnlocked')?.addEventListener('change',syncQuickUnlockAndStrands);
  q('skillCostInfoBtn')?.addEventListener('click',openSkillCostInfo);
  q('quickSkillCostInfoBtn')?.addEventListener('click',openSkillCostInfo);
  q('skillCostInfoClose')?.addEventListener('click',closeSkillCostInfo);
@@ -3236,25 +3234,22 @@ document.addEventListener('DOMContentLoaded',()=>{
    q('quickTraining').value=v;
    q('quickTrainingValue').textContent=v;
  });
- q('quickOfficerLevel')?.addEventListener('input',()=>{
-   syncQuickUnlockAndStrands();
- });
+ q('quickOfficerLevel')?.addEventListener('input',syncQuickUnlockAndStrands);
+ q('quickOfficerLevel')?.addEventListener('change',syncQuickUnlockAndStrands);
  q('quickProgressSave')?.addEventListener('click',applyQuickProgress);
  q('quickProgressMax')?.addEventListener('click',()=>{
-   // Single source of truth: use the already-proven main MAX Officer action.
-   const mainMax=q('maxOfficerProfile');
-   if(!mainMax)return;
-   mainMax.click();
+   // Single source of truth: call the proven main MAX Officer implementation directly.
+   if(typeof maxSelectedOfficerProfile!=='function')return;
+   maxSelectedOfficerProfile();
 
-   // If MAX was confirmed, the main controls are now the authoritative state.
+   // If the user confirmed MAX, close the editor. If cancelled, leave it open.
    const maxApplied=
      Number(q('currentStar')?.value)===5 &&
      Number(q('currentLevel')?.value)===70 &&
      !!q('unlocked')?.checked &&
-     Number(q('training')?.value)===180;
-   if(maxApplied){
-     closeQuickProgress();
-   }
+     Number(q('training')?.value)===180 &&
+     getSkillStrandLevels().every(v=>Number(v)===5);
+   if(maxApplied) closeQuickProgress();
  });
  q('quickProgressModal')?.addEventListener('click',e=>{if(e.target===q('quickProgressModal'))closeQuickProgress();});
 })();;
