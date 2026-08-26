@@ -1,4 +1,4 @@
-/* KoW Companion v4.6.0 TEST — clean feature layer
+/* KoW Companion v4.6.0 LIVE — clean feature layer
    Built against the stable v4.5.0 application code. This is the only v4.6.0
    behaviour extension loaded by English Test. */
 (()=>{

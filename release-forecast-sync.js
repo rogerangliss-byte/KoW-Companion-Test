@@ -1,4 +1,4 @@
-/* KoW Companion v4.6.0 TEST — data-driven future release forecast.
+/* KoW Companion v4.6.0 LIVE — data-driven future release forecast.
    Uses the latest confirmed Legendary seasonal Officer costs in the Officer
    database as the forecasting baseline, then projects the next release slots. */
 (()=>{

@@ -1,5 +1,18 @@
 # Changelog
 
+## v4.6.0 LIVE — HOTFIX 3
+- Fixed Edit Officer Progress MAX delegation and automatic unlock/strand refresh.
+- Edit modal MAX now uses the same main MAX Officer action that already works correctly.
+
+
+## v4.6.0 LIVE
+- Added Upgrade Targets & Recommendations.
+- Added Dynamic Officer Data and Global Officer Data status.
+- Added database-driven Future Officer Cost Forecasting.
+- Current confirmed forecast baseline at release: S7 Tank Destroyers, 600 ORV / 300 SRV.
+- Promoted the validated English Test build to a clean static Live package.
+
+
 ## v4.5.0 TEST
 - Rebuilt from the stable v4.4.0 English Live baseline.
 - Added native working-state persistence for Officer, Progress, Compare and Planner UI state.

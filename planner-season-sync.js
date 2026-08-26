@@ -1,4 +1,4 @@
-/* KoW Companion v4.6.0 TEST — Advanced Planning season sync
+/* KoW Companion v4.6.0 LIVE — Advanced Planning season sync
    Keeps the Advanced Multi-Officer Planning season dropdown aligned with
    whatever seasons currently exist in the Officer Database. */
 (()=>{
