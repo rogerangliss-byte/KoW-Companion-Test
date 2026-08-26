@@ -1,4 +1,4 @@
-const CACHE='kow-english-test-v4.6.0-hotfix6-cleanmodal';
+const CACHE='kow-english-test-v4.6.0-hotfix7-verified-events';
 self.addEventListener('install',event=>{self.skipWaiting();});
 self.addEventListener('activate',event=>{
   event.waitUntil(

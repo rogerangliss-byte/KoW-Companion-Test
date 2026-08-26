@@ -766,7 +766,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
 
 </head>
 <body>
-<div style="position:sticky;top:0;z-index:9999;background:#a50000;color:#fff;text-align:center;font-weight:800;padding:8px 12px">ENGLISH TEST — NOT LIVE</div>
+<div style="position:sticky;top:0;z-index:9999;background:#a50000;color:#fff;text-align:center;font-weight:800;padding:8px 12px">ENGLISH TEST — HOTFIX 7 — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
@@ -3103,187 +3103,139 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 (function(){
  const q=id=>document.getElementById(id);
+ function buildQuickSkills(){
+ const box=q('quickSkills'); if(!box)return;
+ box.innerHTML='';
+ box.style.display='grid';
+ box.style.gap='10px';
+ const levels=getSkillStrandLevels();
+ const quickStars=Number(q('quickStarLevel')?.value??q('currentStar')?.value??0);
+ const quickUnlocked=!!(q('quickUnlocked')?.checked??q('unlocked')?.checked);
 
- function quickCurrentLevels(){
-   const rows=[...document.querySelectorAll('#quickSkills .quick-strand-row')];
-   if(rows.length===4){
-     return rows.map(row=>Math.max(1,Math.min(5,Number(row.dataset.selectedLevel)||1)));
+ for(let strand=0;strand<4;strand++){
+   const available=strandIsAvailable(strand,quickStars,quickUnlocked);
+   const row=document.createElement('div');
+   row.className='quick-strand-row'+(available?'':' locked');
+   row.dataset.quickStrand=strand;
+
+   const label=document.createElement('label');
+   label.className='skill-strand-label';
+   label.innerHTML=`Strand ${strand+1}${available?'':`<span class="strand-requirement">${strandRequirementText(strand,quickStars,quickUnlocked)}</span>`}`;
+   row.appendChild(label);
+
+   const select=document.createElement('select');
+   select.className='quick-strand-select';
+   select.dataset.quickStrandSelect=strand;
+   select.disabled=!available;
+   for(let level=1;level<=5;level++){
+     const opt=document.createElement('option');
+     opt.value=level;
+     opt.textContent=level===1?'Level 1 — Free':`Level ${level}`;
+     select.appendChild(opt);
    }
-   return getSkillStrandLevels();
+   select.value=levels[strand];
+   row.dataset.selectedLevel=levels[strand];
+   select.title=available?`Set Strand ${strand+1} level`:strandRequirementText(strand,quickStars,quickUnlocked);
+   select.onchange=()=>{
+ row.dataset.selectedLevel=select.value;
+ const paid=[...document.querySelectorAll('#quickSkills .quick-strand-select')].reduce((sum,x)=>sum+Math.max(0,(Number(x.value)||1)-1),0);
+ const cc=skillCostsForOfficer(); const next=paid>=16?0:cc[paid];
+ const summaryBox=document.getElementById('quickNextSkillCostSummary');
+ if(summaryBox){
+ const total=cc.reduce((a,b)=>a+b,0);
+ const spent=cc.slice(0,paid).reduce((a,b)=>a+b,0);
+ const remaining=Math.max(0,total-spent);
+ summaryBox.innerHTML=paid>=16
+  ? `<b>Skills complete · ${spent}/${total} badges used · 0 remaining.</b>`
+  : `<b>Next cost: ${next} badges · ${spent}/${total} used · ${remaining} remaining.</b>`;
+}
+};
+   row.appendChild(select);
+   box.appendChild(row);
  }
-
- function quickShouldBeUnlocked(){
-   const stars=Math.max(0,Math.min(5,Number(q('quickStarLevel')?.value)||0));
-   const level=Math.max(0,Math.min(70,Number(q('quickOfficerLevel')?.value)||0));
-   return stars>0 || level>1;
- }
-
- function updateQuickSkillSummary(levels){
-   const paid=levels.reduce((sum,lvl)=>sum+Math.max(0,Number(lvl)-1),0);
-   const cc=skillCostsForOfficer();
-   const next=paid>=16?0:cc[paid];
-   const summary=document.getElementById('quickNextSkillCostSummary');
-   if(summary){
-     const total=cc.reduce((a,b)=>a+b,0);
-     const spent=cc.slice(0,paid).reduce((a,b)=>a+b,0);
-     const remaining=Math.max(0,total-spent);
-     summary.innerHTML=paid>=16
-       ? `<b>Skills complete · ${spent}/${total} badges used · 0 remaining.</b>`
-       : `<b>Next cost: ${next} badges · ${spent}/${total} used · ${remaining} remaining.</b>`;
-   }
- }
-
- function buildQuickSkills(forceLevels=null){
-   const box=q('quickSkills'); if(!box)return;
-   const levels=Array.isArray(forceLevels)?forceLevels:quickCurrentLevels();
-
-   if(quickShouldBeUnlocked() && q('quickUnlocked')) q('quickUnlocked').checked=true;
-
-   const quickStars=Math.max(0,Math.min(5,Number(q('quickStarLevel')?.value)||0));
-   const quickUnlocked=!!q('quickUnlocked')?.checked;
-
-   box.innerHTML='';
-   box.style.display='grid';
-   box.style.gap='10px';
-
-   for(let strand=0;strand<4;strand++){
-     const available=strandIsAvailable(strand,quickStars,quickUnlocked);
-     const row=document.createElement('div');
-     row.className='quick-strand-row'+(available?'':' locked');
-     row.dataset.quickStrand=strand;
-
-     const label=document.createElement('label');
-     label.className='skill-strand-label';
-     label.innerHTML=`Strand ${strand+1}${available?'':`<span class="strand-requirement">${strandRequirementText(strand,quickStars,quickUnlocked)}</span>`}`;
-     row.appendChild(label);
-
-     const select=document.createElement('select');
-     select.className='quick-strand-select';
-     select.dataset.quickStrandSelect=strand;
-     select.disabled=!available;
-
-     for(let level=1;level<=5;level++){
-       const opt=document.createElement('option');
-       opt.value=level;
-       opt.textContent=level===1?'Level 1 — Free':`Level ${level}`;
-       select.appendChild(opt);
-     }
-
-     const level=Math.max(1,Math.min(5,Number(levels[strand])||1));
-     select.value=String(level);
-     row.dataset.selectedLevel=String(level);
-     select.title=available?`Set Strand ${strand+1} level`:strandRequirementText(strand,quickStars,quickUnlocked);
-
-     select.addEventListener('change',()=>{
-       row.dataset.selectedLevel=select.value;
-       updateQuickSkillSummary(quickCurrentLevels());
-     });
-
-     row.appendChild(select);
-     box.appendChild(row);
-   }
-
-   updateQuickSkillSummary(levels);
- }
-
+ const paid=levels.reduce((sum,lvl)=>sum+Math.max(0,lvl-1),0);
+ const cc=skillCostsForOfficer(); const next=paid>=16?0:cc[paid];
+ const summary=document.getElementById('quickNextSkillCostSummary');
+ if(summary){
+ const total=cc.reduce((a,b)=>a+b,0);
+ const spent=cc.slice(0,paid).reduce((a,b)=>a+b,0);
+ const remaining=Math.max(0,total-spent);
+ summary.innerHTML=paid>=16
+  ? `<b>Skills complete · ${spent}/${total} badges used · 0 remaining.</b>`
+  : `<b>Next cost: ${next} badges · ${spent}/${total} used · ${remaining} remaining.</b>`;
+}
+}
  function openQuickProgress(){
+   buildQuickSkills();
    const o=typeof currentOfficer==='function'?currentOfficer():null;
    q('quickProgressOfficer').textContent=o?officerDisplayName(o):'Selected Officer';
    q('quickStarLevel').value=q('currentStar')?.value??0;
    q('quickOfficerLevel').value=q('currentLevel')?.value??1;
    q('quickUnlocked').checked=!!q('unlocked')?.checked;
+   if((Number(q('quickStarLevel').value)||0)>0 || (Number(q('quickOfficerLevel').value)||0)>1){
+     q('quickUnlocked').checked=true;
+   }
    q('quickTraining').value=q('training')?.value??0;
    q('quickTrainingValue').textContent=q('quickTraining').value;
    if(q('quickTrainingExact'))q('quickTrainingExact').value=q('quickTraining').value;
-   if(quickShouldBeUnlocked()) q('quickUnlocked').checked=true;
-   buildQuickSkills(getSkillStrandLevels());
+   buildQuickSkills();
    q('quickProgressModal').style.display='block';
  }
-
- function closeQuickProgress(){
-   q('quickProgressModal').style.display='none';
- }
-
+ function closeQuickProgress(){q('quickProgressModal').style.display='none';}
  function applyQuickProgress(){
    q('currentStar').value=q('quickStarLevel').value;
    q('targetStar').value=Math.max(Number(q('targetStar').value)||5,Number(q('quickStarLevel').value)||0);
    q('currentLevel').value=q('quickOfficerLevel').value;
    q('targetLevel').value=Math.max(Number(q('targetLevel').value)||70,Number(q('quickOfficerLevel').value)||1);
-   q('unlocked').checked=!!q('quickUnlocked').checked;
-
+   q('unlocked').checked=q('quickUnlocked').checked;
    skills=Array(16).fill(false);
    document.querySelectorAll('#quickSkills .quick-strand-row').forEach((row,strand)=>{
      const level=Math.max(1,Math.min(5,Number(row.dataset.selectedLevel)||1));
-     for(let step=0;step<4;step++) skills[strand*4+step]=step<(level-1);
+     for(let step=0;step<4;step++)skills[strand*4+step]=step<(level-1);
    });
-
    renderSkillStrands();
-
-   const training=q('quickTrainingExact')?q('quickTrainingExact').value:q('quickTraining').value;
-   q('training').value=training;
-   if(q('trainingExact'))q('trainingExact').value=training;
-   if(q('trainingLabel'))q('trainingLabel').textContent=training;
-
+   q('training').value=q('quickTrainingExact')?q('quickTrainingExact').value:q('quickTraining').value;
+   if(q('trainingExact'))q('trainingExact').value=q('training').value;
+   if(q('trainingLabel'))q('trainingLabel').textContent=q('quickTraining').value;
    calculate();
    saveOfficerProfile(true);
    if(typeof renderSavedOfficerProgress==='function')renderSavedOfficerProgress();
    if(typeof renderProgressCompareChoices==='function')renderProgressCompareChoices();
    closeQuickProgress();
-
    const o=typeof currentOfficer==='function'?currentOfficer():null;
    alert(`${o?officerDisplayName(o):'Officer'} progress saved.`);
  }
-
  q('quickProgressBtn')?.addEventListener('click',openQuickProgress);
-
- const liveRefresh=()=>buildQuickSkills();
- q('quickStarLevel')?.addEventListener('input',liveRefresh);
- q('quickStarLevel')?.addEventListener('change',liveRefresh);
- q('quickOfficerLevel')?.addEventListener('input',liveRefresh);
- q('quickOfficerLevel')?.addEventListener('change',liveRefresh);
- q('quickUnlocked')?.addEventListener('change',liveRefresh);
-
+ q('quickStarLevel')?.addEventListener('change',buildQuickSkills);
+ q('quickUnlocked')?.addEventListener('change',buildQuickSkills);
  q('skillCostInfoBtn')?.addEventListener('click',openSkillCostInfo);
  q('quickSkillCostInfoBtn')?.addEventListener('click',openSkillCostInfo);
  q('skillCostInfoClose')?.addEventListener('click',closeSkillCostInfo);
  q('skillCostInfoModal')?.addEventListener('click',e=>{if(e.target===q('skillCostInfoModal'))closeSkillCostInfo();});
-
  q('quickProgressClose')?.addEventListener('click',closeQuickProgress);
  q('quickProgressCancel')?.addEventListener('click',closeQuickProgress);
-
  q('quickTraining')?.addEventListener('input',()=>{
    const v=Math.max(0,Math.min(180,Math.round(Number(q('quickTraining').value)||0)));
    q('quickTraining').value=v;
    q('quickTrainingValue').textContent=v;
    if(q('quickTrainingExact'))q('quickTrainingExact').value=v;
  });
-
  q('quickTrainingExact')?.addEventListener('input',()=>{
    const v=Math.max(0,Math.min(180,Math.round(Number(q('quickTrainingExact').value)||0)));
    q('quickTrainingExact').value=v;
    q('quickTraining').value=v;
    q('quickTrainingValue').textContent=v;
  });
-
+ q('quickOfficerLevel')?.addEventListener('input',()=>{
+   const level=Number(q('quickOfficerLevel').value);
+   if(Number.isFinite(level) && level>0 && !q('quickUnlocked').checked){
+     q('quickUnlocked').checked=true;
+     buildQuickSkills();
+   }
+ });
  q('quickProgressSave')?.addEventListener('click',applyQuickProgress);
-
- q('quickProgressMax')?.addEventListener('click',()=>{
-   if(typeof maxSelectedOfficerProfile!=='function')return;
-   maxSelectedOfficerProfile();
-
-   const maxApplied=
-     Number(q('currentStar')?.value)===5 &&
-     Number(q('currentLevel')?.value)===70 &&
-     !!q('unlocked')?.checked &&
-     Number(q('training')?.value)===180 &&
-     getSkillStrandLevels().every(v=>Number(v)===5);
-
-   if(maxApplied) closeQuickProgress();
- });
-
- q('quickProgressModal')?.addEventListener('click',e=>{
-   if(e.target===q('quickProgressModal'))closeQuickProgress();
- });
+ // HOTFIX 7: Edit Officer MAX uses direct onclick -> kowEditOfficerMax() -> main maxSelectedOfficerProfile().
+ q('quickProgressModal')?.addEventListener('click',e=>{if(e.target===q('quickProgressModal'))closeQuickProgress();});
 })();;
 
 
@@ -3323,10 +3275,10 @@ window.KOW_PLANNER_BRIDGE = {
   <div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h2>✏️ Edit Officer Progress</h2><button id="quickProgressClose" class="app-action-secondary app-icon-button" type="button" onclick="document.getElementById('quickProgressModal').style.display='none';return false;">✕</button></div>
   <div id="quickProgressOfficer" class="notice"></div>
   <div class="two">
-   <div><label>Current Star Level</label><select id="quickStarLevel"><option value="0">0★</option><option value="1">1★</option><option value="2">2★</option><option value="3">3★</option><option value="4">4★</option><option value="5">5★</option></select></div>
-   <div><label>Current Officer Level</label><input id="quickOfficerLevel" type="number" min="0" max="70"></div>
+   <div><label>Current Star Level</label><select id="quickStarLevel" oninput="kowEditOfficerSync()" onchange="kowEditOfficerSync()"><option value="0">0★</option><option value="1">1★</option><option value="2">2★</option><option value="3">3★</option><option value="4">4★</option><option value="5">5★</option></select></div>
+   <div><label>Current Officer Level</label><input id="quickOfficerLevel" type="number" min="0" max="70" oninput="kowEditOfficerSync()" onchange="kowEditOfficerSync()"></div>
   </div>
-  <label><input id="quickUnlocked" type="checkbox"> Officer unlocked (10 badges)</label>
+  <label><input id="quickUnlocked" type="checkbox" onchange="kowEditOfficerSync()"> Officer unlocked (10 badges)</label>
   <h3>Skill Strands — each starts at Level 1</h3><div id="quickSkills"></div>
   <label style="display:block;margin-top:14px">Training Level: <b id="quickTrainingValue">0</b> / 180</label>
   <div style="display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center">
@@ -3372,7 +3324,7 @@ onclick="(function(){
     console.error('Quick Progress save failed',err);
     alert('Progress could not be saved. Please refresh and try again.');
   }
-})();return false;">💾 Save Progress</button><button id="quickProgressMax" class="primary" type="button">⭐ MAX Officer</button><button id="quickProgressCancel" class="app-action-secondary" type="button" onclick="document.getElementById('quickProgressModal').style.display='none';return false;">Cancel</button></div>
+})();return false;">💾 Save Progress</button><button id="quickProgressMax" class="primary" type="button" onclick="return kowEditOfficerMax()">⭐ MAX Officer</button><button id="quickProgressCancel" class="app-action-secondary" type="button" onclick="document.getElementById('quickProgressModal').style.display='none';return false;">Cancel</button></div>
   <div class="notice">Officer-specific progress only. Shared resources remain on Stars, Develop and XP.</div>
  </article>
 </div>
@@ -4008,5 +3960,65 @@ window.kowRenderPlanningReadiness=render;
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
-<script src="./v460-features.js?v=460-live"></script><script src="./planner-season-sync.js?v=460-live"></script><script src="./release-forecast-sync.js?v=460-live"></script></body>
+<script src="./v460-features.js?v=460-live"></script><script src="./planner-season-sync.js?v=460-live"></script><script src="./release-forecast-sync.js?v=460-live"></script>
+<script id="hotfix7EditOfficerRuntime">
+(function(){
+'use strict';
+
+window.kowEditOfficerSync=function(){
+  const star=document.getElementById('quickStarLevel');
+  const level=document.getElementById('quickOfficerLevel');
+  const unlocked=document.getElementById('quickUnlocked');
+  if(!star||!level||!unlocked)return;
+
+  const stars=Math.max(0,Math.min(5,Number(star.value)||0));
+  const officerLevel=Math.max(0,Math.min(70,Number(level.value)||0));
+
+  // Canonical rule:
+  // 0★ + Level 1 may remain locked.
+  // Any star progress OR any level above 1 means the Officer is unlocked.
+  if(stars>0 || officerLevel>1) unlocked.checked=true;
+
+  document.querySelectorAll('#quickSkills .quick-strand-row').forEach((row,strand)=>{
+    const available=unlocked.checked && stars>=Math.max(0,Math.min(3,strand));
+    const select=row.querySelector('.quick-strand-select');
+    const label=row.querySelector('.skill-strand-label');
+
+    row.classList.toggle('locked',!available);
+    if(select)select.disabled=!available;
+
+    if(label){
+      let requirement='';
+      if(!available){
+        requirement=!unlocked.checked
+          ? 'Requires Officer unlock'
+          : (strand===0?'Available when Officer is unlocked':`Requires ${strand}★`);
+      }
+      label.innerHTML=`Strand ${strand+1}${requirement?`<span class="strand-requirement">${requirement}</span>`:''}`;
+    }
+  });
+};
+
+window.kowEditOfficerMax=function(){
+  // EXACT same MAX implementation as the working outside button.
+  if(typeof maxSelectedOfficerProfile!=='function')return false;
+  maxSelectedOfficerProfile();
+
+  const maxApplied=
+    Number(document.getElementById('currentStar')?.value)===5 &&
+    Number(document.getElementById('currentLevel')?.value)===70 &&
+    !!document.getElementById('unlocked')?.checked &&
+    Number(document.getElementById('training')?.value)===180 &&
+    (typeof getSkillStrandLevels==='function' && getSkillStrandLevels().every(v=>Number(v)===5));
+
+  if(maxApplied){
+    const modal=document.getElementById('quickProgressModal');
+    if(modal)modal.style.display='none';
+  }
+  return false;
+};
+})();
+</script>
+
+</body>
 </html>
