@@ -766,6 +766,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
 
 </head>
 <body>
+<div style="position:sticky;top:0;z-index:9999;background:#a50000;color:#fff;text-align:center;font-weight:800;padding:8px 12px">ENGLISH TEST — NOT LIVE</div>
 <header class="topbar">
   <div>
     <h1 id="appTitle">⚔ GODS OF WAR 371</h1>
@@ -3164,11 +3165,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   : `<b>Next cost: ${next} badges · ${spent}/${total} used · ${remaining} remaining.</b>`;
 }
 }
+ // Canonical Edit Officer progression rules:
+ // - 0★ + Level 1 may remain locked.
+ // - Any Star progress (>0★) or Officer Level >1 automatically unlocks.
+ // - Once unlocked: 0★=Strand 1, 1★=Strands 1-2, 2★=1-3, 3★+=1-4.
  function syncQuickUnlockAndStrands(){
    const stars=Math.max(0,Math.min(5,Number(q('quickStarLevel')?.value)||0));
    const level=Math.max(0,Math.min(70,Number(q('quickOfficerLevel')?.value)||0));
    // Any recorded Officer progress means the Officer is unlocked.
-   if((stars>0 || level>0) && q('quickUnlocked') && !q('quickUnlocked').checked){
+   if((stars>0 || level>1) && q('quickUnlocked') && !q('quickUnlocked').checked){
      q('quickUnlocked').checked=true;
    }
    buildQuickSkills();

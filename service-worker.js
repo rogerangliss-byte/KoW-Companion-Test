@@ -1,4 +1,4 @@
-const CACHE='kow-english-live-v4.6.0';
+const CACHE='kow-english-test-v4.6.0-hotfix4';
 self.addEventListener('install',event=>{self.skipWaiting();});
 self.addEventListener('activate',event=>{
   event.waitUntil(
