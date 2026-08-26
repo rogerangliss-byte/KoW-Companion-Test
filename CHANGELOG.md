@@ -1,10 +1,5 @@
 # Changelog
 
-## v4.6.0 LIVE — HOTFIX 3
-- Fixed Edit Officer Progress MAX delegation and automatic unlock/strand refresh.
-- Edit modal MAX now uses the same main MAX Officer action that already works correctly.
-
-
 ## v4.6.0 LIVE
 - Added Upgrade Targets & Recommendations.
 - Added Dynamic Officer Data and Global Officer Data status.
