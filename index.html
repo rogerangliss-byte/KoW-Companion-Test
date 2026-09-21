@@ -523,6 +523,9 @@ html.ios-safari{
 
 /* v4.6.0 LIVE — Upgrade Targets & Recommendations */
 .v460-target-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.v460-target-result{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:rgba(0,0,0,.28)}.v460-target-result strong{color:var(--gold2)}@media(max-width:760px){.v460-target-grid{grid-template-columns:1fr}}
+
+/* TEST BUILD BANNER — development/testing only; never present on English Live */
+.test-build-banner{background:#8b0000;color:#fff;text-align:center;font-weight:800;letter-spacing:.08em;padding:8px 12px;border-bottom:2px solid #d5a72f;font-size:.9rem;position:sticky;top:0;z-index:1000}
 </style>
 <script>
 (function(){
@@ -773,6 +776,8 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
   </div>
   <div class="creator-credit">Created by FireStorm (371)</div>
 </header>
+
+<div class="test-build-banner">⚠ TEST BUILD — DEVELOPMENT / TESTING ONLY — NOT LIVE</div>
 <main class="app">
   <section id="dashboard" class="view active">
 <article class="card" id="guidedWorkflowCard">
