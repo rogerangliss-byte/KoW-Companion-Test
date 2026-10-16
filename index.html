@@ -3765,8 +3765,8 @@ document.addEventListener("click",function(e){
     var session=futureSession(mode), projected=[];
     if(mode!=='saved'){
       var types=typeChoice!=='auto'?[typeChoice]:(session?session.types:[]);
-      var season=projectedSeason(mode,t);
       projected=types.map(function(t){
+        var season=projectedSeason(mode,t);
         return {name:season+' '+t+' — PROJECTED',pct:0,status:'PROJECTED',future:true,type:t};
       });
     }
