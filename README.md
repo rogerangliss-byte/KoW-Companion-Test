@@ -1,27 +1,19 @@
-# KoW Companion v4.6.0 LIVE
+# KoW Companion v4.6.0 TEST
 
-**English Live production release**
+**English Test environment — development/testing only. NOT LIVE.**
 
-KoW Companion is an Officer development, Inventory, Progress and planning companion for *Kiss of War*. v4.6.0 adds Upgrade Targets & Recommendations, Dynamic Officer Data and database-driven Future Officer Cost Forecasting while retaining the stable v4.5.0 core.
+This repository is a test copy based on the approved English Live v4.6.0 Stable baseline. It is isolated from the English Live repository and must not be treated as a production release.
 
-## v4.6.0 highlights
-- Upgrade Targets & Recommendations (non-destructive)
-- Dynamic Officer dataset in `officers.json`
-- Versioned Officer-data manifest in `officer-data-version.json`
-- Global Officer Data status in Settings
-- Data-driven future Officer cost forecasting
-- Working-state persistence retained
-- Correct Legendary Badge Chest and Selection Chest rules retained
-- Approved Central Inventory ordering retained
-- 50 XP Book remains removed
+## Test-only changes in this baseline
+- Advanced Multi Officer Planner release sequence: October 2026 is S8 Rally/Garrison; January, April and July 2027 remain S8; October 2027 begins S9.
+- Forecast cost baseline: S8 October Rally/Garrison at 720 Officer Readiness Vouchers (ORV) per badge and 360 Seasonal Readiness Vouchers (SRV) per Exclusive Star.
+- Test-specific cache keys and a persistent TEST — NOT LIVE banner.
 
-## Forecast baseline
-At release, the latest confirmed Legendary seasonal baseline is **S7 Tank Destroyers — 600 ORV per Badge / 300 SRV per Exclusive Star**. Future forecast values are estimates until confirmed release data is published.
+## Progression rules
+- Keep the English Live repository unchanged.
+- Preserve existing approved functionality and data.
+- Make only requested changes, inspect the actual repository, and verify before proposing progression.
+- Do not change the version or promote to Live without explicit approval.
 
-## Deployment
-This package is the clean **English Live v4.6.0** release. `index.html` is a static production entry file; TEST-only build wrappers and obsolete upload instructions are not included.
-
-See `USER-GUIDE.md` for the full guide.
-
----
-**Created by FireStorm (371)**
+## Test site
+https://rogerangliss-byte.github.io/KoW-Companion-Test/

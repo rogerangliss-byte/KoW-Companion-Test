@@ -1,4 +1,4 @@
-const CACHE='kow-english-test-v4.6.0-forecast-costs-20261016-2';
+const CACHE='kow-english-test-v4.6.0-clean-20261016';
 self.addEventListener('install',event=>{self.skipWaiting();});
 self.addEventListener('activate',event=>{
   event.waitUntil(

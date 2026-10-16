@@ -1005,7 +1005,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
       <input type="number" id="legendarySelectionChestHeld" min="0" step="1" value="0">
       <div class="notice">Each <b>Legendary Officer Badge Selection Chest</b> gives <b>1 specific Legendary Officer Badge</b> for an Officer currently available in the chest. It does not convert to a Universal Legendary Badge or ORV.</div>
       <div class="notice">
-        Each <b>Legendary Officer Badge Chest</b> can be used as either <b>1 Universal Legendary Badge</b> or <b><span id="chestRateNotice">current latest-season ORV value</span> Officer Readiness Vouchers</b>. A chest cannot count as both.
+        Each <b>Legendary Officer Badge Chest</b> can be used as either <b>1 Universal Legendary Badge</b> or <b><span id="chestRateNotice">current latest-officer ORV value</span> Officer Readiness Vouchers</b>. A chest cannot count as both.
       </div>
       <label>Use Legendary Officer Badge Chests as</label>
       <select id="legendaryBadgeChestMode">
@@ -1223,7 +1223,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
 
   <h4>📦 Correct Legendary chest rules</h4>
   <ul>
-    <li><b>Legendary Officer Badge Chest:</b> each chest can be used as <b>either 1 Universal Legendary Badge or <span id="chestRateHelpRule">current latest-season ORV value</span> Officer Readiness Vouchers (ORV)</b>. It cannot count as both.</li>
+    <li><b>Legendary Officer Badge Chest:</b> each chest can be used as <b>either 1 Universal Legendary Badge or <span id="chestRateHelpRule">current latest-officer ORV value</span> Officer Readiness Vouchers (ORV)</b>. It cannot count as both.</li>
     <li><b>Legendary Officer Badge Selection Chest:</b> each chest gives <b>1 specific Legendary Officer Badge</b> for an Officer currently available in the Selection Chest pool. It does <b>not</b> convert to ORV or a Universal Legendary Badge.</li>
     <li>Original Legendary Officers remain ineligible for ORV/SRV seasonal conversion routes.</li>
   </ul>
@@ -1266,7 +1266,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
   <p>Planning Readiness Dashboard, Badge/Star/XP readiness, Priority Target, Suggested Next Action, future October/January/April/July sessions, Season + Officer Type reports, projected future Legendary resources, ORV/SRV forecasting and MAXED-Officer exclusions remain available.</p>
 
   <h4>🔮 Dynamic Future Officer Cost Forecast</h4>
-  <p>The forecast uses the latest confirmed seasonal Legendary Officer release as its baseline. The current confirmed baseline is <b>S8 October Rally / Garrison — 720 ORV per Badge / 360 SRV per Exclusive Star</b>. Future costs apply the selected growth percentage to that baseline for each release step.</p>
+  <p>The forecast now uses the latest confirmed Legendary seasonal Officer release in the Officer Database as its baseline. <b>Example:</b> at the v4.6.0 release, the latest confirmed baseline is <b>S7 Tank Destroyers — 600 ORV per Badge / 300 SRV per Exclusive Star</b>. When a newer confirmed release is published, the baseline automatically advances.</p>
   <p>Future ORV/SRV figures are <b>planning estimates only</b> until actual release costs are confirmed.</p>
 </div>
 
@@ -1289,7 +1289,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
       <h3>4. Development</h3>
       <p>Enter unlock status, the four independent Skill Strand levels and Training Level. Development uses the relevant saved Inventory resources when calculating what is available for the selected Officer.</p>
       <p>Each <b>Universal Legendary Badge</b> is worth <b>1 Officer Badge</b> for a Legendary Officer.</p>
-      <p>Each <b>Legendary Officer Badge Selection Chest</b> gives <b>1 specific Legendary Officer Badge</b> for an Officer currently available in that chest. It does not convert to ORV. Each <b>Legendary Officer Badge Chest</b> can instead be used as either <b>1 Universal Legendary Badge</b> or <b><span id="chestRateHelpShort">current latest-season ORV value</span> ORV</b>.</p>
+      <p>Each <b>Legendary Officer Badge Selection Chest</b> gives <b>1 specific Legendary Officer Badge</b> for an Officer currently available in that chest. It does not convert to ORV. Each <b>Legendary Officer Badge Chest</b> can instead be used as either <b>1 Universal Legendary Badge</b> or <b><span id="chestRateHelpShort">current latest-officer ORV value</span> ORV</b>.</p>
 
       <h3>5. XP</h3>
       <p>Enter current and target Officer Level. Saved XP Book quantities from Inventory are used to calculate XP held, XP required and the remaining shortfall.</p>
@@ -1332,16 +1332,16 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
 <section id="releases" class="view">
 <article class="card" id="futureOfficerForecastCard">
   <h2>🔮 Future Officer Cost Forecast</h2>
-  <p class="muted">Forecast future Officer costs from the established Officer-release sequence. The latest confirmed release is October 2026 S8 Rally / Garrison (720 ORV / 360 SRV); future releases are projected in quarterly role order.</p>
+  <p class="muted">Forecast future Officer costs from the established Officer-release sequence. The model uses the latest known S7 Tank Destroyer release (600 ORV / 300 SRV) and compounds approximately 20% for each future Officer release.</p>
 
   <div class="two">
     <div>
       <label>Future Officer release</label>
       <select id="forecastRelease">
-        <option value="1" selected>January — S8 Infantry</option>
-        <option value="2">April — S8 Tanks</option>
-        <option value="3">July — S8 Tank Destroyers</option>
-        <option value="4">October — S9 Rally / Garrison</option>
+        <option value="1">October — S8 Rally / Garrison</option>
+        <option value="2">January — S8 Infantry</option>
+        <option value="3" selected>April — S8 Tanks</option>
+        <option value="4">July — S8 Tank Destroyers</option>
       </select>
     </div>
     <div>
@@ -1727,15 +1727,16 @@ function officerRarity(o){ return ['Legendary','Epic','Elite'].includes(o?.rarit
 function latestLegendaryOrvChestRate(){
  const source=Array.isArray(window.KOW_PUBLISHED_OFFICERS)&&window.KOW_PUBLISHED_OFFICERS.length
    ?window.KOW_PUBLISHED_OFFICERS:officers;
- // Chest conversion follows the current released Legendary Officer ORV values,
- // not session/season labels. The highest valid seasonal Legendary ORV value
- // represents the current released conversion rate.
+ // Follow the current released seasonal Legendary Officer ORV values,
+ // not session/season numbers. Use the highest valid ORV value in the data.
  const values=source.filter(o=>officerRarity(o)==='Legendary'&&Number(o.orv)>0&&String(o.season||'').toLowerCase()!=='original').map(o=>Number(o.orv)).filter(Number.isFinite);
  return values.length?Math.max(...values):0;
 }
 function updateLegendaryChestRateLabels(){
  const rate=latestLegendaryOrvChestRate();
- ['chestRateNotice','chestRateHelpRule','chestRateHelpShort'].forEach(id=>{const el=$(id);if(el)el.textContent=rate?fmt(rate):'unavailable'});const dev=$('legendaryBadgeChestOrvOption');if(dev)dev.textContent='Officer Readiness Vouchers ('+(rate?fmt(rate):'unavailable')+' each)';const planner=$('multiChestOrvOption');if(planner)planner.textContent='Convert to ORV ('+(rate?fmt(rate):'unavailable')+' each)';
+ ['chestRateNotice','chestRateHelpRule','chestRateHelpShort'].forEach(id=>{const el=$(id);if(el)el.textContent=rate?fmt(rate):'unavailable'});
+ const dev=$('legendaryBadgeChestOrvOption');if(dev)dev.textContent='Officer Readiness Vouchers ('+(rate?fmt(rate):'unavailable')+' each)';
+ const planner=$('multiChestOrvOption');if(planner)planner.textContent='Convert to ORV ('+(rate?fmt(rate):'unavailable')+' each)';
 }
 function trainingBadgeCost(o=currentOfficer()){ return officerRarity(o)==='Elite'?100:officerRarity(o)==='Epic'?25:5; }
 function promotionBadgeTotal(o=currentOfficer()){return officerRarity(o)==='Epic'?440:officerRarity(o)==='Elite'?440:690;}
@@ -2671,42 +2672,39 @@ function updateSmartDashboard(){
 
 
 function updateFutureOfficerForecast(){
- // Test hotfix: repair the known stale April-first option list before invoking
- // the dynamic forecast script. Leave any correctly rebuilt future list intact.
- const releaseSelect=$('forecastRelease');
- if(releaseSelect && releaseSelect.options.length &&
-    releaseSelect.options[0].textContent.trim()==='April — S8 Tanks'){
-   releaseSelect.replaceChildren(
-     new Option('January — S8 Infantry','1'),
-     new Option('April — S8 Tanks','2'),
-     new Option('July — S8 Tank Destroyers','3'),
-     new Option('October — S9 Rally / Garrison','4')
-   );
-   releaseSelect.value='1';
- }
- // The dynamic release-forecast script is the single source of truth for
- // release ordering, latest confirmed Officer costs, and forecast output.
- if(typeof window.kowRefreshDynamicReleaseForecast==='function'){
-   window.kowRefreshDynamicReleaseForecast();
-   return;
- }
  if(!$('forecastRelease'))return;
  const steps=Math.max(1,+$('forecastRelease').value||1);
  const growth=Math.max(0,+$('forecastGrowth').value||20)/100;
  const badges=Math.max(0,+$('forecastBadges').value||0);
  const starValue=Math.max(0,+$('forecastStarValue').value||0);
- // October 2026 S8 Rally/Garrison is the latest confirmed release.
- const baseOrv=720, baseSrv=360;
- const orv=Math.round(baseOrv*Math.pow(1+growth,steps));
- const srv=Math.round(baseSrv*Math.pow(1+growth,steps));
+
+ // Latest confirmed published sequence point in the app database:
+ // S7 Tank Destroyer = 600 ORV/badge and 300 SRV/Exclusive Star.
+ const baseOrv=600, baseSrv=300;
+ const orvExact=baseOrv*Math.pow(1+growth,steps);
+ const srvExact=baseSrv*Math.pow(1+growth,steps);
+
+ // Round to whole vouchers for a practical planning figure.
+ const orv=Math.round(orvExact);
+ const srv=Math.round(srvExact);
+
+ // One Exclusive Star contributes 110 Officer Star value.
  const exclusiveStars=Math.ceil(starValue/110);
- const totalOrv=badges*orv, totalSrv=exclusiveStars*srv;
+ const totalOrv=badges*orv;
+ const totalSrv=exclusiveStars*srv;
+
  $('forecastOrvPerBadge').textContent=fmt(orv);
  $('forecastSrvPerStar').textContent=fmt(srv);
  $('forecastTotalOrv').textContent=fmt(totalOrv);
  $('forecastTotalSrv').textContent=fmt(totalSrv);
- const label=$('forecastRelease').options[$('forecastRelease').selectedIndex]?.textContent||'Future Officer';
- $('forecastNote').innerHTML=`<b>${label}</b><br>Planning estimate using ${($('forecastGrowth').value||20)}% growth per future Officer release from the latest confirmed S8 Rally / Garrison release (720 ORV / 360 SRV). For ${fmt(badges)} badges and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
+
+ const labels={
+   1:'October — S8 Rally / Garrison',
+   2:'January — S8 Infantry',
+   3:'April — S8 Tanks',
+   4:'July — S8 Tank Destroyers'
+ };
+ $('forecastNote').innerHTML=`<b>${labels[steps]}</b><br>Planning estimate using ${($('forecastGrowth').value||20)}% growth per Officer release from the latest known 600 ORV / 300 SRV release. For ${fmt(badges)} badges and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
 }
 async function init(){
  await loadOfficers();updateLegendaryChestRateLabels();renderOfficerFilters();restoreOfficerFilterState();renderOfficerOptions(getUiState().officerName||undefined);
@@ -2901,7 +2899,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{saveAc
  });
  renderSkillStrands();renderDb();calculate();populateCompareOfficers();buildUpgradeSummary();restoreStatusFilterState();restoreComparePickState();saveSelectedOfficerState();setTimeout(restoreActiveViewState,0);
  window.addEventListener('resize',applyResponsivePageBackground);
- if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=460-test-forecast-costs-20261016-2'));
+ if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'));
 }
 init();
 
@@ -3268,7 +3266,7 @@ window.KOW_PLANNER_BRIDGE = {
   xpDenoms: () => (Array.isArray(XP_DENOMS) ? XP_DENOMS : [100,500,1000,5000,10000,20000,50000]),
   releaseForecast: () => {
     const growth = Number(document.getElementById('forecastGrowth')?.value || 20);
-    const latestOrv = 720, latestSrv = 360;
+    const latestOrv = 600, latestSrv = 300;
     const releaseStep = Math.max(1, Number(document.getElementById('forecastRelease')?.value || 1));
     const factor = Math.pow(1 + growth / 100, releaseStep);
     return {
@@ -3276,7 +3274,7 @@ window.KOW_PLANNER_BRIDGE = {
       releaseStep,
       orvPerBadge: Math.round(latestOrv * factor),
       srvPerStar: Math.round(latestSrv * factor),
-      source: `Latest confirmed S8 October Rally / Garrison cost (720 ORV / 360 SRV), ${growth}% compounded for ${releaseStep} future Officer release${releaseStep===1?'':'s'}`
+      source: `Latest published S7 cost (600 ORV / 300 SRV), ${growth}% compounded for ${releaseStep} future Officer release${releaseStep===1?'':'s'}`
     };
   }
 };
@@ -3659,7 +3657,7 @@ document.addEventListener("click",function(e){
       return /^S\d+$/i.test(String(o.season||'')) && +o.orv>0 && +o.srv>0 &&
         String(o.rarity||'Legendary').toLowerCase()==='legendary';
     });
-    if(!seasonal.length)return {orv:720,srv:360,season:8};
+    if(!seasonal.length)return {orv:600,srv:300,season:7};
     var maxSeason=seasonal.reduce(function(m,o){
       var n=+(String(o.season).match(/\d+/)||[0])[0];
       return Math.max(m,n);
@@ -3686,7 +3684,7 @@ document.addEventListener("click",function(e){
         pct:f.growth
       };
     }
-    return {orv:720,srv:360,source:'Latest confirmed S8 October Rally / Garrison cost (720 ORV / 360 SRV)',pct:20};
+    return {orv:720,srv:360,source:'Latest published S7 cost increased by 20%',pct:20};
   }
   function projectedResourceHtml(projected,inv){
     var box=document.getElementById('kowProjectedResourceForecast');
@@ -3767,8 +3765,8 @@ document.addEventListener("click",function(e){
     var session=futureSession(mode), projected=[];
     if(mode!=='saved'){
       var types=typeChoice!=='auto'?[typeChoice]:(session?session.types:[]);
+      var season=projectedSeason(mode,t);
       projected=types.map(function(t){
-        var season=projectedSeason(mode,t);
         return {name:season+' '+t+' — PROJECTED',pct:0,status:'PROJECTED',future:true,type:t};
       });
     }
@@ -3831,7 +3829,7 @@ const KEY='kow_v4359_planning_scenarios';
 const INV_KEY='kow_central_inventory_v1';
 const TOTAL={badges:1600,stars:98000,xp:199646700};
 const LABEL={next:'Next Officer session',october:'October — Rally / Garrison',january:'January — Infantry',april:'April — Tanks',july:'July — Tank Destroyers'};
-const STEP={next:1,january:1,april:2,july:3,october:4};
+const STEP={next:1,october:1,january:2,april:3,july:4};
 let current=null;
 function n(id){return Number(document.getElementById(id)?.value||0);}
 function savedInventory(){try{return JSON.parse(localStorage.getItem(INV_KEY)||'{}')}catch(e){return {}}}
@@ -3850,8 +3848,8 @@ function getHeld(){
 function forecast(session,count){
  const growth=Math.max(0,Number(document.getElementById('forecastGrowth')?.value||20))/100;
  const steps=STEP[session]||1;
- const orvPerBadge=Math.round(720*Math.pow(1+growth,steps));
- const srvPerStar=Math.round(360*Math.pow(1+growth,steps));
+ const orvPerBadge=Math.round(600*Math.pow(1+growth,steps));
+ const srvPerStar=Math.round(300*Math.pow(1+growth,steps));
  const badges=TOTAL.badges*count;
  const exclusiveStars=Math.ceil((TOTAL.stars*count)/110);
  return {growth,steps,orvPerBadge,srvPerStar,orv:badges*orvPerBadge,srv:exclusiveStars*srvPerStar};
@@ -3993,7 +3991,7 @@ window.kowRenderPlanningReadiness=render;
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
-<script src="./v460-features.js?v=460-live"></script><script src="./planner-season-sync.js?v=460-live"></script><script src="./release-forecast-sync.js?v=460-test-forecast-baseline-20261016-4"></script>
+<script src="./v460-features.js?v=460-test-clean-20261016"></script><script src="./planner-season-sync.js?v=460-test-clean-20261016"></script><script src="./release-forecast-sync.js?v=460-test-clean-20261016"></script>
 <script id="hotfix7EditOfficerRuntime">
 (function(){
 'use strict';
@@ -4053,30 +4051,5 @@ window.kowEditOfficerMax=function(){
 })();
 </script>
 
-
-<script id="testForecastDropdownOrderHotfix">
-(function(){
-  'use strict';
-  function enforceJanuaryFirst(){
-    const select=document.getElementById('forecastRelease');
-    if(!select||!select.options.length)return;
-    const first=(select.options[0].textContent||'').trim();
-    if(first==='April — S8 Tanks'){
-      select.replaceChildren(
-        new Option('January — S8 Infantry','1'),
-        new Option('April — S8 Tanks','2'),
-        new Option('July — S8 Tank Destroyers','3'),
-        new Option('October — S9 Rally / Garrison','4')
-      );
-      select.value='1';
-      select.dispatchEvent(new Event('change',{bubbles:true}));
-    }
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enforceJanuaryFirst,{once:true});
-  [0,100,500,1500,3000,6000].forEach(ms=>setTimeout(enforceJanuaryFirst,ms));
-  const target=document.getElementById('forecastRelease');
-  if(target&&typeof MutationObserver!=='undefined')new MutationObserver(enforceJanuaryFirst).observe(target,{childList:true,subtree:true});
-})();
-</script>
 </body>
 </html>

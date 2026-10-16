@@ -1,18 +1,14 @@
-# KoW Companion v4.6.0 TEST — Release Notes
+# KoW Companion v4.6.0 TEST — Baseline Notes
 
-**ENGLISH TEST — NOT LIVE**
+This is the English Test deployment, based on English Live v4.6.0 Stable. It is for development and verification only and is not a production release.
 
-v4.6.0 is based on the stable v4.5.0 English Live application and introduces Upgrade Targets & Recommendations plus the Dynamic Officer Data framework.
+## Confirmed release forecast baseline
+- October 2026: S8 Rally / Garrison — 720 ORV per badge and 360 SRV per Exclusive Star.
+- January 2027: S8 Infantry.
+- April 2027: S8 Tanks.
+- July 2027: S8 Tank Destroyers.
+- October 2027: S9 Rally / Garrison.
 
-## v4.6.0 additions
-- Upgrade Targets & Recommendations for the selected Officer, initially non-destructive.
-- Dynamic Officer dataset in `officers.json`.
-- Versioned Officer-data manifest in `officer-data-version.json`.
-- Settings status for the currently published global Officer dataset.
-- Clean v4.6.0 service worker with no runtime HTML/version rewriting.
+Forecast growth defaults to 20% per quarterly release step. Future or estimated Officer database rows must not be used to infer the confirmed season rollover.
 
-## Controlled reset
-The English Test deployment was cleaned after failed one-shot repair workflows. Obsolete custom Actions workflows were removed and the full existing app was preserved as the build source while `index.html` now produces the v4.6.0 Test identity consistently during the GitHub Pages build.
-
-## QA gate
-Do not promote to Live until the banner, header, Settings, About and Version Integrity all report v4.6.0, Global Officer Data loads, normal navigation works, saved state survives refresh, and the v4.5.0 core calculations remain regression-free.
+English Live is not modified by this test baseline. Any promotion requires separate explicit approval.

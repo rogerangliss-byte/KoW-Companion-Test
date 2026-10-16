@@ -1,7 +1,0 @@
-KoW Companion v4.5.0 TEST — Documentation Update
-
-1. Extract this ZIP.
-2. Upload/replace these root files in KoW-Companion-Test.
-3. Leave the existing officer-portraits folder and background image files untouched.
-4. Wait for GitHub Pages deployment to complete.
-5. Refresh the Test site and review Help & Instructions before Live approval.
