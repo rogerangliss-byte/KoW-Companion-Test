@@ -30,8 +30,9 @@
 
   function latestKnownRelease(){
     // Approved Test forecast starting point: 720 ORV / 360 SRV.
-    // Slot zero makes the first projected slot October S8; costs compound per future release.
-    return {season:8,slot:0,orv:720,srv:360,source:'Test forecast starting cost'};
+    // S8 October Rally / Garrison is confirmed at 720 ORV / 360 SRV.
+    // Start at slot 1 so the first forecast is January S8 Infantry (one growth step).
+    return {season:8,slot:1,orv:720,srv:360,source:'Confirmed S8 Rally / Garrison cost'};
   }
 
   function advance(season,slot,steps){
