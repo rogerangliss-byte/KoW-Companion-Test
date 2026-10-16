@@ -1332,7 +1332,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
 <section id="releases" class="view">
 <article class="card" id="futureOfficerForecastCard">
   <h2>🔮 Future Officer Cost Forecast</h2>
-  <p class="muted">Forecast future Officer costs from the established Officer-release sequence. The model uses the latest known S7 Tank Destroyer release (600 ORV / 300 SRV) and compounds approximately 20% for each future Officer release.</p>
+  <p class="muted">Forecast future Officer costs from the established Officer-release sequence. The latest confirmed release is October 2026 S8 Rally / Garrison (720 ORV / 360 SRV); future releases are projected in quarterly role order.</p>
 
   <div class="two">
     <div>
@@ -3263,7 +3263,7 @@ window.KOW_PLANNER_BRIDGE = {
       releaseStep,
       orvPerBadge: Math.round(latestOrv * factor),
       srvPerStar: Math.round(latestSrv * factor),
-      source: `Latest published S7 cost (600 ORV / 300 SRV), ${growth}% compounded for ${releaseStep} future Officer release${releaseStep===1?'':'s'}`
+      source: `Latest confirmed S8 October Rally / Garrison cost (720 ORV / 360 SRV), ${growth}% compounded for ${releaseStep} future Officer release${releaseStep===1?'':'s'}`
     };
   }
 };
