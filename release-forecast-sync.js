@@ -40,6 +40,9 @@
     if(!rows.length)return {season:8,slot:1,orv:720,srv:360,source:'S8 Rally / Garrison'};
 
     const maxSeason=Math.max(...rows.map(x=>x.season));
+    // October 2026 S8 Rally / Garrison is confirmed at 720 ORV / 360 SRV.
+    // An older cached Officer database must not roll the forecast back to S7.
+    if(maxSeason<8)return {season:8,slot:1,orv:720,srv:360,source:'S8 Rally / Garrison'};
     const seasonRows=rows.filter(x=>x.season===maxSeason);
     const maxSlot=Math.max(...seasonRows.map(x=>x.slot));
     const latest=seasonRows.filter(x=>x.slot===maxSlot);
