@@ -2671,6 +2671,19 @@ function updateSmartDashboard(){
 
 
 function updateFutureOfficerForecast(){
+ // Test hotfix: repair the known stale April-first option list before invoking
+ // the dynamic forecast script. Leave any correctly rebuilt future list intact.
+ const releaseSelect=$('forecastRelease');
+ if(releaseSelect && releaseSelect.options.length &&
+    releaseSelect.options[0].textContent.trim()==='April — S8 Tanks'){
+   releaseSelect.replaceChildren(
+     new Option('January — S8 Infantry','1'),
+     new Option('April — S8 Tanks','2'),
+     new Option('July — S8 Tank Destroyers','3'),
+     new Option('October — S9 Rally / Garrison','4')
+   );
+   releaseSelect.value='1';
+ }
  // The dynamic release-forecast script is the single source of truth for
  // release ordering, latest confirmed Officer costs, and forecast output.
  if(typeof window.kowRefreshDynamicReleaseForecast==='function'){
@@ -3972,7 +3985,7 @@ window.kowRenderPlanningReadiness=render;
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
-<script src="./v460-features.js?v=460-live"></script><script src="./planner-season-sync.js?v=460-live"></script><script src="./release-forecast-sync.js?v=460-test-forecast-fix-20261016-1200"></script>
+<script src="./v460-features.js?v=460-live"></script><script src="./planner-season-sync.js?v=460-live"></script><script src="./release-forecast-sync.js?v=460-test-forecast-repair-20261016-2"></script>
 <script id="hotfix7EditOfficerRuntime">
 (function(){
 'use strict';
