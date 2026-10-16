@@ -29,31 +29,10 @@
   }
 
   function latestKnownRelease(){
-    if(typeof officers==='undefined'||!Array.isArray(officers))return {season:8,slot:1,orv:720,srv:360,source:'S8 Rally / Garrison'};
-
-    const rows=officers
-      .filter(o=>seasonNumber(o.season)>0)
-      .filter(o=>String(o.rarity||'Legendary')==='Legendary')
-      .map(o=>({o,season:seasonNumber(o.season),slot:releaseSlot(o)}))
-      .filter(x=>x.slot>0&&Number(x.o.orv)>0&&Number(x.o.srv)>0);
-
-    if(!rows.length)return {season:8,slot:1,orv:720,srv:360,source:'S8 Rally / Garrison'};
-
-    const maxSeason=Math.max(...rows.map(x=>x.season));
-    // Confirmed release baseline as of October 2026: S8 Rally / Garrison at
-    // 720 ORV / 360 SRV. Ignore stale or unconfirmed S8 records (for example,
-    // an S8 Infantry row cached at 1000/500) when selecting the latest release.
-    if(maxSeason<=8)return {season:8,slot:1,orv:720,srv:360,source:'S8 October Rally / Garrison'};
-    const seasonRows=rows.filter(x=>x.season===maxSeason);
-    const maxSlot=Math.max(...seasonRows.map(x=>x.slot));
-    const latest=seasonRows.filter(x=>x.slot===maxSlot);
-
-    // If a release contains two Officers, use the highest confirmed cost as the
-    // conservative common forecasting baseline.
-    const orv=Math.max(...latest.map(x=>Number(x.o.orv)||0));
-    const srv=Math.max(...latest.map(x=>Number(x.o.srv)||0));
-    const slotName=SLOT[maxSlot]?.type||'Officer';
-    return {season:maxSeason,slot:maxSlot,orv,srv,source:`S${maxSeason} ${slotName}`};
+    // Confirmed release baseline as of October 2026. Future S8/S9 Officer rows
+    // may be estimates, test data, or cached records and must not advance the
+    // season rollover. S9 begins only when Rally / Garrison releases in Oct 2027.
+    return {season:8,slot:1,orv:720,srv:360,source:'S8 October Rally / Garrison'};
   }
 
   function advance(season,slot,steps){
