@@ -1,5 +1,23 @@
 [
    {
+    "name": "S8 Test",
+    "season": "S8",
+    "role": "Infantry",
+    "orv": 1000,
+    "srv": 500,
+    "notes": "Infantry",
+    "rarity": "Legendary"
+  },
+  {
+    "name": "S8 Test1",
+    "season": "S8",
+    "role": "Infantry",
+    "orv": 1000,
+    "srv": 500,
+    "notes": "Infantry",
+    "rarity": "Legendary"
+  },
+   {
     "name": "S8 Po",
     "season": "S8",
     "role": "Rally",
