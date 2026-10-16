@@ -1266,7 +1266,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
   <p>Planning Readiness Dashboard, Badge/Star/XP readiness, Priority Target, Suggested Next Action, future October/January/April/July sessions, Season + Officer Type reports, projected future Legendary resources, ORV/SRV forecasting and MAXED-Officer exclusions remain available.</p>
 
   <h4>🔮 Dynamic Future Officer Cost Forecast</h4>
-  <p>The forecast now uses the latest confirmed Legendary seasonal Officer release in the Officer Database as its baseline. <b>Example:</b> at the v4.6.0 release, the latest confirmed baseline is <b>S7 Tank Destroyers — 600 ORV per Badge / 300 SRV per Exclusive Star</b>. When a newer confirmed release is published, the baseline automatically advances.</p>
+  <p>The forecast uses the latest confirmed seasonal Legendary Officer release as its baseline. The current confirmed baseline is <b>S8 October Rally / Garrison — 720 ORV per Badge / 360 SRV per Exclusive Star</b>. Future costs apply the selected growth percentage to that baseline for each release step.</p>
   <p>Future ORV/SRV figures are <b>planning estimates only</b> until actual release costs are confirmed.</p>
 </div>
 
@@ -2901,7 +2901,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{saveAc
  });
  renderSkillStrands();renderDb();calculate();populateCompareOfficers();buildUpgradeSummary();restoreStatusFilterState();restoreComparePickState();saveSelectedOfficerState();setTimeout(restoreActiveViewState,0);
  window.addEventListener('resize',applyResponsivePageBackground);
- if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=460-test-forecast-costs-20261016-1'));
+ if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=460-test-forecast-costs-20261016-2'));
 }
 init();
 
@@ -3985,7 +3985,7 @@ window.kowRenderPlanningReadiness=render;
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
-<script src="./v460-features.js?v=460-live"></script><script src="./planner-season-sync.js?v=460-live"></script><script src="./release-forecast-sync.js?v=460-test-forecast-costs-20261016-1"></script>
+<script src="./v460-features.js?v=460-live"></script><script src="./planner-season-sync.js?v=460-live"></script><script src="./release-forecast-sync.js?v=460-test-forecast-costs-20261016-2"></script>
 <script id="hotfix7EditOfficerRuntime">
 (function(){
 'use strict';
