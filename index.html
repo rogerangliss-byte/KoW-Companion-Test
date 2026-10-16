@@ -1266,7 +1266,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
   <p>Planning Readiness Dashboard, Badge/Star/XP readiness, Priority Target, Suggested Next Action, future October/January/April/July sessions, Season + Officer Type reports, projected future Legendary resources, ORV/SRV forecasting and MAXED-Officer exclusions remain available.</p>
 
   <h4>🔮 Dynamic Future Officer Cost Forecast</h4>
-  <p>The forecast now uses the latest confirmed Legendary seasonal Officer release in the Officer Database as its baseline. <b>Example:</b> at the v4.6.0 release, the latest confirmed baseline is <b>S7 Tank Destroyers — 600 ORV per Badge / 300 SRV per Exclusive Star</b>. When a newer confirmed release is published, the baseline automatically advances.</p>
+  <p>For the English Test forecast, the starting estimate is <b>720 ORV per Badge / 360 SRV per Exclusive Star</b> (a 20% increase over the S7 published costs). This is a Test planning assumption, not a claim that S8 costs have been published. Growth is compounded for each future Officer release.</p>
   <p>Future ORV/SRV figures are <b>planning estimates only</b> until actual release costs are confirmed.</p>
 </div>
 
@@ -1332,7 +1332,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
 <section id="releases" class="view">
 <article class="card" id="futureOfficerForecastCard">
   <h2>🔮 Future Officer Cost Forecast</h2>
-  <p class="muted">Forecast future Officer costs from the established Officer-release sequence. The model uses the latest known S7 Tank Destroyer release (600 ORV / 300 SRV) and compounds approximately 20% for each future Officer release.</p>
+  <p class="muted">English Test forecast: starting cost is 720 ORV per Badge and 360 SRV per Exclusive Star, with 20% compounded per future Officer release. These are estimates, not confirmed release costs.</p>
 
   <div class="two">
     <div>
@@ -2678,9 +2678,9 @@ function updateFutureOfficerForecast(){
  const badges=Math.max(0,+$('forecastBadges').value||0);
  const starValue=Math.max(0,+$('forecastStarValue').value||0);
 
- // Latest confirmed published sequence point in the app database:
- // S7 Tank Destroyer = 600 ORV/badge and 300 SRV/Exclusive Star.
- const baseOrv=600, baseSrv=300;
+ // English Test forecast starting cost, based on a 20% increase over S7:
+ // 720 ORV/badge and 360 SRV/Exclusive Star. This is an estimate, not a published S8 cost.
+ const baseOrv=720, baseSrv=360;
  const orvExact=baseOrv*Math.pow(1+growth,steps);
  const srvExact=baseSrv*Math.pow(1+growth,steps);
 
@@ -2704,7 +2704,7 @@ function updateFutureOfficerForecast(){
    3:'April — S8 Tanks',
    4:'July — S8 Tank Destroyers'
  };
- $('forecastNote').innerHTML=`<b>${labels[steps]}</b><br>Planning estimate using ${($('forecastGrowth').value||20)}% growth per Officer release from the latest known 600 ORV / 300 SRV release. For ${fmt(badges)} badges and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
+ $('forecastNote').innerHTML=`<b>${labels[steps]}</b><br>Test planning estimate using ${($('forecastGrowth').value||20)}% growth per future Officer release from the 720 ORV / 360 SRV forecast starting cost. For ${fmt(badges)} badges and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
 }
 async function init(){
  await loadOfficers();updateLegendaryChestRateLabels();renderOfficerFilters();restoreOfficerFilterState();renderOfficerOptions(getUiState().officerName||undefined);
@@ -3266,7 +3266,7 @@ window.KOW_PLANNER_BRIDGE = {
   xpDenoms: () => (Array.isArray(XP_DENOMS) ? XP_DENOMS : [100,500,1000,5000,10000,20000,50000]),
   releaseForecast: () => {
     const growth = Number(document.getElementById('forecastGrowth')?.value || 20);
-    const latestOrv = 600, latestSrv = 300;
+    const latestOrv = 720, latestSrv = 360;
     const releaseStep = Math.max(1, Number(document.getElementById('forecastRelease')?.value || 1));
     const factor = Math.pow(1 + growth / 100, releaseStep);
     return {
@@ -3274,7 +3274,7 @@ window.KOW_PLANNER_BRIDGE = {
       releaseStep,
       orvPerBadge: Math.round(latestOrv * factor),
       srvPerStar: Math.round(latestSrv * factor),
-      source: `Latest published S7 cost (600 ORV / 300 SRV), ${growth}% compounded for ${releaseStep} future Officer release${releaseStep===1?'':'s'}`
+      source: `Test forecast starting cost (720 ORV / 360 SRV), ${growth}% compounded for ${releaseStep} future Officer release${releaseStep===1?'':'s'}`
     };
   }
 };
@@ -3684,7 +3684,7 @@ document.addEventListener("click",function(e){
         pct:f.growth
       };
     }
-    return {orv:720,srv:360,source:'Latest published S7 cost increased by 20%',pct:20};
+    return {orv:720,srv:360,source:'Test forecast starting cost (720 ORV / 360 SRV)',pct:20};
   }
   function projectedResourceHtml(projected,inv){
     var box=document.getElementById('kowProjectedResourceForecast');
@@ -3848,8 +3848,8 @@ function getHeld(){
 function forecast(session,count){
  const growth=Math.max(0,Number(document.getElementById('forecastGrowth')?.value||20))/100;
  const steps=STEP[session]||1;
- const orvPerBadge=Math.round(600*Math.pow(1+growth,steps));
- const srvPerStar=Math.round(300*Math.pow(1+growth,steps));
+ const orvPerBadge=Math.round(720*Math.pow(1+growth,steps));
+ const srvPerStar=Math.round(360*Math.pow(1+growth,steps));
  const badges=TOTAL.badges*count;
  const exclusiveStars=Math.ceil((TOTAL.stars*count)/110);
  return {growth,steps,orvPerBadge,srvPerStar,orv:badges*orvPerBadge,srv:exclusiveStars*srvPerStar};
