@@ -2901,7 +2901,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{saveAc
  });
  renderSkillStrands();renderDb();calculate();populateCompareOfficers();buildUpgradeSummary();restoreStatusFilterState();restoreComparePickState();saveSelectedOfficerState();setTimeout(restoreActiveViewState,0);
  window.addEventListener('resize',applyResponsivePageBackground);
- if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'));
+ if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=460-test-forecast-repair-20261016-3'));
 }
 init();
 
@@ -4045,5 +4045,30 @@ window.kowEditOfficerMax=function(){
 })();
 </script>
 
+
+<script id="testForecastDropdownOrderHotfix">
+(function(){
+  'use strict';
+  function enforceJanuaryFirst(){
+    const select=document.getElementById('forecastRelease');
+    if(!select||!select.options.length)return;
+    const first=(select.options[0].textContent||'').trim();
+    if(first==='April — S8 Tanks'){
+      select.replaceChildren(
+        new Option('January — S8 Infantry','1'),
+        new Option('April — S8 Tanks','2'),
+        new Option('July — S8 Tank Destroyers','3'),
+        new Option('October — S9 Rally / Garrison','4')
+      );
+      select.value='1';
+      select.dispatchEvent(new Event('change',{bubbles:true}));
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enforceJanuaryFirst,{once:true});
+  [0,100,500,1500,3000,6000].forEach(ms=>setTimeout(enforceJanuaryFirst,ms));
+  const target=document.getElementById('forecastRelease');
+  if(target&&typeof MutationObserver!=='undefined')new MutationObserver(enforceJanuaryFirst).observe(target,{childList:true,subtree:true});
+})();
+</script>
 </body>
 </html>
