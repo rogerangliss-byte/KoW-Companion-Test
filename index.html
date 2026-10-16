@@ -1338,10 +1338,10 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
     <div>
       <label>Future Officer release</label>
       <select id="forecastRelease">
-        <option value="1">October — S8 Rally / Garrison</option>
-        <option value="2">January — S8 Infantry</option>
-        <option value="3" selected>April — S8 Tanks</option>
-        <option value="4">July — S8 Tank Destroyers</option>
+        <option value="1" selected>January — S8 Infantry</option>
+        <option value="2">April — S8 Tanks</option>
+        <option value="3">July — S8 Tank Destroyers</option>
+        <option value="4">October — S9 Rally / Garrison</option>
       </select>
     </div>
     <div>
@@ -2671,39 +2671,29 @@ function updateSmartDashboard(){
 
 
 function updateFutureOfficerForecast(){
+ // The dynamic release-forecast script is the single source of truth for
+ // release ordering, latest confirmed Officer costs, and forecast output.
+ if(typeof window.kowRefreshDynamicReleaseForecast==='function'){
+   window.kowRefreshDynamicReleaseForecast();
+   return;
+ }
  if(!$('forecastRelease'))return;
  const steps=Math.max(1,+$('forecastRelease').value||1);
  const growth=Math.max(0,+$('forecastGrowth').value||20)/100;
  const badges=Math.max(0,+$('forecastBadges').value||0);
  const starValue=Math.max(0,+$('forecastStarValue').value||0);
-
- // Latest confirmed published sequence point in the app database:
- // S7 Tank Destroyer = 600 ORV/badge and 300 SRV/Exclusive Star.
- const baseOrv=600, baseSrv=300;
- const orvExact=baseOrv*Math.pow(1+growth,steps);
- const srvExact=baseSrv*Math.pow(1+growth,steps);
-
- // Round to whole vouchers for a practical planning figure.
- const orv=Math.round(orvExact);
- const srv=Math.round(srvExact);
-
- // One Exclusive Star contributes 110 Officer Star value.
+ // October 2026 S8 Rally/Garrison is the latest confirmed release.
+ const baseOrv=720, baseSrv=360;
+ const orv=Math.round(baseOrv*Math.pow(1+growth,steps));
+ const srv=Math.round(baseSrv*Math.pow(1+growth,steps));
  const exclusiveStars=Math.ceil(starValue/110);
- const totalOrv=badges*orv;
- const totalSrv=exclusiveStars*srv;
-
+ const totalOrv=badges*orv, totalSrv=exclusiveStars*srv;
  $('forecastOrvPerBadge').textContent=fmt(orv);
  $('forecastSrvPerStar').textContent=fmt(srv);
  $('forecastTotalOrv').textContent=fmt(totalOrv);
  $('forecastTotalSrv').textContent=fmt(totalSrv);
-
- const labels={
-   1:'October — S8 Rally / Garrison',
-   2:'January — S8 Infantry',
-   3:'April — S8 Tanks',
-   4:'July — S8 Tank Destroyers'
- };
- $('forecastNote').innerHTML=`<b>${labels[steps]}</b><br>Planning estimate using ${($('forecastGrowth').value||20)}% growth per Officer release from the latest known 600 ORV / 300 SRV release. For ${fmt(badges)} badges and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
+ const label=$('forecastRelease').options[$('forecastRelease').selectedIndex]?.textContent||'Future Officer';
+ $('forecastNote').innerHTML=`<b>${label}</b><br>Planning estimate using ${($('forecastGrowth').value||20)}% growth per future Officer release from the latest confirmed S8 Rally / Garrison release (720 ORV / 360 SRV). For ${fmt(badges)} badges and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
 }
 async function init(){
  await loadOfficers();updateLegendaryChestRateLabels();renderOfficerFilters();restoreOfficerFilterState();renderOfficerOptions(getUiState().officerName||undefined);
@@ -3265,7 +3255,7 @@ window.KOW_PLANNER_BRIDGE = {
   xpDenoms: () => (Array.isArray(XP_DENOMS) ? XP_DENOMS : [100,500,1000,5000,10000,20000,50000]),
   releaseForecast: () => {
     const growth = Number(document.getElementById('forecastGrowth')?.value || 20);
-    const latestOrv = 600, latestSrv = 300;
+    const latestOrv = 720, latestSrv = 360;
     const releaseStep = Math.max(1, Number(document.getElementById('forecastRelease')?.value || 1));
     const factor = Math.pow(1 + growth / 100, releaseStep);
     return {
