@@ -1010,7 +1010,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
       <label>Use Legendary Officer Badge Chests as</label>
       <select id="legendaryBadgeChestMode">
         <option value="badge">Universal Legendary Badges (1 each)</option>
-        <option value="orv">Officer Readiness Vouchers (<span id="chestRateDevelopLabel">current rate</span> each)</option>
+        <option id="legendaryBadgeChestOrvOption" value="orv">Officer Readiness Vouchers (current rate each)</option>
       </select>
       <label>Officer Readiness Vouchers (ORV) Held</label><input id="orvHeld" type="number" min="0" step="1" inputmode="numeric" value="0">
       <div class="stat"><span>Badges used</span><b id="badgesUsed">0</b></div>
@@ -1117,7 +1117,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
       </div>
       <div class="two">
         <div><label>Legendary Officer Badge Chests</label><input id="multiChests" type="number" min="0" step="1" inputmode="numeric" value="0"></div><div><label>Legendary Officer Badge Selection Chests</label><input id="multiSelectionChests" type="number" min="0" step="1" value="0"></div>
-        <div><label>Chest strategy</label><select id="multiChestMode"><option value="optimise">Optimise automatically</option><option value="badge">Use as Universal Badges</option><option value="orv">Convert to ORV (<span id="chestRatePlannerLabel">current rate</span> each)</option></select></div>
+        <div><label>Chest strategy</label><select id="multiChestMode"><option value="optimise">Optimise automatically</option><option value="badge">Use as Universal Badges</option><option id="multiChestOrvOption" value="orv">Convert to ORV (current rate each)</option></select></div>
       </div>
 
       <div class="toolbar planner-actions" style="margin-top:10px">
@@ -1727,14 +1727,14 @@ function officerRarity(o){ return ['Legendary','Epic','Elite'].includes(o?.rarit
 function latestLegendaryOrvChestRate(){
  const source=Array.isArray(window.KOW_PUBLISHED_OFFICERS)&&window.KOW_PUBLISHED_OFFICERS.length
    ?window.KOW_PUBLISHED_OFFICERS:officers;
- const seasonal=source.filter(o=>officerRarity(o)==='Legendary'&&/^S\\d+$/i.test(String(o.season||''))&&Number(o.orv)>0);
+ const seasonal=source.filter(o=>officerRarity(o)==='Legendary'&&/^S\d+$/i.test(String(o.season||''))&&Number(o.orv)>0);
  if(!seasonal.length)return 0;
- const latestSeason=Math.max(...seasonal.map(o=>Number(String(o.season).match(/\\d+/)?.[0]||0)));
- return Math.max(...seasonal.filter(o=>Number(String(o.season).match(/\\d+/)?.[0]||0)===latestSeason).map(o=>Number(o.orv)||0));
+ const latestSeason=Math.max(...seasonal.map(o=>Number(String(o.season).match(/\d+/)?.[0]||0)));
+ return Math.max(...seasonal.filter(o=>Number(String(o.season).match(/\d+/)?.[0]||0)===latestSeason).map(o=>Number(o.orv)||0));
 }
 function updateLegendaryChestRateLabels(){
  const rate=latestLegendaryOrvChestRate();
- ['chestRateNotice','chestRateDevelopLabel','chestRatePlannerLabel','chestRateHelpRule','chestRateHelpShort'].forEach(id=>{const el=$(id);if(el)el.textContent=rate?fmt(rate):'unavailable'});
+ ['chestRateNotice','chestRateHelpRule','chestRateHelpShort'].forEach(id=>{const el=$(id);if(el)el.textContent=rate?fmt(rate):'unavailable'});const dev=$('legendaryBadgeChestOrvOption');if(dev)dev.textContent='Officer Readiness Vouchers ('+(rate?fmt(rate):'unavailable')+' each)';const planner=$('multiChestOrvOption');if(planner)planner.textContent='Convert to ORV ('+(rate?fmt(rate):'unavailable')+' each);
 }
 function trainingBadgeCost(o=currentOfficer()){ return officerRarity(o)==='Elite'?100:officerRarity(o)==='Epic'?25:5; }
 function promotionBadgeTotal(o=currentOfficer()){return officerRarity(o)==='Epic'?440:officerRarity(o)==='Elite'?440:690;}
