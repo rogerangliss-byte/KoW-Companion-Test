@@ -29,7 +29,7 @@
   }
 
   function latestKnownRelease(){
-    if(typeof officers==='undefined'||!Array.isArray(officers))return {season:7,slot:4,orv:600,srv:300,source:'S7 Tank Destroyer'};
+    if(typeof officers==='undefined'||!Array.isArray(officers))return {season:8,slot:1,orv:720,srv:360,source:'S8 Rally / Garrison'};
 
     const rows=officers
       .filter(o=>seasonNumber(o.season)>0)
@@ -37,7 +37,7 @@
       .map(o=>({o,season:seasonNumber(o.season),slot:releaseSlot(o)}))
       .filter(x=>x.slot>0&&Number(x.o.orv)>0&&Number(x.o.srv)>0);
 
-    if(!rows.length)return {season:7,slot:4,orv:600,srv:300,source:'S7 Tank Destroyer'};
+    if(!rows.length)return {season:8,slot:1,orv:720,srv:360,source:'S8 Rally / Garrison'};
 
     const maxSeason=Math.max(...rows.map(x=>x.season));
     const seasonRows=rows.filter(x=>x.season===maxSeason);
