@@ -1727,10 +1727,11 @@ function officerRarity(o){ return ['Legendary','Epic','Elite'].includes(o?.rarit
 function latestLegendaryOrvChestRate(){
  const source=Array.isArray(window.KOW_PUBLISHED_OFFICERS)&&window.KOW_PUBLISHED_OFFICERS.length
    ?window.KOW_PUBLISHED_OFFICERS:officers;
- const seasonal=source.filter(o=>officerRarity(o)==='Legendary'&&/^S\d+$/i.test(String(o.season||''))&&Number(o.orv)>0);
- if(!seasonal.length)return 0;
- const latestSeason=Math.max(...seasonal.map(o=>Number(String(o.season).match(/\d+/)?.[0]||0)));
- return Math.max(...seasonal.filter(o=>Number(String(o.season).match(/\d+/)?.[0]||0)===latestSeason).map(o=>Number(o.orv)||0));
+ // Chest conversion follows the current released Legendary Officer ORV values,
+ // not session/season labels. The highest valid seasonal Legendary ORV value
+ // represents the current released conversion rate.
+ const values=source.filter(o=>officerRarity(o)==='Legendary'&&Number(o.orv)>0&&String(o.season||'').toLowerCase()!=='original').map(o=>Number(o.orv)).filter(Number.isFinite);
+ return values.length?Math.max(...values):0;
 }
 function updateLegendaryChestRateLabels(){
  const rate=latestLegendaryOrvChestRate();
