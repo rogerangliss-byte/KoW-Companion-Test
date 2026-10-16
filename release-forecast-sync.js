@@ -1,4 +1,4 @@
-/* KoW Companion v4.6.0 LIVE — data-driven future release forecast.
+/* KoW Companion v4.6.0 TEST — data-driven future release forecast.
    Uses the latest confirmed Legendary seasonal Officer costs in the Officer
    database as the forecasting baseline, then projects the next release slots. */
 (()=>{
@@ -64,7 +64,9 @@
   function rebuildReleaseOptions(base){
     const select=$('forecastRelease');
     if(!select)return;
-    const previous=select.selectedIndex;
+    // The existing HTML options may be stale (for example, October 2026
+    // was previously selected as the first option). When the confirmed base
+    // release changes, always default to the next future release.
     select.innerHTML='';
     for(let delta=1;delta<=4;delta++){
       const r=advance(base.season,base.slot,delta);
@@ -76,7 +78,7 @@
       opt.textContent=`${meta.month} — S${r.season} ${meta.type}`;
       select.appendChild(opt);
     }
-    select.selectedIndex=Math.max(0,Math.min(previous,select.options.length-1));
+    select.selectedIndex=0;
   }
 
   function updateDynamicForecast(){
