@@ -2901,7 +2901,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{saveAc
  });
  renderSkillStrands();renderDb();calculate();populateCompareOfficers();buildUpgradeSummary();restoreStatusFilterState();restoreComparePickState();saveSelectedOfficerState();setTimeout(restoreActiveViewState,0);
  window.addEventListener('resize',applyResponsivePageBackground);
- if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=460-test-forecast-repair-20261016-3'));
+ if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=460-test-forecast-costs-20261016-1'));
 }
 init();
 
@@ -3651,7 +3651,7 @@ document.addEventListener("click",function(e){
       return /^S\d+$/i.test(String(o.season||'')) && +o.orv>0 && +o.srv>0 &&
         String(o.rarity||'Legendary').toLowerCase()==='legendary';
     });
-    if(!seasonal.length)return {orv:600,srv:300,season:7};
+    if(!seasonal.length)return {orv:720,srv:360,season:8};
     var maxSeason=seasonal.reduce(function(m,o){
       var n=+(String(o.season).match(/\d+/)||[0])[0];
       return Math.max(m,n);
@@ -3678,7 +3678,7 @@ document.addEventListener("click",function(e){
         pct:f.growth
       };
     }
-    return {orv:720,srv:360,source:'Latest published S7 cost increased by 20%',pct:20};
+    return {orv:720,srv:360,source:'Latest confirmed S8 October Rally / Garrison cost (720 ORV / 360 SRV)',pct:20};
   }
   function projectedResourceHtml(projected,inv){
     var box=document.getElementById('kowProjectedResourceForecast');
@@ -3823,7 +3823,7 @@ const KEY='kow_v4359_planning_scenarios';
 const INV_KEY='kow_central_inventory_v1';
 const TOTAL={badges:1600,stars:98000,xp:199646700};
 const LABEL={next:'Next Officer session',october:'October — Rally / Garrison',january:'January — Infantry',april:'April — Tanks',july:'July — Tank Destroyers'};
-const STEP={next:1,october:1,january:2,april:3,july:4};
+const STEP={next:1,january:1,april:2,july:3,october:4};
 let current=null;
 function n(id){return Number(document.getElementById(id)?.value||0);}
 function savedInventory(){try{return JSON.parse(localStorage.getItem(INV_KEY)||'{}')}catch(e){return {}}}
@@ -3842,8 +3842,8 @@ function getHeld(){
 function forecast(session,count){
  const growth=Math.max(0,Number(document.getElementById('forecastGrowth')?.value||20))/100;
  const steps=STEP[session]||1;
- const orvPerBadge=Math.round(600*Math.pow(1+growth,steps));
- const srvPerStar=Math.round(300*Math.pow(1+growth,steps));
+ const orvPerBadge=Math.round(720*Math.pow(1+growth,steps));
+ const srvPerStar=Math.round(360*Math.pow(1+growth,steps));
  const badges=TOTAL.badges*count;
  const exclusiveStars=Math.ceil((TOTAL.stars*count)/110);
  return {growth,steps,orvPerBadge,srvPerStar,orv:badges*orvPerBadge,srv:exclusiveStars*srvPerStar};
@@ -3985,7 +3985,7 @@ window.kowRenderPlanningReadiness=render;
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
-<script src="./v460-features.js?v=460-live"></script><script src="./planner-season-sync.js?v=460-live"></script><script src="./release-forecast-sync.js?v=460-test-forecast-repair-20261016-2"></script>
+<script src="./v460-features.js?v=460-live"></script><script src="./planner-season-sync.js?v=460-live"></script><script src="./release-forecast-sync.js?v=460-test-forecast-costs-20261016-1"></script>
 <script id="hotfix7EditOfficerRuntime">
 (function(){
 'use strict';
