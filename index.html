@@ -1734,7 +1734,7 @@ function latestLegendaryOrvChestRate(){
 }
 function updateLegendaryChestRateLabels(){
  const rate=latestLegendaryOrvChestRate();
- ['chestRateNotice','chestRateHelpRule','chestRateHelpShort'].forEach(id=>{const el=$(id);if(el)el.textContent=rate?fmt(rate):'unavailable'});const dev=$('legendaryBadgeChestOrvOption');if(dev)dev.textContent='Officer Readiness Vouchers ('+(rate?fmt(rate):'unavailable')+' each)';const planner=$('multiChestOrvOption');if(planner)planner.textContent='Convert to ORV ('+(rate?fmt(rate):'unavailable')+' each);
+ ['chestRateNotice','chestRateHelpRule','chestRateHelpShort'].forEach(id=>{const el=$(id);if(el)el.textContent=rate?fmt(rate):'unavailable'});const dev=$('legendaryBadgeChestOrvOption');if(dev)dev.textContent='Officer Readiness Vouchers ('+(rate?fmt(rate):'unavailable')+' each)';const planner=$('multiChestOrvOption');if(planner)planner.textContent='Convert to ORV ('+(rate?fmt(rate):'unavailable')+' each)';
 }
 function trainingBadgeCost(o=currentOfficer()){ return officerRarity(o)==='Elite'?100:officerRarity(o)==='Epic'?25:5; }
 function promotionBadgeTotal(o=currentOfficer()){return officerRarity(o)==='Epic'?440:officerRarity(o)==='Elite'?440:690;}
