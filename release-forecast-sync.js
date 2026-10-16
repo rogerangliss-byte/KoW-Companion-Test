@@ -1,6 +1,6 @@
-/* KoW Companion v4.6.0 LIVE — data-driven future release forecast.
-   Uses the latest confirmed Legendary seasonal Officer costs in the Officer
-   database as the forecasting baseline, then projects the next release slots. */
+/* KoW Companion v4.6.0 TEST — data-driven future release forecast.
+   Uses the approved English Test starting estimate, then compounds growth by
+   future Officer release. All projected costs remain estimates until confirmed. */
 (()=>{
   'use strict';
 
@@ -29,9 +29,9 @@
   }
 
   function latestKnownRelease(){
-    // Test baseline: confirmed latest release is S8 October Rally / Garrison.
-    // Future S8/S9 entries are forecasts and must not advance the confirmed baseline.
-    return {season:8,slot:1,orv:720,srv:360,source:'S8 October Rally / Garrison'};
+    // Approved Test forecast starting point: 720 ORV / 360 SRV.
+    // Slot zero makes the first projected slot October S8; costs compound per future release.
+    return {season:8,slot:0,orv:720,srv:360,source:'Test forecast starting cost'};
   }
 
   function advance(season,slot,steps){
@@ -87,11 +87,11 @@
     if($('forecastTotalSrv'))$('forecastTotalSrv').textContent=fmt(totalSrv);
 
     const label=select.options[select.selectedIndex]?.textContent||'Future Officer';
-    if($('forecastNote'))$('forecastNote').innerHTML=`<b>${label}</b><br>Planning estimate using ${String($('forecastGrowth')?.value||20)}% growth per Officer release from the latest confirmed database release: <b>${base.source}</b> (${fmt(base.orv)} ORV / ${fmt(base.srv)} SRV). For ${fmt(badges)} badges and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
+    if($('forecastNote'))$('forecastNote').innerHTML=`<b>${label}</b><br>Test planning estimate using ${String($('forecastGrowth')?.value||20)}% growth per future Officer release from <b>${base.source}</b> (${fmt(base.orv)} ORV / ${fmt(base.srv)} SRV). For ${fmt(badges)} badges and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
 
     const card=$('futureOfficerForecastCard');
     const intro=card?.querySelector('p.muted');
-    if(intro)intro.innerHTML=`Forecast future Officer costs from the established Officer-release sequence. The model now uses the latest confirmed Officer Database release — <b>${base.source}</b> (${fmt(base.orv)} ORV / ${fmt(base.srv)} SRV) — and compounds the selected growth rate for each subsequent release.`;
+    if(intro)intro.innerHTML=`English Test forecast: starting estimate <b>720 ORV per Badge / 360 SRV per Exclusive Star</b>. The selected growth rate is compounded for each future Officer release; all values remain estimates until actual costs are published.`;
   }
 
   function install(){
