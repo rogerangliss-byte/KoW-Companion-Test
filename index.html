@@ -3266,7 +3266,7 @@ window.KOW_PLANNER_BRIDGE = {
   xpDenoms: () => (Array.isArray(XP_DENOMS) ? XP_DENOMS : [100,500,1000,5000,10000,20000,50000]),
   latestKnownRelease: () => {
     const rows = Array.isArray(officers) ? officers : [];
-    const seasonNumber = o => Number(String(o?.season || '').match(/^S(\\d+)$/i)?.[1] || 0);
+    const seasonNumber = o => Number(String(o?.season || '').match(/^S(\d+)$/i)?.[1] || 0);
     const releaseSlot = o => {
       const role = String(o?.role || o?.notes || '').toLowerCase();
       if (role.includes('rally') || role.includes('garrison')) return 1;
