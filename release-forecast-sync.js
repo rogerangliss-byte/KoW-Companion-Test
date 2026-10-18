@@ -29,10 +29,12 @@
   }
 
   function latestKnownRelease(){
-    // Approved Test forecast starting point: 720 ORV / 360 SRV.
-    // S8 October Rally / Garrison is confirmed at 720 ORV / 360 SRV.
-    // Start at slot 1 so the first forecast is January S8 Infantry (one growth step).
-    return {season:8,slot:1,orv:720,srv:360,source:'Confirmed S8 Rally / Garrison cost'};
+    const bridge=window.KOW_PLANNER_BRIDGE||{};
+    if(typeof bridge.latestKnownRelease==='function'){
+      const base=bridge.latestKnownRelease();
+      if(base&&Number(base.season)>0&&Number(base.slot)>0&&Number(base.orv)>0&&Number(base.srv)>0)return base;
+    }
+    return {season:7,slot:4,orv:600,srv:300,source:'Fallback: S7 Tank Destroyer cost (600 ORV / 300 SRV)'};
   }
 
   function advance(season,slot,steps){
@@ -92,7 +94,7 @@
 
     const card=$('futureOfficerForecastCard');
     const intro=card?.querySelector('p.muted');
-    if(intro)intro.innerHTML=`English Test forecast: starting estimate <b>720 ORV per Badge / 360 SRV per Exclusive Star</b>. The selected growth rate is compounded for each future Officer release; all values remain estimates until actual costs are published.`;
+    if(intro)intro.innerHTML=`Forecast baseline follows the latest confirmed release in the Officer database. The selected growth rate is compounded for each future Officer release; all future values remain estimates until actual costs are published.`;
   }
 
   function install(){
