@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "dataVersion": "2026.10.18-01",
-  "publishedAt": "2026-10-18T00:00:00+01:00",
+  "dataVersion": "2026.10.19-01",
+  "publishedAt": "2026-10-19T14:35:00+01:00",
   "officerCount": 68,
   "environment": "English Test",
-  "notes": "Test-only Officer data sync. officers.json, officers.csv and default Officer data files include S8 Po and S8 Sara. Test-only changes must be verified here before any separately approved promotion."
+  "notes": "Officer data synchronized with officers.json and officers.csv, including confirmed S8 Po and S8 Sara at 720 ORV / 360 SRV. Default Officer datasets are synchronized where used."
 }
