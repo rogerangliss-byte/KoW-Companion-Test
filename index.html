@@ -3279,7 +3279,7 @@ window.KOW_PLANNER_BRIDGE = {
     let latestRows = rows.filter(o => seasonNumber(o) === latestSeason && releaseSlot(o) > 0);
     let latestSlot = Math.max(0, ...latestRows.map(releaseSlot));
     let latest = latestRows.find(o => releaseSlot(o) === latestSlot && Number(o.orv) > 0 && Number(o.srv) > 0);
-    if (!latest) return {season: 7, slot: 4, orv: 600, srv: 300, source: 'Fallback: S7 Tank Destroyer cost (600 ORV / 300 SRV)'};
+    if (!latest) return {season: 7, slot: 1, orv: 600, srv: 300, source: 'Fallback: S7 Rally / Garrison cost (600 ORV / 300 SRV)'};
     return {
       season: latestSeason,
       slot: latestSlot,
