@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.6.0</title>
+<title>KoW Companion v4.7.0</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -1205,6 +1205,25 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
     <article class="card">
       <h2>❓ Help & Instructions</h2>
 
+<div class="card" id="whatsNewV470" style="margin-bottom:16px">
+  <h3 style="margin-top:0">✨ What’s New — v4.7.0 TEST</h3>
+  <div class="notice"><b>TEST BUILD — NOT LIVE.</b> v4.7.0 introduces the revised Officer Skill Progression and Training prerequisite rules. This release is for English Test validation only; English Live remains on v4.6.0.</div>
+  <h4>🏅 New Skill Progression System</h4>
+  <ul>
+    <li>Each Officer has four primary Skill Strands, each progressing through Levels 1–10 (36 paid upgrades in total).</li>
+    <li>Skill Fragment requirements are rarity-based and separate from Officer Badges: <b>Elite (Blue): 340</b>, <b>Epic (Purple): 440</b>, and <b>Legendary (Gold): 690</b>.</li>
+    <li>The fifth Skill is available only for Epic and Legendary Officers, and unlocks after all four primary Skills reach Level 10. Elite Officers do not have a fifth Skill.</li>
+  </ul>
+  <h4>🔒 Training prerequisite</h4>
+  <p>All four primary Skills must reach Level 10 before Training can begin. Training remains a separate Officer Badge requirement and is not included in Skill Fragment totals.</p>
+  <ul>
+    <li>Legendary: 5 Officer Badges per Training level (900 for Levels 1–180).</li>
+    <li>Epic: 25 Officer Badges per Training level (4,500 for Levels 1–180).</li>
+    <li>Elite: 100 Officer Badges per Training level (18,000 for Levels 1–180).</li>
+    <li>Officer unlock requires 10 Officer Badges, separate from both Skills and Training.</li>
+  </ul>
+  <p><b>Progression order:</b> unlock the Officer, complete all four primary Skills, then begin Training. The fifth Skill unlocks for eligible rarities once the four primary Skills are complete.</p>
+</div>
 <div class="card" id="whatsNewV450" style="margin-bottom:16px">
   <h3 style="margin-top:0">✨ What’s New — v4.6.0 LIVE</h3>
   <div class="notice"><b>LIVE RELEASE.</b> v4.6.0 adds Upgrade Targets & Recommendations, Dynamic Officer Data and database-driven Future Officer Cost Forecasting while retaining the stable planning, Inventory, Progress, backup and Officer development features.</div>
@@ -1287,7 +1306,9 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
       <p>Set the Officer's current and target Star level. The Stars tab automatically follows the selected Officer rarity: Legendary, Epic or Elite Star I / II / III. <b>Star Readiness Vouchers (SRV)</b> are shown only for Legendary Officers and cannot be used by Epic or Elite Officers.</p>
 
       <h3>4. Development</h3>
-      <p>Enter unlock status, the four independent Skill Strand levels and Training Level. Development uses the relevant saved Inventory resources when calculating what is available for the selected Officer.</p>
+      <p>Enter the Officer's unlock status and progress each of the four primary Skill Strands independently from Level 1 to Level 10. Skill costs are tracked as rarity-specific Skill Fragments, not Officer Badges: Elite (Blue) 340, Epic (Purple) 440 and Legendary (Gold) 690 in total.</p>
+      <p><b>Fifth Skill:</b> Epic and Legendary Officers unlock their fifth Skill only after all four primary Skills reach Level 10. Elite Officers do not have a fifth Skill.</p>
+      <p><b>Training prerequisite:</b> Training Levels 0–180 remain unavailable until all four primary Skills are Level 10. Training then uses separate Officer Badges: 5 per level for Legendary, 25 for Epic and 100 for Elite. Unlocking an Officer costs a separate 10 Officer Badges.</p>
       <p>Each <b>Universal Legendary Badge</b> is worth <b>1 Officer Badge</b> for a Legendary Officer.</p>
       <p>Each <b>Legendary Officer Badge Selection Chest</b> gives <b>1 specific Legendary Officer Badge</b> for an Officer currently available in that chest. It does not convert to ORV. Each <b>Legendary Officer Badge Chest</b> can instead be used as either <b>1 Universal Legendary Badge</b> or <b><span id="chestRateHelpShort">current latest-officer ORV value</span> ORV</b>.</p>
 
@@ -1306,6 +1327,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
 
       <h3>8. Save Progress</h3>
       <p><b>MAX Officer:</b> use the ⭐ MAX Officer button to set the selected Officer to 5 Stars, Level 70, Unlocked, all 4 primary Skills at Level 10 and Training Level 180. The Officer profile is saved immediately. Shared inventory is not spent or changed.</p>
+      <p><b>Development sequence:</b> unlock → complete the four primary Skills (36 paid upgrades) → Training to Level 180. For Epic and Legendary Officers, the fifth Skill becomes available when the four primary Skills are complete. Skill Fragments and Officer Badges are separate resource types.</p>
       <p>Use <b>Save Progress</b> after entering or changing Officer progress information. Progress is stored locally in the browser on the current device. Save Progress does not publish your personal data to other users.</p>
 
       <h3>9. Database</h3>
@@ -2276,7 +2298,7 @@ function loadProgress(){
 }
 
 
-const APP_VERSION='4.6.0';
+const APP_VERSION='4.7.0';
 function syncVersionUI(){
  const v='v'+APP_VERSION;
  if($('headerVersion'))$('headerVersion').textContent=v;
@@ -2848,7 +2870,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{saveAc
  setBackground('landscapeBackgroundPicker','kow_bg_landscape_v401','landscapeBgStatus','Custom landscape');
  $('resetAppearance').onclick=()=>{
   ['kow_app_name_v4','kow_bg_v4','kow_bg_portrait_v401','kow_bg_landscape_v401'].forEach(k=>localStorage.removeItem(k));
-  $('appName').value='OFFICER COMMAND CENTRE';$('appTitle').textContent='OFFICER COMMAND CENTRE';document.title='KoW Companion v4.6.0';
+  $('appName').value='OFFICER COMMAND CENTRE';$('appTitle').textContent='OFFICER COMMAND CENTRE';document.title='KoW Companion v4.7.0';
   $('portraitBgStatus').textContent='Built-in default portrait';$('landscapeBgStatus').textContent='Built-in default landscape';
   $('portraitBackgroundPicker').value='';$('landscapeBackgroundPicker').value='';
    applyResponsivePageBackground();
