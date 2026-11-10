@@ -1561,6 +1561,7 @@ function setSkillStrandLevel(strand,level){
  calculate();
  scheduleOfficerAutoSave();
 }
+function primarySkillsComplete(){return totalPaidSkillUpgrades()>=36;}
 function totalPaidSkillUpgrades(){
  return getSkillStrandLevels().reduce((sum,lvl)=>sum+(lvl-1),0);
 }
@@ -1813,6 +1814,9 @@ function updateOfficerExperience(){
  if($('officerRarityValue'))$('officerRarityValue').textContent=officerRarity(o);
  if($('officerRoleValue'))$('officerRoleValue').textContent=role;
  updateStarRarityUI(o);
+ const trainingReady=primarySkillsComplete();
+ ['training','trainingExact'].forEach(id=>{const el=$(id);if(el)el.disabled=!trainingReady;});
+ if($('trainingRarityNote'))$('trainingRarityNote').textContent=trainingReady?`${officerRarity(o)}: ${trainingBadgeCost(o)} Officer Badges per Training level · ${fmt(180*trainingBadgeCost(o))} Training Badges to MAX.`:'Complete all four primary Skills to Level 10 before starting Officer Training (0–180).';
  if($('dashOfficerRole'))$('dashOfficerRole').textContent=[o.season,role].filter(Boolean).join(' · ');
  if($('expectedPortraitFile'))$('expectedPortraitFile').textContent=candidates[0];
 
@@ -1871,12 +1875,14 @@ function clampTrainingValue(v){
  return Math.max(0,Math.min(180,v));
 }
 function syncMainTrainingFromSlider(){
+ if(!primarySkillsComplete()){$('training').value=0;if($('trainingExact'))$('trainingExact').value=0;if($('trainingLabel'))$('trainingLabel').textContent='0';return;}
  const v=clampTrainingValue($('training').value);
  $('training').value=v;
  if($('trainingExact'))$('trainingExact').value=v;
  if($('trainingLabel'))$('trainingLabel').textContent=v;
 }
 function syncMainTrainingFromExact(){
+ if(!primarySkillsComplete()){$('trainingExact').value=0;$('training').value=0;if($('trainingLabel'))$('trainingLabel').textContent='0';calculate();return;}
  const v=clampTrainingValue($('trainingExact').value);
  $('trainingExact').value=v;
  $('training').value=v;
@@ -2070,8 +2076,8 @@ function applyOfficerProgress(d){
  skills=Array(36).fill(false);
  if(savedSkills.length<=16){for(let strand=0;strand<4;strand++)for(let step=0;step<4;step++)skills[strand*9+step]=!!savedSkills[strand*4+step];}
  else{for(let i=0;i<36;i++)skills[i]=!!savedSkills[i];}
- $('training').value=d.training??0;
- if($('trainingExact'))$('trainingExact').value=d.training??0;
+ $('training').value=primarySkillsComplete()?(d.training??0):0;
+ if($('trainingExact'))$('trainingExact').value=primarySkillsComplete()?(d.training??0):0;
  if($('trainingLabel'))$('trainingLabel').textContent=d.training??0;
  $('badgeHeld').value=d.badgeHeld??0;
  $('currentLevel').value=d.currentLevel??1;
@@ -3171,7 +3177,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  const total=cc.reduce((a,b)=>a+b,0);
  const spent=cc.slice(0,paid).reduce((a,b)=>a+b,0);
  const remaining=Math.max(0,total-spent);
- summaryBox.innerHTML=paid>=16
+ summaryBox.innerHTML=paid>=36
   ? `<b>Primary skills complete · ${spent}/${total} fragments used · 0 remaining.</b>`
   : `<b>Next cost: ${next} fragments · ${spent}/${total} used · ${remaining} remaining.</b>`;
 }
@@ -3201,7 +3207,11 @@ document.addEventListener('DOMContentLoaded',()=>{
    if((Number(q('quickStarLevel').value)||0)>0 || (Number(q('quickOfficerLevel').value)||0)>1){
      q('quickUnlocked').checked=true;
    }
-   q('quickTraining').value=q('training')?.value??0;
+   const quickReady=primarySkillsComplete();
+   q('quickTraining').disabled=!quickReady;
+   if(q('quickTrainingExact'))q('quickTrainingExact').disabled=!quickReady;
+   if(q('quickTrainingNote'))q('quickTrainingNote').textContent=quickReady?'Training is available.':'Complete all four primary Skills to Level 10 before starting Training.';
+   q('quickTraining').value=quickReady?(q('training')?.value??0):0;
    q('quickTrainingValue').textContent=q('quickTraining').value;
    if(q('quickTrainingExact'))q('quickTrainingExact').value=q('quickTraining').value;
    buildQuickSkills();
@@ -3220,7 +3230,7 @@ document.addEventListener('DOMContentLoaded',()=>{
      for(let step=0;step<9;step++)skills[strand*9+step]=step<(level-1);
    });
    renderSkillStrands();
-   q('training').value=q('quickTrainingExact')?q('quickTrainingExact').value:q('quickTraining').value;
+   q('training').value=primarySkillsComplete()?(q('quickTrainingExact')?q('quickTrainingExact').value:q('quickTraining').value):0;
    if(q('trainingExact'))q('trainingExact').value=q('training').value;
    if(q('trainingLabel'))q('trainingLabel').textContent=q('quickTraining').value;
    calculate();
@@ -3241,13 +3251,15 @@ document.addEventListener('DOMContentLoaded',()=>{
  q('quickProgressClose')?.addEventListener('click',closeQuickProgress);
  q('quickProgressCancel')?.addEventListener('click',closeQuickProgress);
  q('quickTraining')?.addEventListener('input',()=>{
-   const v=Math.max(0,Math.min(180,Math.round(Number(q('quickTraining').value)||0)));
+   if(!primarySkillsComplete()){q('quickTraining').value=0;if(q('quickTrainingExact'))q('quickTrainingExact').value=0;q('quickTrainingValue').textContent='0';return;}
+    const v=Math.max(0,Math.min(180,Math.round(Number(q('quickTraining').value)||0)));
    q('quickTraining').value=v;
    q('quickTrainingValue').textContent=v;
    if(q('quickTrainingExact'))q('quickTrainingExact').value=v;
  });
  q('quickTrainingExact')?.addEventListener('input',()=>{
-   const v=Math.max(0,Math.min(180,Math.round(Number(q('quickTrainingExact').value)||0)));
+   if(!primarySkillsComplete()){q('quickTrainingExact').value=0;q('quickTraining').value=0;q('quickTrainingValue').textContent='0';return;}
+    const v=Math.max(0,Math.min(180,Math.round(Number(q('quickTrainingExact').value)||0)));
    q('quickTrainingExact').value=v;
    q('quickTraining').value=v;
    q('quickTrainingValue').textContent=v;
@@ -3331,6 +3343,7 @@ window.KOW_PLANNER_BRIDGE = {
   <label><input id="quickUnlocked" type="checkbox" onchange="kowEditOfficerSync()"> Officer unlocked (10 badges)</label>
   <h3>Skill Strands — each starts at Level 1</h3><div id="quickSkills"></div>
   <label style="display:block;margin-top:14px">Training Level: <b id="quickTrainingValue">0</b> / 180</label>
+  <div id="quickTrainingNote" class="muted">Complete all four primary Skills to Level 10 before starting Training.</div>
   <div style="display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center">
     <input id="quickTraining" type="range" min="0" max="180" value="0" style="width:100%">
     <input id="quickTrainingExact" type="number" min="0" max="180" step="1" inputmode="numeric" value="0" aria-label="Exact Training Level">
@@ -3354,7 +3367,7 @@ onclick="(function(){
 
     if(typeof renderSkillStrands==='function')renderSkillStrands();
 
-    var training=q('quickTrainingExact') ? q('quickTrainingExact').value : q('quickTraining').value;
+    var training=primarySkillsComplete()?(q('quickTrainingExact') ? q('quickTrainingExact').value : q('quickTraining').value):0;
     if(q('training'))q('training').value=training;
     if(q('trainingExact'))q('trainingExact').value=training;
     if(q('trainingLabel'))q('trainingLabel').textContent=training;
