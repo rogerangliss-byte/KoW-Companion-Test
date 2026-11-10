@@ -1257,9 +1257,9 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
 
   <h4>🏅 Confirmed Officer Badge totals</h4>
   <ul>
-    <li><b>Legendary:</b> 10 unlock + 690 Skills + 900 Training = <b>1,600 badges to MAX</b>.</li>
-    <li><b>Epic:</b> 10 unlock + 440 Skills + 4,500 Training = <b>4,950 badges to MAX</b>.</li>
-    <li><b>Elite:</b> 10 unlock + 440 Skills + 18,000 Training = <b>18,450 badges to MAX</b>.</li>
+    <li><b>Legendary:</b> 10 unlock + 900 Training = <b>910 Officer Badges</b>, plus 690 Gold Fragments for Skills.</li>
+    <li><b>Epic:</b> 10 unlock + 4,500 Training = <b>4,510 Officer Badges</b>, plus 440 Purple Fragments for Skills.</li>
+    <li><b>Elite:</b> 10 unlock + 18,000 Training = <b>18,010 Officer Badges</b>, plus 340 Blue Fragments for Skills.</li>
   </ul>
 
   <h4>🧭 v4.4.0 planning retained</h4>
@@ -1305,7 +1305,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
       <p>Plans are preview-only and do not spend or alter the saved Inventory. Named plans can be saved locally in the browser and loaded again later.</p>
 
       <h3>8. Save Progress</h3>
-      <p><b>MAX Officer:</b> use the ⭐ MAX Officer button to set the selected Officer to 5 Stars, Level 70, Unlocked, all 4 Skill Strands at Level 5 and Training Level 180. The Officer profile is saved immediately. Shared inventory is not spent or changed.</p>
+      <p><b>MAX Officer:</b> use the ⭐ MAX Officer button to set the selected Officer to 5 Stars, Level 70, Unlocked, all 4 primary Skills at Level 10 and Training Level 180. The Officer profile is saved immediately. Shared inventory is not spent or changed.</p>
       <p>Use <b>Save Progress</b> after entering or changing Officer progress information. Progress is stored locally in the browser on the current device. Save Progress does not publish your personal data to other users.</p>
 
       <h3>9. Database</h3>
@@ -1746,7 +1746,7 @@ function updateLegendaryChestRateLabels(){
 }
 function trainingBadgeCost(o=currentOfficer()){ return officerRarity(o)==='Elite'?100:officerRarity(o)==='Epic'?25:5; }
 function promotionBadgeTotal(o=currentOfficer()){return officerRarity(o)==='Epic'?440:officerRarity(o)==='Elite'?340:690;}
-function maxBadgesForOfficer(o=currentOfficer()){ return 10+promotionBadgeTotal(o)+180*trainingBadgeCost(o); }
+function maxBadgesForOfficer(o=currentOfficer()){ return 10+180*trainingBadgeCost(o); }
 function seasonSort(a,b){
  if(a==='Original')return -1;if(b==='Original')return 1;
  const an=Number(String(a).match(/\d+/)?.[0]||999),bn=Number(String(b).match(/\d+/)?.[0]||999);
@@ -1907,7 +1907,7 @@ function calculate(){
  const readinessEligible=o.readinessEligible!==false&&String(o.season||'').toLowerCase()!=='original';
  $('orvCost').value=readinessEligible?o.orv:'N/A';$('srvCost').value=readinessEligible?o.srv:'N/A';$('dashOfficer').textContent=o.name;updateOfficerExperience();
  $('orvHeld').disabled=!readinessEligible||officerRarity(o)!=='Legendary';$('srvHeld').disabled=!readinessEligible||officerRarity(o)!=='Legendary';
- const trc=trainingBadgeCost(o); if($('trainingRarityNote'))$('trainingRarityNote').textContent=`${officerRarity(o)}: ${trc} badges per Training point · ${promotionBadgeTotal(o)} Promotion badges · ${fmt(maxBadgesForOfficer(o))} total to MAX.`;
+ const trc=trainingBadgeCost(o); if($('trainingRarityNote'))$('trainingRarityNote').textContent=`${officerRarity(o)}: ${trc} Officer Badges per Training level · ${fmt(180*trc)} Training Badges to MAX. Skill progression uses ${promotionBadgeTotal(o)} separate fragments.`;
  updateSkillRarityNotice(o);
  updateSkillCostSummaries();
  $('orvHeld').title=readinessEligible?'':'Officer Readiness Vouchers are not available for Original Officers';
@@ -1941,7 +1941,7 @@ function calculate(){
  $('universalBadgesAvailable').textContent=fmt(universalBadgesAvailable);
 
  const officerMaxBadges=maxBadgesForOfficer(o);
- const badgesUsed=($('unlocked').checked?10:0)+skillBadgesSpent()+ +$('training').value*trainingBadgeCost(o);
+ const badgesUsed=($('unlocked').checked?10:0)+ +$('training').value*trainingBadgeCost(o);
  const badgesFromOrv=readinessEligible&&o.orv>0?Math.floor(orvHeld/o.orv):0;
  const orvRemainder=o.orv>0?orvHeld-badgesFromOrv*o.orv:orvHeld;
  const badgeTotal=badgesUsed+badgesHeld+universalBadgesAvailable+badgesFromOrv;
@@ -1971,7 +1971,7 @@ function renderPlanner(o,cs,starsUsed,legendaryHeld,srvHeld,badgesUsed,badgesHel
  const readinessEligible=o.readinessEligible!==false&&String(o.season||'').toLowerCase()!=='original';
  const g=$('goalSelect').value;let starTarget=0,badgeTarget=0,xpTarget=0;
  if(g==='nextStar')starTarget=STAR_CUM[Math.min(5,cs+1)];else if(g==='fiveStar'||g==='max')starTarget=MAX_STAR;
- if(g==='maxSkills')badgeTarget=10+promotionBadgeTotal(o);else if(g==='maxTraining'||g==='max')badgeTarget=maxBadgesForOfficer(o);
+ if(g==='maxSkills')badgeTarget=10;else if(g==='maxTraining'||g==='max')badgeTarget=maxBadgesForOfficer(o);
  if(g==='max')xpTarget=xpRequiredSelected;
  const rarity=officerRarity(o);
  const srvAllowed=rarity==='Legendary'&&readinessEligible;
@@ -2957,7 +2957,7 @@ function savedOfficerProgressData(){
 
    // A semantically MAXED development profile is always 100%, regardless of the
    // rarity cost table used to reach it. Partial profiles remain rarity-aware.
-   const rawBadgesUsed=(p.unlocked?10:0)+skillSpent+training*trainingBadgeCost(o);
+   const rawBadgesUsed=(p.unlocked?10:0)+training*trainingBadgeCost(o);
    const badgesUsed=developmentComplete?officerMaxBadges:Math.min(officerMaxBadges,rawBadgesUsed);
    const badgeShort=developmentComplete?0:Math.max(0,officerMaxBadges-badgesUsed);
    const dev=developmentComplete?100:savedPct(badgesUsed,officerMaxBadges);
@@ -3409,7 +3409,7 @@ function kowOfficerReadiness(){
   const maxBadges=typeof maxBadgesForOfficer==='function'?maxBadgesForOfficer(o):1600;
   const badgeAvailable=Math.max(0,maxBadges-usedBadges-badgeShort);
   const totalBadgePower=usedBadges+badgeAvailable;
-  const skillTarget=(typeof promotionBadgeTotal==='function'?promotionBadgeTotal(o):10)+(typeof skillCostsForOfficer==='function'?skillCostsForOfficer(o).reduce((a,b)=>a+b,0):690);
+  const skillTarget=(typeof promotionBadgeTotal==='function'?promotionBadgeTotal(o):690);
   const nextStarTarget=STAR_CUM[Math.min(5,cs+1)]||MAX_STAR;
   const starsHeld=Number(String(document.getElementById('starsHeld')?.textContent||'0').replace(/[^0-9.-]/g,''))||0;
   const starPower=(STAR_CUM[cs]||0)+starsHeld;
@@ -3420,7 +3420,7 @@ function kowOfficerReadiness(){
    ['🔓','Unlock',totalBadgePower>=10,Math.max(0,10-totalBadgePower),'Officer Badges'],
    ['⭐','Next Star',cs>=5||starPower>=nextStarTarget,cs>=5?0:Math.max(0,nextStarTarget-starPower),'Officer Star value'],
    ['🌟','Reach 5★',starPower>=MAX_STAR,Math.max(0,MAX_STAR-starPower),'Officer Star value'],
-   ['🏅','MAX Skills',totalBadgePower>=skillTarget,Math.max(0,skillTarget-totalBadgePower),'Officer Badges'],
+   ['🏅','MAX Skills',typeof totalPaidSkillUpgrades==='function'&&totalPaidSkillUpgrades()>=36,typeof skillCostsForOfficer==='function'?skillCostsForOfficer(o).slice(totalPaidSkillUpgrades()).reduce((a,b)=>a+b,0):skillTarget,'Skill fragments'],
    ['🎖️','MAX Training',totalBadgePower>=maxBadges,Math.max(0,maxBadges-totalBadgePower),'Officer Badges'],
    ['📘','Level 70 XP',xpHeld>=xpNeed,Math.max(0,xpNeed-xpHeld),'XP'],
   ];
