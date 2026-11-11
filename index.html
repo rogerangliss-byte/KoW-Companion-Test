@@ -3294,19 +3294,22 @@ document.addEventListener('DOMContentLoaded',()=>{
  q('skillCostInfoModal')?.addEventListener('click',e=>{if(e.target===q('skillCostInfoModal'))closeSkillCostInfo();});
  q('quickProgressClose')?.addEventListener('click',closeQuickProgress);
  q('quickProgressCancel')?.addEventListener('click',closeQuickProgress);
- q('quickTraining')?.addEventListener('input',()=>{
-   if(!quickPrimarySkillsComplete()){syncQuickTrainingControls();return;}
-    const v=Math.max(0,Math.min(180,Math.round(Number(q('quickTraining').value)||0)));
-   q('quickTraining').value=v;
-   q('quickTrainingValue').textContent=v;
-   if(q('quickTrainingExact'))q('quickTrainingExact').value=v;
- });
- q('quickTrainingExact')?.addEventListener('input',()=>{
-   if(!quickPrimarySkillsComplete()){syncQuickTrainingControls();return;}
-    const v=Math.max(0,Math.min(180,Math.round(Number(q('quickTrainingExact').value)||0)));
-   q('quickTrainingExact').value=v;
-   q('quickTraining').value=v;
-   q('quickTrainingValue').textContent=v;
+ // The Edit Officer modal is declared after this script. Use delegated input
+ // handlers so both controls are wired once their markup exists.
+ document.addEventListener('input',event=>{
+   if(event.target?.id==='quickTraining'){
+     if(!quickPrimarySkillsComplete()){syncQuickTrainingControls();return;}
+     const v=Math.max(0,Math.min(180,Math.round(Number(event.target.value)||0)));
+     event.target.value=v;
+     if(q('quickTrainingValue'))q('quickTrainingValue').textContent=v;
+     if(q('quickTrainingExact'))q('quickTrainingExact').value=v;
+   }else if(event.target?.id==='quickTrainingExact'){
+     if(!quickPrimarySkillsComplete()){syncQuickTrainingControls();return;}
+     const v=Math.max(0,Math.min(180,Math.round(Number(event.target.value)||0)));
+     event.target.value=v;
+     if(q('quickTraining'))q('quickTraining').value=v;
+     if(q('quickTrainingValue'))q('quickTrainingValue').textContent=v;
+   }
  });
  q('quickOfficerLevel')?.addEventListener('input',()=>{
    const level=Number(q('quickOfficerLevel').value);
