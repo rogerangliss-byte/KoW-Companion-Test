@@ -1897,11 +1897,18 @@ function clampTrainingValue(v){
  return Math.max(0,Math.min(180,v));
 }
 function syncMainTrainingFromSlider(){
- if(!primarySkillsComplete()){$('training').value=0;if($('trainingExact'))$('trainingExact').value=0;if($('trainingLabel'))$('trainingLabel').textContent='0';return;}
+ if(!primarySkillsComplete()){
+  $('training').value=0;
+  if($('trainingExact'))$('trainingExact').value=0;
+  if($('trainingLabel'))$('trainingLabel').textContent='0';
+  calculate();
+  return;
+ }
  const v=clampTrainingValue($('training').value);
  $('training').value=v;
  if($('trainingExact'))$('trainingExact').value=v;
  if($('trainingLabel'))$('trainingLabel').textContent=v;
+ calculate();
 }
 function syncMainTrainingFromExact(){
  if(!primarySkillsComplete()){$('trainingExact').value=0;$('training').value=0;if($('trainingLabel'))$('trainingLabel').textContent='0';calculate();return;}
