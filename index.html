@@ -1225,8 +1225,8 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
   <p><b>Progression order:</b> unlock the Officer, complete all four primary Skills, then begin Training. The fifth Skill unlocks for eligible rarities once the four primary Skills are complete.</p>
 </div>
 <div class="card" id="whatsNewV450" style="margin-bottom:16px">
-  <h3 style="margin-top:0">✨ What’s New — v4.6.0 LIVE</h3>
-  <div class="notice"><b>LIVE RELEASE.</b> v4.6.0 adds Upgrade Targets & Recommendations, Dynamic Officer Data and database-driven Future Officer Cost Forecasting while retaining the stable planning, Inventory, Progress, backup and Officer development features.</div>
+  <h3 style="margin-top:0">Historical release notes — v4.6.0</h3>
+  <div class="notice">This section records features introduced in the historical v4.6.0 release. The current application is v4.7.0.</div>
 
   <h4>💾 Native working-state persistence</h4>
   <p>A normal browser refresh should keep the working interface where you left it instead of returning key controls to defaults.</p>
@@ -1285,7 +1285,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
   <p>Planning Readiness Dashboard, Badge/Star/XP readiness, Priority Target, Suggested Next Action, future October/January/April/July sessions, Season + Officer Type reports, projected future Legendary resources, ORV/SRV forecasting and MAXED-Officer exclusions remain available.</p>
 
   <h4>🔮 Dynamic Future Officer Cost Forecast</h4>
-  <p>For the English Test forecast, the starting estimate is <b>720 ORV per Badge / 360 SRV per Exclusive Star</b> (a 20% increase over the S7 published costs). This is a Test planning assumption, not a claim that S8 costs have been published. Growth is compounded for each future Officer release.</p>
+  <p>The confirmed S8 Rally / Garrison baseline is <b>720 ORV per Badge / 360 SRV per Exclusive Star</b>. Future Officer costs are forecast by compounding the selected growth rate from this confirmed baseline; projected values are estimates until each release is confirmed.</p>
   <p>Future ORV/SRV figures are <b>planning estimates only</b> until actual release costs are confirmed.</p>
 </div>
 
@@ -3346,7 +3346,7 @@ window.KOW_PLANNER_BRIDGE = {
     let latestRows = rows.filter(o => seasonNumber(o) === latestSeason && releaseSlot(o) > 0);
     let latestSlot = Math.max(0, ...latestRows.map(releaseSlot));
     let latest = latestRows.find(o => releaseSlot(o) === latestSlot && Number(o.orv) > 0 && Number(o.srv) > 0);
-    if (!latest) return {season: 7, slot: 1, orv: 600, srv: 300, source: 'Fallback: S7 Rally / Garrison cost (600 ORV / 300 SRV)'};
+    if (!latest) return {season: 8, slot: 1, orv: 720, srv: 360, source: 'Fallback: S8 Rally / Garrison cost (720 ORV / 360 SRV)'};
     return {
       season: latestSeason,
       slot: latestSlot,
