@@ -1,4 +1,7 @@
-# KoW Companion v4.6.0 TEST — Baseline Notes
+# ARCHIVED — KoW Companion v4.6.0 English Test Baseline Notes
+
+These notes record a historical v4.6.0 Test baseline only. They are superseded by the current v4.7.0 application. Do not use the former statement that English Live remains at v4.6.0 as current release information.
+
 
 This is the English Test deployment, based on English Live v4.6.0 Stable. It is for development and verification only and is not a production release.
 
