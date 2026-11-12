@@ -1,19 +1,23 @@
-# KoW Companion v4.6.0 TEST
+# KoW Companion v4.7.0 — English Test
 
-**English Test environment — development/testing only. NOT LIVE.**
+**Development and testing environment — NOT LIVE**
 
-This repository is a test copy based on the approved English Live v4.6.0 Stable baseline. It is isolated from the English Live repository and must not be treated as a production release.
-
-## Test-only changes in this baseline
-- Advanced Multi Officer Planner release sequence: October 2026 is S8 Rally/Garrison; January, April and July 2027 remain S8; October 2027 begins S9.
-- Forecast cost baseline: S8 October Rally/Garrison at 720 Officer Readiness Vouchers (ORV) per badge and 360 Seasonal Readiness Vouchers (SRV) per Exclusive Star.
-- Test-specific cache keys and a persistent TEST — NOT LIVE banner.
-
-## Progression rules
-- Keep the English Live repository unchanged.
-- Preserve existing approved functionality and data.
-- Make only requested changes, inspect the actual repository, and verify before proposing progression.
-- Do not change the version or promote to Live without explicit approval.
+This repository is the English Test environment for changes to KoW Companion. Its index.html currently identifies the application as **v4.7.0**.
 
 ## Test site
+
 https://rogerangliss-byte.github.io/KoW-Companion-Test/
+
+The custom domain is configured in CNAME.
+
+## Development and release rules
+
+- Use the approved English Live release as the reference baseline.
+- Keep English Live unchanged while work is being developed and tested here.
+- Preserve existing approved functionality and data.
+- Inspect the actual repository and dependencies before making changes.
+- Make only requested and approved changes.
+- Verify functionality before proposing progression to Live.
+- Do not change the version or promote anything to Live without explicit approval.
+
+Test-only changes must remain isolated from the Live repositories.
