@@ -3890,7 +3890,11 @@ document.addEventListener("click",function(e){
     current.sort(function(a,b){return score(b,inv)-score(a,inv)});
 
     var session=futureSession(mode), projected=[];
-    if(mode!=='saved'){
+    // In "All Officer sessions", a selected historical season means analyse
+    // saved/current Officers from that season only. Do not append unrelated
+    // future placeholders (which previously made S5 appear to recommend S8).
+    var historicalSeasonOnly=mode==='all' && seasonChoice!=='all';
+    if(mode!=='saved' && !historicalSeasonOnly){
       var types=typeChoice!=='auto'?[typeChoice]:(session?session.types:[]);
       projected=types.map(function(t){
         var season=projectedSeason(mode,t);
@@ -3906,15 +3910,18 @@ document.addEventListener("click",function(e){
     else rows=projected.concat(current);
 
     if(!rows.length){
-      sum.innerHTML='<b>No eligible Officers are available for the selected filters.</b>';
-      box.innerHTML=''; projectedResourceHtml([],inv);
+      var emptyMessage=historicalSeasonOnly
+        ? '<b>No matching saved Officer progress was found for '+esc(seasonChoice==='original'?'Original':seasonChoice)+'.</b><br><span class="muted">Check that progress has been saved for Officers in this season. If you want Officers with no recorded progress included, enable “Include Not Started”. MAXED Officers remain excluded.</span>'
+        : '<b>No eligible Officers are available for the selected filters.</b><br><span class="muted">Check the session, season and Officer Type filters, or enable “Include Not Started” to include Officers without recorded progress.</span>';
+      sum.innerHTML=emptyMessage;
+      box.innerHTML=''; projectedResourceHtml([],inv,mode);
       if(controls)controls.style.display='none'; return;
     }
 
     var filterBits=[];
     if(seasonChoice!=='all')filterBits.push(seasonChoice==='original'?'Original':seasonChoice);
     if(typeChoice!=='auto')filterBits.push(typeChoice);
-    var baseLabel=mode==='saved'?'Saved Officers only':(session?session.label:'Future Officer session');
+    var baseLabel=historicalSeasonOnly?'Saved/current Officers':(mode==='saved'?'Saved Officers only':(session?session.label:'Future Officer session'));
     var label=baseLabel+(filterBits.length?' — '+filterBits.join(' / '):'');
     var best=current[0], futureNames=projected.map(function(x){return x.name.replace(' — PROJECTED','')});
     var decision;
@@ -3923,7 +3930,7 @@ document.addEventListener("click",function(e){
     else decision=best?'Current priority: '+best.name+'.':'No current candidate.';
 
     sum.innerHTML='<b>Planning session: '+esc(label)+'</b><br><b>Recommendation: '+esc(decision)+'</b><br><span class="muted">'+
-      (isSpecificFuture?'Specific future sessions show only the selected projected Officer. Use All Officer sessions to compare against saved Officers.':'MAXED Officers are excluded. Season and Officer Type filters can narrow saved/current candidates, for example S6 + Tank.')+'</span>';
+      (isSpecificFuture?'Specific future sessions show only the selected projected Officer. Use All Officer sessions to compare against saved Officers.':(historicalSeasonOnly?'Historical season filters analyse matching saved/current Officers only; no future Officer is added. MAXED Officers are excluded.':'MAXED Officers are excluded. Season and Officer Type filters can narrow saved/current candidates, for example S6 + Tank.'))+'</span>';
 
     var canCollapse=(mode==='saved'||mode==='all')&&rows.length>10;
     var displayRows=(canCollapse&&!window.__kowPlannerShowAll)?rows.slice(0,10):rows;
