@@ -4022,7 +4022,8 @@ function calculate(){
  const held=getHeld(fc.orvPerBadge), req={badges:TOTAL.badges*count,stars:TOTAL.stars*count,xp:TOTAL.xp*count};
  const short={badges:Math.max(0,req.badges-held.badges),stars:Math.max(0,req.stars-held.stars),xp:Math.max(0,req.xp-held.xp)};
  const overall=Math.min(pct(held.badges,req.badges),pct(held.stars,req.stars),pct(held.xp,req.xp));
- const additionalOrvForBadgeShortfall=Math.max(0,short.badges*fc.orvPerBadge-held.badgeParts.orvRemainder);
+ // Report the full voucher cost for every remaining badge. The held ORV remainder is shown separately and is not deducted here.
+ const additionalOrvForBadgeShortfall=short.badges*fc.orvPerBadge;
  const targetLabel=session==='next'?'Next Officer session':sessionLabel(session,year);
  current={id:Date.now(),name:document.getElementById('scenarioName').value.trim()||`${targetLabel} — ${count} Officer${count>1?'s':''}`,session,count,year,targetLabel,held,req,short,overall,forecast:fc};
  const invNote=held.savedAt?'Saved Central Inventory: '+new Date(held.savedAt).toLocaleString():'WARNING: Central Inventory has not been saved yet.';
