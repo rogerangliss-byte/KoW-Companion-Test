@@ -1,4 +1,4 @@
-const CACHE='kow-english-test-v4.7.0-data-sync-20261112';
+const CACHE='occ-english-test-v4.7.0-20261113';
 self.addEventListener('install',event=>{self.skipWaiting();});
 self.addEventListener('activate',event=>{
   event.waitUntil(
