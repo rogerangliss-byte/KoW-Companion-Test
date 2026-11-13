@@ -4069,7 +4069,7 @@ function render(){
    `<small><b>Scenario saved:</b> ${scenarioSaved}<br><b>Inventory snapshot used:</b> ${inventorySaved}<br>`+
    `Shared badges held: <b>${fmt(sharedBadges)}</b> · ORV badge equivalents: <b>${fmt(h.badgeParts?.orvBadgeEquiv??Math.floor(Math.max(0,Number(h.orv)||0)/Math.max(1,Number(h.badgeParts?.orvRate)||Number(f.orvPerBadge)||Number(latestLegendaryOrvChestRate?.())||720)))}</b> · Selection Chests held: <b>${fmt(selectionChests)}</b> · Stars held: <b>${fmt(h.stars)}</b> · XP held: <b>${fmt(h.xp)}</b><br>`+
    `${badgeShort?'<b>Badges: SHORT '+fmt(badgeShort)+'</b>':'<b>Badges: READY</b>'}<br>${s.short.stars?'<b>Stars: SHORT '+fmt(s.short.stars)+'</b>':'<b>Stars: READY</b>'}<br>${s.short.xp?'<b>XP: SHORT '+fmt(s.short.xp)+'</b>':'<b>XP: READY</b>'}`+
-   (f.orv!==undefined?`<br>Additional ORV for badge shortfall: ${fmt(Math.max(0,badgeShort*(Number(f.orvPerBadge)||720)-savedScenarioOrvRemainder(h,f)))} FORECAST · SRV: ${fmt(f.srv)} FORECAST`:'')+`</small><br><button type="button" class="app-action-secondary" data-load-scenario="${i}">Load</button> <button type="button" class="app-action-danger" data-delete-scenario="${i}">Delete</button></div>`;
+   (f.orv!==undefined?`<br>Additional ORV for badge shortfall: ${fmt(Math.max(0,badgeShort*(Number(f.orvPerBadge)||720)))} FORECAST · SRV: ${fmt(f.srv)} FORECAST`:'')+`</small><br><button type="button" class="app-action-secondary" data-load-scenario="${i}">Load</button> <button type="button" class="app-action-danger" data-delete-scenario="${i}">Delete</button></div>`;
  }).join('');
 }
 function save(){const s=calculate();const a=load();a.unshift(s);store(a);render()}
