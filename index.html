@@ -3373,10 +3373,10 @@ window.KOW_PLANNER_BRIDGE = {
       source: `Confirmed ${latest.season} ${latest.role || latest.notes || 'Officer'} database cost`
     };
   },
-  releaseForecast: () => {
+  releaseForecast: (releaseStepOverride) => {
     const growth = Number(document.getElementById('forecastGrowth')?.value || 20);
     const base = window.KOW_PLANNER_BRIDGE.latestKnownRelease();
-    const releaseStep = Math.max(1, Number(document.getElementById('forecastRelease')?.value || 1));
+    const releaseStep = Math.max(1, Number(releaseStepOverride ?? document.getElementById('forecastRelease')?.value ?? 1));
     const factor = Math.pow(1 + growth / 100, releaseStep);
     return {
       growth,
@@ -3795,24 +3795,32 @@ document.addEventListener("click",function(e){
       season:maxSeason
     };
   }
-  function forecastS8Costs(){
+  function forecastS8Costs(mode){
     var bridge=window.KOW_PLANNER_BRIDGE||{};
     if(typeof bridge.releaseForecast==='function'){
-      var f=bridge.releaseForecast();
+      // Forecast against the selected future session, not the generic next-release default.
+      var target={october:{season:9,slot:1},january:{season:8,slot:2},april:{season:8,slot:3},july:{season:8,slot:4}}[mode];
+      if(mode==='next'){
+        var month=(new Date()).getMonth();
+        target=month>=9?{season:9,slot:1}:month>=6?{season:8,slot:4}:month>=3?{season:8,slot:3}:month>=0?{season:8,slot:2}:{season:8,slot:2};
+      }
+      var base=typeof bridge.latestKnownRelease==='function'?bridge.latestKnownRelease():{season:8,slot:1};
+      var steps=target?Math.max(1,(target.season-Number(base.season||8))*4+(target.slot-Number(base.slot||1))):1;
+      var f=bridge.releaseForecast(steps);
       return {
         orv:f.orvPerBadge,
         srv:f.srvPerStar,
-        source:f.source,
+        source:f.source+' · '+steps+' future release step'+(steps===1?'':'s'),
         pct:f.growth
       };
     }
     return {orv:720,srv:360,source:'Test forecast starting cost (720 ORV / 360 SRV)',pct:20};
   }
-  function projectedResourceHtml(projected,inv){
+  function projectedResourceHtml(projected,inv,mode){
     var box=document.getElementById('kowProjectedResourceForecast');
     if(!box)return;
     if(!projected.length){box.innerHTML='';return;}
-    var c=forecastS8Costs();
+    var c=forecastS8Costs(mode);
     var starsPerOfficer=Math.ceil(98000/110); // 891 Exclusive Stars
     function scenarioRow(count,label){
       var badges=1600*count, stars=98000*count, xp=199646700*count;
@@ -3939,7 +3947,7 @@ document.addEventListener("click",function(e){
       if(showBtn){showBtn.style.display=canCollapse&&!window.__kowPlannerShowAll?'inline-block':'none';showBtn.textContent='Show all '+rows.length;}
       if(collapseBtn)collapseBtn.style.display=canCollapse&&window.__kowPlannerShowAll?'inline-block':'none';
     }
-    projectedResourceHtml(projected,inv);
+    projectedResourceHtml(projected,inv,mode);
   };
 })();
 </script>
