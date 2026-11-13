@@ -39,8 +39,15 @@
       .sort((a,b) => b.season-a.season || b.slot-a.slot);
     if (known.length) {
       const latest = known[0];
+      const sameRelease = known.filter(o => o.season === latest.season && o.slot === latest.slot);
       const meta = SLOT[latest.slot];
-      return {...latest, source:`Confirmed S${latest.season} ${meta.type} cost`};
+      return {
+        season:latest.season,
+        slot:latest.slot,
+        orv:Math.max(...sameRelease.map(o=>o.orv)),
+        srv:Math.max(...sameRelease.map(o=>o.srv)),
+        source:`Confirmed S${latest.season} ${meta.type} cost`
+      };
     }
     // Safe fallback for older cached pages that do not expose the data bridge.
     return {season:8,slot:1,orv:720,srv:360,source:'Fallback S8 Rally / Garrison cost'};
