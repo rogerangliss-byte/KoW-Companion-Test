@@ -106,7 +106,7 @@
     if($('forecastTotalSrv'))$('forecastTotalSrv').textContent=fmt(totalSrv);
 
     const label=select.options[select.selectedIndex]?.textContent||'Future Officer';
-    if($('forecastNote'))$('forecastNote').innerHTML=`<b>${label}</b><br>Test planning estimate using ${String($('forecastGrowth')?.value||20)}% growth per future Officer release from <b>${base.source}</b> (${fmt(base.orv)} ORV / ${fmt(base.srv)} SRV). For ${fmt(badges)} badges and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
+    if($('forecastNote'))$('forecastNote').innerHTML=`<b>${label}</b><br>Test planning estimate using ${String($('forecastGrowth')?.value||20)}% growth per future Officer release from <b>${base.source}</b> (${fmt(base.orv)} ORV / ${fmt(base.srv)} SRV). For ${fmt(badges)} Officer Badges (plus 690 separate Skill Fragments per Legendary Officer) and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
 
     const card=$('futureOfficerForecastCard');
     const intro=card?.querySelector('p.muted');
