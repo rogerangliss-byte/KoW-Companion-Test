@@ -856,7 +856,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
     </div>
     <div class="table-wrap" style="margin-top:12px">
       <table id="savedOfficerProgressTable">
-        <thead><tr><th>Officer</th><th>Overall progress</th><th>Development</th><th>Stars</th><th>XP</th><th>Badge shortfall</th><th>Star shortfall</th><th>XP shortfall</th><th>Status</th></tr></thead>
+        <thead><tr><th>Officer</th><th>Overall progress</th><th>Development</th><th>Stars</th><th>XP</th><th>Officer Badge shortfall</th><th>Skill Fragment shortfall</th><th>Star shortfall</th><th>XP shortfall</th><th>Status</th></tr></thead>
         <tbody id="savedOfficerProgressRows"></tbody>
       </table>
     </div>
@@ -880,7 +880,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
     <div id="compareProgressRecommendation" class="notice" style="display:none;margin-top:12px"></div>
     <div class="table-wrap" id="compareProgressResultsWrap" style="display:none;margin-top:12px">
       <table>
-        <thead><tr><th>Officer</th><th>Overall progress</th><th>Development</th><th>Stars</th><th>XP</th><th>Badges Needed</th><th>Stars Needed</th><th>XP Needed</th><th>Status</th></tr></thead>
+        <thead><tr><th>Officer</th><th>Overall progress</th><th>Development</th><th>Stars</th><th>XP</th><th>Officer Badges Needed</th><th>Skill Fragments Needed</th><th>Stars Needed</th><th>XP Needed</th><th>Status</th></tr></thead>
         <tbody id="compareProgressResults"></tbody>
       </table>
     </div>
@@ -1375,7 +1375,8 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
   <div class="two">
     <div>
       <label>Officer Badges required</label>
-      <input id="forecastBadges" type="number" min="0" step="1" value="1600">
+      <input id="forecastBadges" type="number" min="0" step="1" value="910">
+      <small>Legendary Skill Fragments: 690 required separately per Officer; they are not covered by ORV.</small>
     </div>
     <div>
       <label>Officer Star value required</label>
@@ -1542,7 +1543,7 @@ function savePlannerWorkingState(){
 function restorePlannerWorkingState(){
  const st=getPlannerWorkingState(),controls=st.controls||{};
  Object.entries(controls).forEach(([id,v])=>{const e=$(id);if(!e)return;if(e.type==='checkbox')e.checked=!!v;else if(e.tagName!=='SELECT'||[...e.options].some(o=>o.value===String(v)))e.value=String(v)});
- multiPlanOfficers=Array.isArray(st.officers)&&st.officers.length?st.officers.map(x=>({officerIndex:+x.officerIndex||0,badgesNeeded:Math.max(0,+x.badgesNeeded||0)})):[{officerIndex:0,badgesNeeded:1600}];
+ multiPlanOfficers=Array.isArray(st.officers)&&st.officers.length?st.officers.map(x=>({officerIndex:+x.officerIndex||0,badgesNeeded:Math.max(0,+x.badgesNeeded||0)})):[{officerIndex:0,badgesNeeded:maxBadgesForOfficer(officers[0])}];
  renderMultiPlanner();
 }
 
@@ -2532,14 +2533,14 @@ function renderMultiPlanner(){
    return `<tr data-pos="${pos}">
     <td>${pos+1}</td>
     <td><select data-multi-officer>${multiOfficerOptions(row.officerIndex)}</select></td>
-    <td><input data-multi-needed type="number" min="0" max="1600" step="1" value="${Math.max(0,Number(row.badgesNeeded)||0)}" style="min-width:90px"></td>
+    <td><input data-multi-needed type="number" min="0" max="${maxBadgesForOfficer(o)}" step="1" value="${Math.max(0,Number(row.badgesNeeded)||0)}" style="min-width:90px"></td>
     <td data-multi-held>—</td>
     <td>${o&&o.readinessEligible!==false&&String(o.season||'').toLowerCase()!=='original'?fmt(o.orv):'N/A'}</td>
     <td data-multi-allocated>—</td><td data-multi-status>—</td>
     <td><button data-up title="Move up">↑</button> <button data-down title="Move down">↓</button> <button data-remove title="Remove">×</button></td>
    </tr>`;
  }).join('');
- tbody.querySelectorAll('[data-multi-officer]').forEach((el,i)=>el.onchange=()=>{multiPlanOfficers[i].officerIndex=+el.value;renderMultiPlanner();calculateMultiPlanner();savePlannerWorkingState()});
+ tbody.querySelectorAll('[data-multi-officer]').forEach((el,i)=>el.onchange=()=>{const row=multiPlanOfficers[i],oldOfficer=officers[row.officerIndex]||officers[0],wasDefault=Number(row.badgesNeeded)===maxBadgesForOfficer(oldOfficer);row.officerIndex=+el.value;const newOfficer=officers[row.officerIndex]||officers[0];if(wasDefault)row.badgesNeeded=maxBadgesForOfficer(newOfficer);renderMultiPlanner();calculateMultiPlanner();savePlannerWorkingState()});
  tbody.querySelectorAll('[data-multi-needed]').forEach((el,i)=>el.oninput=()=>{multiPlanOfficers[i].badgesNeeded=Math.max(0,+el.value||0);calculateMultiPlanner();savePlannerWorkingState()});
  tbody.querySelectorAll('[data-up]').forEach((b,i)=>b.onclick=()=>{if(i){[multiPlanOfficers[i-1],multiPlanOfficers[i]]=[multiPlanOfficers[i],multiPlanOfficers[i-1]];renderMultiPlanner();calculateMultiPlanner();savePlannerWorkingState()}});
  tbody.querySelectorAll('[data-down]').forEach((b,i)=>b.onclick=()=>{if(i<multiPlanOfficers.length-1){[multiPlanOfficers[i+1],multiPlanOfficers[i]]=[multiPlanOfficers[i],multiPlanOfficers[i+1]];renderMultiPlanner();calculateMultiPlanner();savePlannerWorkingState()}});
@@ -2573,7 +2574,7 @@ function calculateMultiPlanner(){
      const o=officers[row.officerIndex]||officers[0];
      const savedProgress=progressRows.find(r=>String(r.name||'').trim()===String(o?.name||'').trim()&&String(r.season||'').trim()===String(o?.season||'').trim())||null;
      const requestedNeeded=Math.max(0,+row.badgesNeeded||0);
-     const needed=savedProgress?Math.min(requestedNeeded,Math.max(0,+savedProgress.badgeShort||0)):requestedNeeded;
+     const needed=savedProgress?Math.min(requestedNeeded,Math.max(0,+savedProgress.officerBadgeShort||0)):requestedNeeded;
      const heldInventory=Math.max(0,+heldMap[String(o?.name||'').trim()]||0);
      const held=Math.min(needed,heldInventory);
      const remaining=Math.max(0,needed-held);
@@ -2761,7 +2762,7 @@ function updateFutureOfficerForecast(){
  $('forecastTotalOrv').textContent=fmt(totalOrv);
  $('forecastTotalSrv').textContent=fmt(totalSrv);
  const label=$('forecastRelease').options[$('forecastRelease').selectedIndex]?.textContent||'Future Officer';
- $('forecastNote').innerHTML=`<b>${label}</b><br>Test planning estimate using ${f.growth}% growth per future Officer release from <b>${f.source}</b>. For ${fmt(badges)} badges and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
+ $('forecastNote').innerHTML=`<b>${label}</b><br>Test planning estimate using ${f.growth}% growth per future Officer release from <b>${f.source}</b>. For ${fmt(badges)} Officer Badges (plus 690 separate Skill Fragments per Legendary Officer) and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
 }
 async function init(){
  await loadOfficers();updateLegendaryChestRateLabels();renderOfficerFilters();restoreOfficerFilterState();renderOfficerOptions(getUiState().officerName||undefined);
@@ -2864,7 +2865,7 @@ document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>{saveAc
  $('dbRestore').onclick=()=>{if(confirm('Restore default officer database?')){officers=clone(window.KOW_PUBLISHED_OFFICERS||DEFAULT_OFFICERS).map(normalizeOfficer).filter(o=>o.name);saveOfficers();renderDb();renderOfficerFilters();renderOfficerOptions('S7 Liora');calculate()}};
 
 
- if($('multiAddOfficer'))$('multiAddOfficer').onclick=()=>{multiPlanOfficers.push({officerIndex:0,badgesNeeded:1600});renderMultiPlanner();savePlannerWorkingState()};
+ if($('multiAddOfficer'))$('multiAddOfficer').onclick=()=>{multiPlanOfficers.push({officerIndex:0,badgesNeeded:maxBadgesForOfficer(officers[0])});renderMultiPlanner();savePlannerWorkingState()};
  if($('multiUseCurrent'))$('multiUseCurrent').onclick=()=>{const x=(typeof kowInvGet==='function'?kowInvGet():{});$('multiOrv').value=x.invOrv||0;$('multiUniversal').value=x.invUniversalLegendary||0;$('multiChests').value=x.invLegendaryBadgeChests||0;if($('multiSelectionChests'))$('multiSelectionChests').value=x.invLegendarySelectionChests||0;calculateMultiPlanner();savePlannerWorkingState()};
  if($('multiSavePlan'))$('multiSavePlan').onclick=saveMultiPlan;
  if($('multiDeletePlan'))$('multiDeletePlan').onclick=deleteMultiPlan;
@@ -2971,121 +2972,47 @@ function savedPct(v,max){return Math.max(0,Math.min(100,max?Math.round((Number(v
 function meter(value){return `${value}%<div class="progress-meter"><span style="width:${value}%"></span></div>`;}
 function savedOfficerProgressData(){
  const profiles=(typeof getOfficerProfiles==='function'?getOfficerProfiles():{})||{};
-
- function profileKeyForOfficer(o){
-   return `${String(o.season||'').trim()}|${String(o.name||'').trim()}`;
- }
+ function profileKeyForOfficer(o){return String(o.season||'').trim()+'|'+String(o.name||'').trim();}
  function profileForOfficer(o){
-   const exact=profiles[profileKeyForOfficer(o)];
-   if(exact)return exact;
-   const wantedName=String(o.name||'').trim();
-   const entry=Object.entries(profiles).find(([key])=>String(key).split('|').pop().trim()===wantedName);
-   return entry?entry[1]:null;
+  const exact=profiles[profileKeyForOfficer(o)];if(exact)return exact;
+  const wantedName=String(o.name||'').trim(),entry=Object.entries(profiles).find(([key])=>String(key).split('|').pop().trim()===wantedName);
+  return entry?entry[1]:null;
  }
-
- // Every Officer is represented. Officers with no saved development are automatically NOT STARTED.
  return officers.map(o=>{
-   const p=profileForOfficer(o) || {};
-   const displayName=o?.name || '';
-   const season=o?.season || '';
-
-   const skillFlags=Array.isArray(p.skills)?p.skills.slice(0,36):[];
-   // Each true flag is one paid skill increase (Lv1 is free). Count all saved paid
-   // increases rather than stopping at the first false, so older profiles cannot
-   // be under-counted by strand ordering.
-   const paidSkillUpgrades=Math.min(36,skillFlags.filter(Boolean).length);
-   const skillCosts=skillCostsForOfficer(o);
-   const promotionTotal=promotionBadgeTotal(o);
-   const skillSpent=paidSkillUpgrades>=36
-     ? promotionTotal
-     : skillCosts.slice(0,paidSkillUpgrades).reduce((a,b)=>a+b,0);
-
-   const training=Math.max(0,Math.min(180,Number(p.training)||0));
-   const officerMaxBadges=maxBadgesForOfficer(o);
-   const developmentComplete=!!p.unlocked && paidSkillUpgrades>=36 && training>=180;
-
-   // A semantically MAXED development profile is always 100%, regardless of the
-   // rarity cost table used to reach it. Partial profiles remain rarity-aware.
-   const rawBadgesUsed=(p.unlocked?10:0)+training*trainingBadgeCost(o);
-   const badgesUsed=developmentComplete?officerMaxBadges:Math.min(officerMaxBadges,rawBadgesUsed);
-   // Development progress and the planner's shortfall include unlock + paid
-   // skill fragments + training. badgeShort is the combined badge-equivalent total.
-   const developmentRequired=officerMaxBadges+promotionTotal;
-   const developmentUsed=Math.min(developmentRequired,badgesUsed+skillSpent);
-   const badgeShort=developmentComplete?0:Math.max(0,developmentRequired-developmentUsed);
-   const dev=developmentComplete?100:savedPct(developmentUsed,developmentRequired);
-
-   const currentStar=Math.max(0,Math.min(5,Number(p.currentStar)||0));
-   const starValue=STAR_CUM[currentStar]||0;
-   const starShort=currentStar>=5?0:Math.max(0,MAX_STAR-starValue);
-   const stars=currentStar>=5?100:savedPct(starValue,MAX_STAR);
-
-   const level=Math.max(0,Math.min(70,Number(p.currentLevel)||0));
-   const xpUsed=level>=70?MAX_XP:cumulativeXp(Math.max(1,level||1));
-   const xpShort=level>=70?0:Math.max(0,MAX_XP-xpUsed);
-   const xp=level>=70?100:savedPct(xpUsed,MAX_XP);
-
-   const maxed=developmentComplete && currentStar>=5 && level>=70;
-   const overall=maxed?100:Math.round(((dev+stars+xp)/3)*10)/10;
-   const hasProgress=badgesUsed>0||paidSkillUpgrades>0||currentStar>0||level>1;
-   const notStarted=!maxed&&!hasProgress;
-   const status=maxed?'MAXED':hasProgress?'IN PROGRESS':'NOT STARTED';
-
-   return {
-     name:displayName,season,overall,dev,stars,xp,
-     badgeShort,starShort,xpShort,maxed,notStarted,status
-   };
+  const p=profileForOfficer(o)||{},displayName=o?.name||'',season=o?.season||'';
+  const skillFlags=Array.isArray(p.skills)?p.skills.slice(0,36):[],paidSkillUpgrades=Math.min(36,skillFlags.filter(Boolean).length);
+  const skillCosts=skillCostsForOfficer(o),promotionTotal=promotionBadgeTotal(o);
+  const skillSpent=paidSkillUpgrades>=36?promotionTotal:skillCosts.slice(0,paidSkillUpgrades).reduce((a,b)=>a+b,0);
+  const training=Math.max(0,Math.min(180,Number(p.training)||0)),officerMaxBadges=maxBadgesForOfficer(o);
+  const developmentComplete=!!p.unlocked&&paidSkillUpgrades>=36&&training>=180;
+  const rawBadgesUsed=(p.unlocked?10:0)+training*trainingBadgeCost(o);
+  const badgesUsed=developmentComplete?officerMaxBadges:Math.min(officerMaxBadges,rawBadgesUsed);
+  const officerBadgeShort=Math.max(0,officerMaxBadges-badgesUsed);
+  const skillFragmentShort=Math.max(0,promotionTotal-skillSpent);
+  const badgeShort=officerBadgeShort+skillFragmentShort;
+  const developmentRequired=officerMaxBadges+promotionTotal,developmentUsed=Math.min(developmentRequired,badgesUsed+skillSpent);
+  const dev=developmentComplete?100:savedPct(developmentUsed,developmentRequired);
+  const currentStar=Math.max(0,Math.min(5,Number(p.currentStar)||0)),starValue=STAR_CUM[currentStar]||0;
+  const starShort=currentStar>=5?0:Math.max(0,MAX_STAR-starValue),stars=currentStar>=5?100:savedPct(starValue,MAX_STAR);
+  const level=Math.max(0,Math.min(70,Number(p.currentLevel)||0)),xpUsed=level>=70?MAX_XP:cumulativeXp(Math.max(1,level||1));
+  const xpShort=level>=70?0:Math.max(0,MAX_XP-xpUsed),xp=level>=70?100:savedPct(xpUsed,MAX_XP);
+  const maxed=developmentComplete&&currentStar>=5&&level>=70,overall=maxed?100:Math.round(((dev+stars+xp)/3)*10)/10;
+  const hasProgress=badgesUsed>0||paidSkillUpgrades>0||currentStar>0||level>1,notStarted=!maxed&&!hasProgress,status=maxed?'MAXED':hasProgress?'IN PROGRESS':'NOT STARTED';
+  return {name:displayName,season,overall,dev,stars,xp,badgeShort,officerBadgeShort,skillFragmentShort,starShort,xpShort,maxed,notStarted,status};
  }).sort((a,b)=>{
-   const statusRank=r=>r.maxed?0:(r.notStarted?2:1);
-   const seasonRank=s=>{
-     const v=String(s||'').trim().toLowerCase();
-     if(v==='original')return 0;
-     const m=v.match(/^s(\d+)$/);
-     return m?Number(m[1]):0;
-   };
-   const officerDbIndex=name=>officers.findIndex(o=>String(o.name||'').trim()===String(name||'').trim());
-   return statusRank(a)-statusRank(b) ||
-          seasonRank(b.season)-seasonRank(a.season) ||
-          officerDbIndex(a.name)-officerDbIndex(b.name) ||
-          String(a.name).localeCompare(String(b.name));
+  const statusRank=r=>r.maxed?0:(r.notStarted?2:1),seasonRank=s=>{const v=String(s||'').trim().toLowerCase();if(v==='original')return 0;const m=v.match(/^s(\d+)$/);return m?Number(m[1]):0;};
+  const officerDbIndex=name=>officers.findIndex(o=>String(o.name||'').trim()===String(name||'').trim());
+  return statusRank(a)-statusRank(b)||seasonRank(b.season)-seasonRank(a.season)||officerDbIndex(a.name)-officerDbIndex(b.name)||String(a.name).localeCompare(String(b.name));
  });
 }
-function progressStatusAllowed(r){
- const boxes=[...document.querySelectorAll('.progressStatusFilter')];
- if(!boxes.length)return true;
- const selected=new Set(boxes.filter(x=>x.checked).map(x=>x.value));
- if(r.maxed)return selected.has('maxed');
- if(r.notStarted)return selected.has('notStarted');
- return selected.has('progress');
-}
 function renderSavedOfficerProgress(){
- const body=document.getElementById('savedOfficerProgressRows');
- const summary=document.getElementById('savedOfficerProgressSummary');
+ const body=document.getElementById('savedOfficerProgressRows'),summary=document.getElementById('savedOfficerProgressSummary');
  if(!body||!summary)return;
  const allRows=savedOfficerProgressData();
- if(!allRows.length){
-   body.innerHTML='';
-   summary.textContent='No saved Officer profiles yet. Use Save Officer Progress to add Officers to this overview.';
-   return;
- }
- const rows=allRows.filter(progressStatusAllowed);
- const ready=allRows.filter(x=>x.maxed);
- const closest=allRows[0];
- summary.innerHTML=`<b>${allRows.length} saved Officer${allRows.length===1?'':'s'}</b> · `+
-   `<b>${ready.length} MAXED</b> · `+
-   `<b>Highest progress:</b> ${esc(closest.name)} (${closest.overall}%)`+
-   (rows.length!==allRows.length?` · <b>Showing ${rows.length}</b>`:'');
- body.innerHTML=rows.length?rows.map(r=>`<tr>
-   <td><b>${esc(r.name)}</b></td>
-   <td>${meter(r.overall)}</td>
-   <td>${meter(r.dev)}</td>
-   <td>${meter(r.stars)}</td>
-   <td>${meter(r.xp)}</td>
-   <td>${fmt(r.badgeShort)}</td>
-   <td>${fmt(r.starShort)}</td>
-   <td>${fmt(r.xpShort)}</td>
-   <td class="${r.maxed?'status-ready':r.notStarted?'':'status-progress'}">${r.status}</td>
- </tr>`).join(''):`<tr><td colspan="9" class="muted">No saved Officers match the selected status filters.</td></tr>`;
+ if(!allRows.length){body.innerHTML='';summary.textContent='No saved Officer profiles yet. Use Save Officer Progress to add Officers to this overview.';return;}
+ const rows=allRows.filter(progressStatusAllowed),ready=allRows.filter(x=>x.maxed),closest=allRows[0];
+ summary.innerHTML='<b>'+allRows.length+' saved Officer'+(allRows.length===1?'':'s')+'</b> · <b>'+ready.length+' MAXED</b> · <b>Highest progress:</b> '+esc(closest.name)+' ('+closest.overall+'%)'+(rows.length!==allRows.length?' · <b>Showing '+rows.length+'</b>':'');
+ body.innerHTML=rows.length?rows.map(r=>'<tr><td><b>'+esc(r.name)+'</b></td><td>'+meter(r.overall)+'</td><td>'+meter(r.dev)+'</td><td>'+meter(r.stars)+'</td><td>'+meter(r.xp)+'</td><td>'+fmt(r.officerBadgeShort)+'</td><td>'+fmt(r.skillFragmentShort)+'</td><td>'+fmt(r.starShort)+'</td><td>'+fmt(r.xpShort)+'</td><td class="'+(r.maxed?'status-ready':r.notStarted?'':'status-progress')+'">'+r.status+'</td></tr>').join(''):'<tr><td colspan="10" class="muted">No saved Officers match the selected status filters.</td></tr>';
 }
 document.addEventListener('DOMContentLoaded',()=>{restoreStatusFilterState();setTimeout(renderSavedOfficerProgress,0)});
 function compareStatusAllowed(r){
@@ -3112,48 +3039,18 @@ function renderProgressCompareChoices(){
  box.dataset.compareRows=JSON.stringify(rows);restoreComparePickState();
 }
 function runProgressComparison(){
- const box=document.getElementById('compareProgressChoices');
- let all=[];
+ const box=document.getElementById('compareProgressChoices');let all=[];
  try{all=JSON.parse(box?.dataset.compareRows||'[]')}catch{}
  if(!all.length)all=savedOfficerProgressData();
-
- const picks=[...document.querySelectorAll('.progressComparePick:checked')]
-   .map(x=>all[Number(x.value)]).filter(Boolean);
-
- const wrap=document.getElementById('compareProgressResultsWrap'),
-       body=document.getElementById('compareProgressResults'),
-       rec=document.getElementById('compareProgressRecommendation');
-
- if(picks.length<2){
-   wrap.style.display='none';
-   rec.style.display='block';
-   rec.textContent='Select at least 2 saved Officers to compare.';
-   return;
- }
-
+ const picks=[...document.querySelectorAll('.progressComparePick:checked')].map(x=>all[Number(x.value)]).filter(Boolean);
+ const wrap=document.getElementById('compareProgressResultsWrap'),body=document.getElementById('compareProgressResults'),rec=document.getElementById('compareProgressRecommendation');
+ if(picks.length<2){wrap.style.display='none';rec.style.display='block';rec.textContent='Select at least 2 saved Officers to compare.';return;}
  picks.sort((a,b)=>Number(b.maxed)-Number(a.maxed)||b.overall-a.overall||a.name.localeCompare(b.name));
-
- body.innerHTML=picks.map(r=>`<tr>
-   <td><b>${esc(r.name)}</b></td>
-   <td>${meter(r.overall)}</td>
-   <td>${meter(r.dev)}</td>
-   <td>${meter(r.stars)}</td>
-   <td>${meter(r.xp)}</td>
-   <td>${fmt(r.badgeShort)}</td>
-   <td>${fmt(r.starShort)}</td>
-   <td>${fmt(r.xpShort)}</td>
-   <td class="${r.maxed?'status-ready':r.notStarted?'':'status-progress'}">${r.status}</td>
- </tr>`).join('');
-
- const best=picks[0];
- rec.style.display='block';
- if(best.maxed){
-   rec.innerHTML=`<b>${esc(officerDisplayName(best))}</b> is already MAXED.`;
- }else if(picks.every(r=>r.notStarted)){
-   rec.innerHTML='<b>No selected Officer has been started yet.</b>';
- }else{
-   rec.innerHTML=`<b>Highest actual progress:</b> ${esc(officerDisplayName(best))} at ${best.overall}%.`;
- }
+ body.innerHTML=picks.map(r=>'<tr><td><b>'+esc(r.name)+'</b></td><td>'+meter(r.overall)+'</td><td>'+meter(r.dev)+'</td><td>'+meter(r.stars)+'</td><td>'+meter(r.xp)+'</td><td>'+fmt(r.officerBadgeShort)+'</td><td>'+fmt(r.skillFragmentShort)+'</td><td>'+fmt(r.starShort)+'</td><td>'+fmt(r.xpShort)+'</td><td class="'+(r.maxed?'status-ready':r.notStarted?'':'status-progress')+'">'+r.status+'</td></tr>').join('');
+ const best=picks[0];rec.style.display='block';
+ if(best.maxed)rec.innerHTML='<b>'+esc(officerDisplayName(best))+'</b> is already MAXED.';
+ else if(picks.every(r=>r.notStarted))rec.innerHTML='<b>No selected Officer has been started yet.</b>';
+ else rec.innerHTML='<b>Highest actual progress:</b> '+esc(officerDisplayName(best))+' at '+best.overall+'%.';
  wrap.style.display='block';
 }
 function setupProgressComparison(){
@@ -3715,7 +3612,7 @@ document.addEventListener("click",function(e){
         maxed:false,
         notStarted:!!r.notStarted,
         status:r.status||'IN PROGRESS',
-        need:num(r.badgeShort),
+        need:num(r.officerBadgeShort ?? r.badgeShort),
         orvCost:num(o.orv),
         srvCost:num(o.srv),
         type:o.role||o.notes||'Current',
