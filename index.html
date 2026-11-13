@@ -3968,7 +3968,7 @@ function calculate(){
  `<b>Current readiness: ${overall.toFixed(1)}%</b><br>`+
  statusLine('Shared badges',held.badges,req.badges,short.badges)+'<br>'+statusLine('Stars',held.stars,req.stars,short.stars,' Star value')+'<br>'+statusLine('XP',held.xp,req.xp,short.xp)+'<br>'+
  `<small>Selection Chests held: ${fmt(held.selectionChests)} — each provides one specific Officer Badge from the approved list and is excluded from the shared future-Officer badge total until an eligible Officer is selected.</small><br><br>`+
- `<b>Projected voucher requirement — FORECAST</b><br>`;
+ `<b>Projected voucher requirement — FORECAST</b><br>`+
  `ORV: ${fmt(fc.orv)} FORECAST (${fmt(fc.orvPerBadge)} per badge) · Held ${fmt(held.orv)} · ${held.orv>=fc.orv?'<b>READY</b>':'<b>SHORT '+fmt(fc.orv-held.orv)+'</b>'}<br>`+
  `SRV: ${fmt(fc.srv)} FORECAST (${fmt(fc.srvPerStar)} per Exclusive Star) · Held ${fmt(held.srv)} · ${held.srv>=fc.srv?'<b>READY</b>':'<b>SHORT '+fmt(fc.srv-held.srv)+'</b>'}<br>`+
  `<small>${invNote}<br>Preview only. Inventory has not been changed. Future ORV/SRV figures use the Releases growth forecast and remain FORECAST until published.</small>`;
