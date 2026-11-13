@@ -1018,7 +1018,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
       <div class="stat"><span>ORV generated from Legendary Officer Badge Chests</span><b id="selectionChestOrvGenerated">0</b></div>
       <div class="stat"><span>Badges from held Officer Readiness Vouchers (ORV)</span><b id="badgesFromOrv">0</b></div>
       <div class="stat"><span>Officer Readiness Vouchers (ORV) remaining after whole badges</span><b id="orvRemainder">0</b></div>
-      <div class="stat"><span>Badges required</span><b id="badgesRequired">1,600</b></div>
+      <div class="stat"><span>Badges required</span><b id="badgesRequired">0</b></div>
       <div class="stat"><span>Officer Readiness Vouchers (ORV) required</span><b id="orvRequired">0</b></div>
       <div class="progress"><span id="badgeBar"></span></div>
     </article>
@@ -1540,10 +1540,17 @@ function savePlannerWorkingState(){
   localStorage.setItem(PLANNER_WORKING_KEY,JSON.stringify({controls,officers:multiPlanOfficers.map(x=>({officerIndex:+x.officerIndex||0,badgesNeeded:Math.max(0,+x.badgesNeeded||0)}))}));
  }catch{}
 }
+function normalizeMultiPlanRows(rows){
+ return (Array.isArray(rows)?rows:[]).map(x=>{
+  const index=Math.max(0,Math.min(Math.max(0,officers.length-1),Number(x.officerIndex)||0)),o=officers[index]||officers[0];
+  const max=typeof maxBadgesForOfficer==='function'?maxBadgesForOfficer(o):910;
+  return {officerIndex:index,badgesNeeded:Math.min(max,Math.max(0,Number(x.badgesNeeded)||0))};
+ });
+}
 function restorePlannerWorkingState(){
  const st=getPlannerWorkingState(),controls=st.controls||{};
  Object.entries(controls).forEach(([id,v])=>{const e=$(id);if(!e)return;if(e.type==='checkbox')e.checked=!!v;else if(e.tagName!=='SELECT'||[...e.options].some(o=>o.value===String(v)))e.value=String(v)});
- multiPlanOfficers=Array.isArray(st.officers)&&st.officers.length?st.officers.map(x=>({officerIndex:+x.officerIndex||0,badgesNeeded:Math.max(0,+x.badgesNeeded||0)})):[{officerIndex:0,badgesNeeded:maxBadgesForOfficer(officers[0])}];
+ multiPlanOfficers=Array.isArray(st.officers)&&st.officers.length?normalizeMultiPlanRows(st.officers):[{officerIndex:0,badgesNeeded:maxBadgesForOfficer(officers[0])}];
  renderMultiPlanner();
 }
 
@@ -2630,7 +2637,7 @@ function saveMultiPlan(){
  localStorage.setItem('kow_multi_plans_v430',JSON.stringify(plans));refreshMultiSavedPlans(name);alert('Plan saved.');
 }
 function loadMultiPlan(name){
- const p=getMultiPlans()[name];if(!p)return;$('multiPlanName').value=p.name||name;$('multiOrv').value=p.orv||0;$('multiUniversal').value=p.universal||0;$('multiChests').value=p.chests||0;if($('multiSelectionChests'))$('multiSelectionChests').value=p.selectionChests||0;$('multiChestMode').value=p.chestMode||'optimise';multiPlanOfficers=Array.isArray(p.officers)?p.officers:[];renderMultiPlanner();savePlannerWorkingState();
+ const p=getMultiPlans()[name];if(!p)return;$('multiPlanName').value=p.name||name;$('multiOrv').value=p.orv||0;$('multiUniversal').value=p.universal||0;$('multiChests').value=p.chests||0;if($('multiSelectionChests'))$('multiSelectionChests').value=p.selectionChests||0;$('multiChestMode').value=p.chestMode||'optimise';multiPlanOfficers=normalizeMultiPlanRows(p.officers);renderMultiPlanner();savePlannerWorkingState();
 }
 function deleteMultiPlan(){
  const name=$('multiSavedPlans').value;if(!name)return;const plans=getMultiPlans();delete plans[name];localStorage.setItem('kow_multi_plans_v430',JSON.stringify(plans));refreshMultiSavedPlans();alert('Saved plan deleted.');
