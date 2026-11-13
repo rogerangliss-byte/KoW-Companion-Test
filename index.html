@@ -2615,7 +2615,7 @@ function calculateMultiPlanner(){
    tr.querySelector('[data-multi-status]').textContent=a.status;
  });
  const totalCovered=chosen.totalHeld+chosen.totalShared;
- $('multiPlannerSummary').innerHTML=\`<b>Plan result:</b> \${chosen.maxedCount} MAXED · \${chosen.fully} fully funded · \${chosen.partial} partially funded · \${chosen.unfunded} shortfall<br><b>\${strategy}</b><br><span class="muted">\${fmt(totalCovered)} of \${fmt(chosen.totalNeed)} required badge equivalents covered: \${fmt(chosen.totalHeld)} Individual Officer Badges held + \${fmt(chosen.totalShared)} shared badges allocated. \${fmt(Math.max(0,chosen.totalNeed-totalCovered))} badge equivalents remain unfunded. Remaining shared resources: \${fmt(chosen.orv)} ORV · \${fmt(chosen.universal)} Universal Badges · \${fmt(chosen.selectionChests)} Selection Chests.</span>\`;
+ $('multiPlannerSummary').innerHTML=`<b>Plan result:</b> ${chosen.maxedCount} MAXED · ${chosen.fully} fully funded · ${chosen.partial} partially funded · ${chosen.unfunded} shortfall<br><b>${strategy}</b><br><span class="muted">${fmt(totalCovered)} of ${fmt(chosen.totalNeed)} required badge equivalents covered: ${fmt(chosen.totalHeld)} Individual Officer Badges held + ${fmt(chosen.totalShared)} shared badges allocated. ${fmt(Math.max(0,chosen.totalNeed-totalCovered))} badge equivalents remain unfunded. Remaining shared resources: ${fmt(chosen.orv)} ORV · ${fmt(chosen.universal)} Universal Badges · ${fmt(chosen.selectionChests)} Selection Chests.</span>`;
 }
 function getMultiPlans(){try{return JSON.parse(localStorage.getItem('kow_multi_plans_v430')||'{}')}catch{return {}}}
 function refreshMultiSavedPlans(selectName=''){
@@ -2761,7 +2761,7 @@ function updateFutureOfficerForecast(){
  $('forecastTotalOrv').textContent=fmt(totalOrv);
  $('forecastTotalSrv').textContent=fmt(totalSrv);
  const label=$('forecastRelease').options[$('forecastRelease').selectedIndex]?.textContent||'Future Officer';
- $('forecastNote').innerHTML=\`<b>\${label}</b><br>Test planning estimate using \${f.growth}% growth per future Officer release from <b>\${f.source}</b>. For \${fmt(badges)} badges and \${fmt(starValue)} Star value (\${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>\${fmt(totalOrv)} ORV</b> and <b>\${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.\`;
+ $('forecastNote').innerHTML=`<b>${label}</b><br>Test planning estimate using ${f.growth}% growth per future Officer release from <b>${f.source}</b>. For ${fmt(badges)} badges and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
 }
 async function init(){
  await loadOfficers();updateLegendaryChestRateLabels();renderOfficerFilters();restoreOfficerFilterState();renderOfficerOptions(getUiState().officerName||undefined);
