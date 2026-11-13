@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111111">
-<title>KoW Companion v4.7.0</title>
+<title>Officer Command Centre v4.7.0</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -3798,70 +3798,44 @@ document.addEventListener("click",function(e){
   function forecastS8Costs(mode){
     var bridge=window.KOW_PLANNER_BRIDGE||{};
     if(typeof bridge.releaseForecast==='function'){
-      // Forecast against the selected future session, not the generic next-release default.
       var target={october:{season:9,slot:1},january:{season:8,slot:2},april:{season:8,slot:3},july:{season:8,slot:4}}[mode];
       var base=typeof bridge.latestKnownRelease==='function'?bridge.latestKnownRelease():{season:8,slot:1};
       var steps=target?Math.max(1,(target.season-Number(base.season||8))*4+(target.slot-Number(base.slot||1))):1;
       var f=bridge.releaseForecast(steps);
-      return {
-        orv:f.orvPerBadge,
-        srv:f.srvPerStar,
-        source:f.source+' · '+steps+' future release step'+(steps===1?'':'s'),
-        pct:f.growth
-      };
+      return {orv:f.orvPerBadge,srv:f.srvPerStar,source:f.source+' · '+steps+' future release step'+(steps===1?'':'s'),pct:f.growth};
     }
     return {orv:720,srv:360,source:'Test forecast starting cost (720 ORV / 360 SRV)',pct:20};
   }
-  function projectedResourceHtml(projected,inv,mode){
-    var box=document.getElementById('kowProjectedResourceForecast');
-    if(!box)return;
+function projectedResourceHtml(projected,inv,mode){
+    var box=document.getElementById('kowProjectedResourceForecast');if(!box)return;
     if(!projected.length){box.innerHTML='';return;}
-    // "All Officer sessions" combines targets at different release dates.
-    // A single ORV/SRV rate would be misleading, so require a specific target
-    // before presenting readiness totals or forecast voucher requirements.
     if(mode==='all'){
-      box.innerHTML='<div class="card" style="margin-top:12px"><h3>🔮 Projected Future Officer Resource Requirement</h3><div class="notice">All Officer sessions includes multiple future release dates, each with a different ORV/SRV forecast. Select January, April, July or October to see accurate voucher costs and inventory readiness for that specific release. Badge, Star and XP requirements remain 1,600 badges, 98,000 Star value and 199,646,700 XP per Legendary Officer.</div></div>';
-      return;
+      box.innerHTML='<div class="card" style="margin-top:12px"><h3>🔮 Projected Future Officer Resource Requirement</h3><div class="notice">All Officer sessions includes multiple future release dates, each with a different ORV/SRV forecast. Select January, April, July or October for a specific release. Each Legendary Officer requires 910 Officer Badges plus 690 separate Skill Fragments, 98,000 Star value and 199,646,700 XP. ORV converts into Officer Badges only; it does not pay Skill Fragment costs.</div></div>';return;
     }
-    var c=forecastS8Costs(mode);
-    var starsPerOfficer=Math.ceil(98000/110); // 891 Exclusive Stars
+    var c=forecastS8Costs(mode),starsPerOfficer=Math.ceil(98000/110);
     function scenarioRow(count,label){
-      var badges=1600*count, stars=98000*count, xp=199646700*count;
-      var orv=badges*c.orv;
-      var srv=starsPerOfficer*count*c.srv;
-      return '<tr><td><b>'+esc(label)+'</b></td><td>'+badges.toLocaleString()+' badges</td><td>'+stars.toLocaleString()+' Star value</td><td>'+xp.toLocaleString()+' XP</td><td>'+orv.toLocaleString()+' ORV <b>FORECAST</b></td><td>'+srv.toLocaleString()+' SRV <b>FORECAST</b></td></tr>';
+      var badges=910*count,fragments=690*count,stars=98000*count,xp=199646700*count,orv=badges*c.orv,srv=starsPerOfficer*count*c.srv;
+      return '<tr><td><b>'+esc(label)+'</b></td><td>'+badges.toLocaleString()+' Officer Badges + '+fragments.toLocaleString()+' Skill Fragments</td><td>'+stars.toLocaleString()+' Star value</td><td>'+xp.toLocaleString()+' XP</td><td>'+orv.toLocaleString()+' ORV <b>FORECAST</b></td><td>'+srv.toLocaleString()+' SRV <b>FORECAST</b></td></tr>';
     }
-
     var baseName=projected[0].name.replace(' — PROJECTED','');
-    // Selection Chests are officer-specific and cannot count toward an unassigned future target.
-    var badgeEquiv=(inv.universal||0)+(inv.badgeChests||0)+Math.floor((inv.orv||0)/c.orv);
-    var oneBadgeShort=Math.max(0,1600-badgeEquiv), twoBadgeShort=Math.max(0,3200-badgeEquiv);
-    var oneXpShort=Math.max(0,199646700-(inv.xp||0)), twoXpShort=Math.max(0,399293400-(inv.xp||0));
-    var starUnitsFromSrv=c.srv?Math.floor((inv.srv||0)/c.srv):0;
-    var starValueAvailable=(inv.starValue||0)+(starUnitsFromSrv*110);
-    var oneStarShort=Math.max(0,98000-starValueAvailable), twoStarShort=Math.max(0,196000-starValueAvailable);
-
+    var badgeEquiv=(inv.universal||0)+(inv.badgeChests||0)+Math.floor((inv.orv||0)/Math.max(1,c.orv));
+    var oneBadgeShort=Math.max(0,910-badgeEquiv),twoBadgeShort=Math.max(0,1820-badgeEquiv);
+    var oneXpShort=Math.max(0,199646700-(inv.xp||0)),twoXpShort=Math.max(0,399293400-(inv.xp||0));
+    var starUnitsFromSrv=c.srv?Math.floor((inv.srv||0)/c.srv):0,starValueAvailable=(inv.starValue||0)+(starUnitsFromSrv*110);
+    var oneStarShort=Math.max(0,98000-starValueAvailable),twoStarShort=Math.max(0,196000-starValueAvailable);
     box.innerHTML='<div class="card" style="margin-top:12px"><h3>🔮 Projected Future Officer Resource Requirement</h3>'+
-      '<div class="notice">Badge, Star and XP totals are established per Legendary Officer. ORV/SRV are forecast from the Releases growth setting and are clearly marked <b>FORECAST</b>.</div>'+
+      '<div class="notice">Officer Badges and Skill Fragments are separate resources. ORV converts into Officer Badges only. Each Legendary Officer requires 910 Officer Badges, 690 Skill Fragments, 98,000 Star value and 199,646,700 XP. SRV forecasts remain separate.</div>'+
       '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse"><thead><tr><th>Scenario</th><th>Development</th><th>Stars</th><th>XP</th><th>ORV forecast</th><th>SRV forecast</th></tr></thead><tbody>'+
-      scenarioRow(1,'1 × '+baseName)+scenarioRow(2,'2 × '+baseName)+
-      '</tbody></table></div>'+
-      '<div class="two" style="margin-top:10px">'+
-        '<div class="result-box"><b>1 Officer — badge position</b><br>'+(oneBadgeShort===0?'READY':'Short by '+oneBadgeShort.toLocaleString()+' badge equivalents')+'</div>'+
-        '<div class="result-box"><b>2 Officers — badge position</b><br>'+(twoBadgeShort===0?'READY':'Short by '+twoBadgeShort.toLocaleString()+' badge equivalents')+'</div>'+
-      '</div>'+
-      '<div class="two">'+
-        '<div class="result-box"><b>1 Officer — Star position</b><br>'+(oneStarShort===0?'READY':'Short by '+oneStarShort.toLocaleString()+' Star value')+'</div>'+
-        '<div class="result-box"><b>2 Officers — Star position</b><br>'+(twoStarShort===0?'READY':'Short by '+twoStarShort.toLocaleString()+' Star value')+'</div>'+
-      '</div>'+
-      '<div class="two">'+
-        '<div class="result-box"><b>1 Officer — XP position</b><br>'+(oneXpShort===0?'READY':'Short by '+oneXpShort.toLocaleString()+' XP')+'</div>'+
-        '<div class="result-box"><b>2 Officers — XP position</b><br>'+(twoXpShort===0?'READY':'Short by '+twoXpShort.toLocaleString()+' XP')+'</div>'+
-      '</div>'+
-      '<p class="muted" style="margin-top:8px">Forecast basis: '+esc(c.source)+'. Inventory is not changed by this calculation.</p></div>';
+      scenarioRow(1,'1 × '+baseName)+scenarioRow(2,'2 × '+baseName)+'</tbody></table></div>'+
+      '<div class="two" style="margin-top:10px"><div class="result-box"><b>1 Officer — badge position</b><br>'+(oneBadgeShort===0?'READY':'Short by '+oneBadgeShort.toLocaleString()+' Officer Badges')+'</div>'+
+      '<div class="result-box"><b>2 Officers — badge position</b><br>'+(twoBadgeShort===0?'READY':'Short by '+twoBadgeShort.toLocaleString()+' Officer Badges')+'</div></div>'+
+      '<div class="two"><div class="result-box"><b>1 Officer — Star position</b><br>'+(oneStarShort===0?'READY':'Short by '+oneStarShort.toLocaleString()+' Star value')+'</div>'+
+      '<div class="result-box"><b>2 Officers — Star position</b><br>'+(twoStarShort===0?'READY':'Short by '+twoStarShort.toLocaleString()+' Star value')+'</div></div>'+
+      '<div class="two"><div class="result-box"><b>1 Officer — XP position</b><br>'+(oneXpShort===0?'READY':'Short by '+oneXpShort.toLocaleString()+' XP')+'</div>'+
+      '<div class="result-box"><b>2 Officers — XP position</b><br>'+(twoXpShort===0?'READY':'Short by '+twoXpShort.toLocaleString()+' XP')+'</div></div>'+
+      '<p class="muted" style="margin-top:8px">Skill Fragments are stated separately and are not converted from ORV or included in badge readiness. Forecast basis: '+esc(c.source)+'. Inventory is not changed by this calculation.</p></div>';
   }
-
-  window.__kowPlannerShowAll=false;
+window.__kowPlannerShowAll=false;
   window.kowPlannerToggleAll=function(showAll){
     window.__kowPlannerShowAll=!!showAll;
     if(typeof window.kowRunAdvancedPlanner==='function')window.kowRunAdvancedPlanner(true);
@@ -3970,7 +3944,7 @@ document.addEventListener("click",function(e){
 'use strict';
 const KEY='kow_v4359_planning_scenarios';
 const INV_KEY='kow_central_inventory_v1';
-const TOTAL={badges:1600,stars:98000,xp:199646700};
+const TOTAL={badges:910,skillFragments:690,stars:98000,xp:199646700};
 const LABEL={next:'Next Officer session',october:'October — S9 Rally / Garrison',january:'January — S8 Infantry',april:'April — S8 Tanks',july:'July — S8 Tank Destroyers'};
 const SLOT={january:1,april:2,july:3,october:4};
 function targetReleaseIndex(session,year){
