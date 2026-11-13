@@ -140,8 +140,10 @@
 
     const trainingCost=trainingBadgeCost(o);
     const currentBadgeUsed=(byId('unlocked')?.checked?10:0)+skillBadgesSpent(o)+ct*trainingCost;
+    // MAX includes unlock + training badges AND the separate skill-fragment
+    // requirement. currentBadgeUsed already includes all three components.
     let badgeNeed=isMax
-      ? Math.max(0,maxBadgesForOfficer(o)-currentBadgeUsed)
+      ? Math.max(0,maxBadgesForOfficer(o)+promotionBadgeTotal(o)-currentBadgeUsed)
       : Math.max(0,tt-ct)*trainingCost;
 
     let badgeAvailable=val('badgeHeld');
@@ -157,7 +159,7 @@
         badgeAvailable+=val('legendarySelectionChestHeld');
       }
       let orvHeld=val('orvHeld');
-      if(chestMode==='orv')orvHeld+=badgeChests*600;
+      if(chestMode==='orv')orvHeld+=badgeChests*(typeof latestLegendaryOrvChestRate==='function'?latestLegendaryOrvChestRate():0);
       if(readiness&&Number(o.orv)>0)badgeAvailable+=Math.floor(orvHeld/Number(o.orv));
     }
 
