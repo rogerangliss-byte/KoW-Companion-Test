@@ -30,7 +30,7 @@
 
   function latestKnownRelease(){
     // Read the confirmed seasonal release and cost from the live Officer data bridge.
-    const rows = window.KOW_PLANNER_BRIDGE?.officers?.() || [];
+    const rows = window.KOW_PLANNER_BRIDGE?.officers?.() || window.KOW_PUBLISHED_OFFICERS || [];
     const known = rows.map(o => {
       const season = seasonNumber(o?.season || String(o?.name || '').match(/^S\d+/i)?.[0]);
       const slot = releaseSlot(o);
@@ -43,7 +43,7 @@
       return {...latest, source:`Confirmed S${latest.season} ${meta.type} cost`};
     }
     // Safe fallback for older cached pages that do not expose the data bridge.
-    return {season:7,slot:1,orv:600,srv:300,source:'Fallback S7 Rally / Garrison cost'};
+    return {season:8,slot:1,orv:720,srv:360,source:'Fallback S8 Rally / Garrison cost'};
   }
 
   function advance(season,slot,steps){
