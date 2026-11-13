@@ -3816,6 +3816,13 @@ document.addEventListener("click",function(e){
     var box=document.getElementById('kowProjectedResourceForecast');
     if(!box)return;
     if(!projected.length){box.innerHTML='';return;}
+    // "All Officer sessions" combines targets at different release dates.
+    // A single ORV/SRV rate would be misleading, so require a specific target
+    // before presenting readiness totals or forecast voucher requirements.
+    if(mode==='all'){
+      box.innerHTML='<div class="card" style="margin-top:12px"><h3>🔮 Projected Future Officer Resource Requirement</h3><div class="notice">All Officer sessions includes multiple future release dates, each with a different ORV/SRV forecast. Select January, April, July or October to see accurate voucher costs and inventory readiness for that specific release. Badge, Star and XP requirements remain 1,600 badges, 98,000 Star value and 199,646,700 XP per Legendary Officer.</div></div>';
+      return;
+    }
     var c=forecastS8Costs(mode);
     var starsPerOfficer=Math.ceil(98000/110); // 891 Exclusive Stars
     function scenarioRow(count,label){
