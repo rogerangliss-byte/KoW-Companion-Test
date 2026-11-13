@@ -3800,10 +3800,6 @@ document.addEventListener("click",function(e){
     if(typeof bridge.releaseForecast==='function'){
       // Forecast against the selected future session, not the generic next-release default.
       var target={october:{season:9,slot:1},january:{season:8,slot:2},april:{season:8,slot:3},july:{season:8,slot:4}}[mode];
-      if(mode==='next'){
-        var month=(new Date()).getMonth();
-        target=month>=9?{season:9,slot:1}:month>=6?{season:8,slot:4}:month>=3?{season:8,slot:3}:month>=0?{season:8,slot:2}:{season:8,slot:2};
-      }
       var base=typeof bridge.latestKnownRelease==='function'?bridge.latestKnownRelease():{season:8,slot:1};
       var steps=target?Math.max(1,(target.season-Number(base.season||8))*4+(target.slot-Number(base.slot||1))):1;
       var f=bridge.releaseForecast(steps);
