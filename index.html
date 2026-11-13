@@ -1014,7 +1014,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
       </select>
       <label>Officer Readiness Vouchers (ORV) Held</label><input id="orvHeld" type="number" min="0" step="1" inputmode="numeric" value="0">
       <div class="stat"><span>Badges used</span><b id="badgesUsed">0</b></div>
-      <div class="stat"><span>Universal Legendary Badges available</span><b id="universalBadgesAvailable">0</b></div>
+      <div class="stat"><span>Eligible Legendary badge resources available</span><b id="universalBadgesAvailable">0</b></div>
       <div class="stat"><span>ORV generated from Legendary Officer Badge Chests</span><b id="selectionChestOrvGenerated">0</b></div>
       <div class="stat"><span>Badges from held Officer Readiness Vouchers (ORV)</span><b id="badgesFromOrv">0</b></div>
       <div class="stat"><span>Officer Readiness Vouchers (ORV) remaining after whole badges</span><b id="orvRemainder">0</b></div>
@@ -3666,7 +3666,7 @@ document.addEventListener("click",function(e){
     var bridge=window.KOW_PLANNER_BRIDGE||{};
     var g=(typeof bridge.globalResources==='function'?bridge.globalResources():{})||{};
     var denoms=(typeof bridge.xpDenoms==='function'?bridge.xpDenoms():[100,500,1000,5000,10000,20000,50000]);
-    var inv={orv:0,srv:0,universal:0,selection:0,xp:0,starValue:0};
+    var inv={orv:0,srv:0,universal:0,badgeChests:0,selection:0,xp:0,starValue:0};
 
     function liveNum(id,fallback){
       var el=document.getElementById(id);
@@ -3676,7 +3676,8 @@ document.addEventListener("click",function(e){
     inv.orv=liveNum('orvHeld',g.orvHeld);
     inv.srv=liveNum('srvHeld',g.srvHeld);
     inv.universal=liveNum('universalBadgeHeld',g.universalBadgeHeld);
-    inv.selection=liveNum('legendaryBadgeChestHeld',g.legendaryBadgeChestHeld);
+    inv.badgeChests=liveNum('legendaryBadgeChestHeld',g.legendaryBadgeChestHeld);
+    inv.selection=liveNum('legendarySelectionChestHeld',g.legendarySelectionChestHeld);
 
     // Use the same XP Book inputs visible on the XP screen.
     denoms.forEach(function(v){
@@ -3722,7 +3723,13 @@ document.addEventListener("click",function(e){
       };
     });
   }
-  function score(r,inv){var remaining=Math.max(0,r.need),affordable=inv.universal+inv.selection+(r.orvCost?Math.floor(inv.orv/r.orvCost):0),gap=Math.max(0,remaining-affordable);return (r.pct*1000)-gap;}
+  function score(r,inv){
+    var remaining=Math.max(0,r.need);
+    var eligibleSelection=typeof selectionChestEligibleOfficer==='function'&&selectionChestEligibleOfficer(r.name)?inv.selection:0;
+    var affordable=inv.universal+(inv.badgeChests||0)+eligibleSelection+(r.orvCost?Math.floor(inv.orv/r.orvCost):0);
+    var gap=Math.max(0,remaining-affordable);
+    return (r.pct*1000)-gap;
+  }
   function futureSession(mode){
     var sessions={
       october:{label:'October — S9 Rally / Garrison',types:['Rally','Garrison']},
@@ -3815,7 +3822,8 @@ document.addEventListener("click",function(e){
     }
 
     var baseName=projected[0].name.replace(' — PROJECTED','');
-    var badgeEquiv=(inv.universal||0)+(inv.selection||0)+Math.floor((inv.orv||0)/c.orv);
+    // Selection Chests are officer-specific and cannot count toward an unassigned future target.
+    var badgeEquiv=(inv.universal||0)+(inv.badgeChests||0)+Math.floor((inv.orv||0)/c.orv);
     var oneBadgeShort=Math.max(0,1600-badgeEquiv), twoBadgeShort=Math.max(0,3200-badgeEquiv);
     var oneXpShort=Math.max(0,199646700-(inv.xp||0)), twoXpShort=Math.max(0,399293400-(inv.xp||0));
     var starUnitsFromSrv=c.srv?Math.floor((inv.srv||0)/c.srv):0;
@@ -3923,7 +3931,7 @@ document.addEventListener("click",function(e){
     });
     html+='</tbody></table></div><p class="muted" style="margin-top:8px">'+
       (canCollapse&&!window.__kowPlannerShowAll?'Showing top 10 of '+rows.length+' results.':'Showing '+rows.length+' result'+(rows.length===1?'':'s')+'.')+
-      '</p><p class="muted">Inventory detected: ORV '+inv.orv.toLocaleString()+', Universal Badges '+inv.universal.toLocaleString()+', Selection Chests '+inv.selection.toLocaleString()+', XP '+inv.xp.toLocaleString()+'. No Inventory values have been changed.</p>';
+      '</p><p class="muted">Inventory detected: ORV '+inv.orv.toLocaleString()+', Universal Badges '+inv.universal.toLocaleString()+', Badge Chests '+(inv.badgeChests||0).toLocaleString()+', Selection Chests '+inv.selection.toLocaleString()+', XP '+inv.xp.toLocaleString()+'. No Inventory values have been changed.</p>';
     box.innerHTML=html;
 
     if(controls){
