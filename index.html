@@ -4083,7 +4083,7 @@ function defaultScenarioName(session,year){
  if(session==='next')return 'Next Officer';
  const label=sessionLabel(session,year);
  const type={october:'Rally / Garrison',january:'Infantry',april:'Tank',july:'Tank Destroyer'}[session];
- const match=label.match(/S\\d+/);
+ const match=label.match(/S\d+/);
  return (match?match[0]:'S8')+' '+(type||'Officer');
 }
 document.addEventListener('DOMContentLoaded',()=>{
@@ -4098,7 +4098,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  });
  if(y&&session&&name)y.addEventListener('change',()=>{
   // Keep the generated name aligned with the selected release year; preserve a user-customised name.
-  const generated=/^S\\d+ (Rally \/ Garrison|Infantry|Tank|Tank Destroyer)$|^Next Officer$/.test(name.value.trim());
+  const generated=/^S\d+ (Rally \/ Garrison|Infantry|Tank|Tank Destroyer)$|^Next Officer$/.test(name.value.trim());
   if(generated)name.value=defaultScenarioName(session.value,y.value);
   savePlannerWorkingState();
  });
