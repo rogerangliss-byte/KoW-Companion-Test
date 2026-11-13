@@ -1756,12 +1756,23 @@ function officerRarity(o){ return ['Legendary','Epic','Elite'].includes(o?.rarit
 function latestLegendaryOrvChestRate(){
  const source=Array.isArray(window.KOW_PUBLISHED_OFFICERS)&&window.KOW_PUBLISHED_OFFICERS.length
    ?window.KOW_PUBLISHED_OFFICERS:officers;
- // The ordinary Badge Chest follows the latest published seasonal Legendary release,
- // not the highest value found anywhere in the historical Officer list.
+ // Select the latest published seasonal Legendary release by season and release slot.
+ // Do not let an older, more expensive Officer override the newest release's cost.
  const seasonal=source.filter(o=>officerRarity(o)==='Legendary'&&Number(o.orv)>0&&Number(o.srv)>0&&/^S\d+$/i.test(String(o.season||'')));
  if(!seasonal.length)return 0;
- const latestSeason=Math.max(...seasonal.map(o=>Number(String(o.season).match(/^S(\d+)$/i)?.[1]||0)));
- const latest=seasonal.filter(o=>Number(String(o.season).match(/^S(\d+)$/i)?.[1]||0)===latestSeason);
+ const seasonNumber=o=>Number(String(o.season).match(/^S(\d+)$/i)?.[1]||0);
+ const releaseSlot=o=>{
+   const role=String(o.role||o.notes||'').toLowerCase();
+   if(role.includes('rally')||role.includes('garrison'))return 1;
+   if(role.includes('infantry'))return 2;
+   if(role.includes('tank destroyer'))return 4;
+   if(role.includes('tank'))return 3;
+   return 0;
+ };
+ const latestSeason=Math.max(...seasonal.map(seasonNumber));
+ const latestSeasonRows=seasonal.filter(o=>seasonNumber(o)===latestSeason&&releaseSlot(o)>0);
+ const latestSlot=Math.max(0,...latestSeasonRows.map(releaseSlot));
+ const latest=latestSeasonRows.filter(o=>releaseSlot(o)===latestSlot);
  return latest.length?Math.max(...latest.map(o=>Number(o.orv)).filter(Number.isFinite)):0;
 }
 function updateLegendaryChestRateLabels(){
