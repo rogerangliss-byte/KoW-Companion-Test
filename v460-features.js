@@ -72,6 +72,7 @@
 
       officers=ordered;
       window.KOW_PUBLISHED_OFFICERS=data.map(o=>typeof normalizeOfficer==='function'?normalizeOfficer(o):o);
+      if(typeof updateLegendaryChestRateLabels==='function')updateLegendaryChestRateLabels();
       if(typeof saveOfficers==='function')saveOfficers();
       if(typeof renderDb==='function')renderDb();
       if(typeof renderOfficerFilters==='function')renderOfficerFilters();
