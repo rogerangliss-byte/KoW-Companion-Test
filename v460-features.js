@@ -141,10 +141,10 @@
 
     const trainingCost=trainingBadgeCost(o);
     const currentBadgeUsed=(byId('unlocked')?.checked?10:0)+skillBadgesSpent(o)+ct*trainingCost;
-    // MAX includes unlock + training badges AND the separate skill-fragment
-    // requirement. currentBadgeUsed already includes all three components.
+    // MAX uses the unified Officer Badge total: unlock + skill badges + training.
+    // currentBadgeUsed already includes every badge spent to date.
     let badgeNeed=isMax
-      ? Math.max(0,maxBadgesForOfficer(o)+promotionBadgeTotal(o)-currentBadgeUsed)
+      ? Math.max(0,maxBadgesForOfficer(o)-currentBadgeUsed)
       : Math.max(0,tt-ct)*trainingCost;
 
     let badgeAvailable=val('badgeHeld');
