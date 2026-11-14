@@ -1964,7 +1964,7 @@ function calculate(){
  const readinessEligible=o.readinessEligible!==false&&String(o.season||'').toLowerCase()!=='original';
  $('orvCost').value=readinessEligible?o.orv:'N/A';$('srvCost').value=readinessEligible?o.srv:'N/A';$('dashOfficer').textContent=o.name;updateOfficerExperience();
  $('orvHeld').disabled=!readinessEligible||officerRarity(o)!=='Legendary';$('srvHeld').disabled=!readinessEligible||officerRarity(o)!=='Legendary';
- const trc=trainingBadgeCost(o); if($('trainingRarityNote'))$('trainingRarityNote').textContent=`${officerRarity(o)}: ${trc} Officer Badges per Training level · ${fmt(180*trc)} Training Badges to MAX. Skill progression uses ${promotionBadgeTotal(o)} separate fragments.`;
+ const trc=trainingBadgeCost(o); if($('trainingRarityNote'))$('trainingRarityNote').textContent=`${officerRarity(o)}: ${trc} Officer Badges per Training level · ${fmt(180*trc)} Training Badges to MAX. Skill progression uses ${promotionBadgeTotal(o)} Officer Badges, included in the total badge requirement.`;
  updateSkillRarityNotice(o);
  updateSkillCostSummaries();
  $('orvHeld').title=readinessEligible?'':'Officer Readiness Vouchers are not available for Original Officers';
