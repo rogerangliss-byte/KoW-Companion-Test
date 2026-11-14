@@ -3962,7 +3962,7 @@ function render(){
   const savedAt=s.id?new Date(Number(s.id)):null,scenarioSaved=savedAt&&Number.isFinite(savedAt.getTime())?savedAt.toLocaleString():'Unknown',inventorySaved=h.savedAt?new Date(h.savedAt).toLocaleString():'Not saved';
   const target=s.targetLabel||(s.session==='next'?'Next Officer session':sessionLabel(s.session,s.year));
   const orvEq=h.badgeParts?.orvBadgeEquiv??Math.floor(Math.max(0,Number(h.orv)||0)/Math.max(1,Number(h.badgeParts?.orvRate)||Number(f.orvPerBadge)||Number(latestLegendaryOrvChestRate?.())||720));
-  return '<div class="result-box"><b>'+s.name+'</b><br>'+target+' · '+count+' Officer'+(count>1?'s':'')+' · Overall readiness (average) '+readiness.toFixed(1)+'%<br>Limiting resource: '+savedReadiness.limitingResource+' — '+savedReadiness.limitingReadiness.toFixed(1)+'%<br>
+  return '<div class="result-box"><b>'+s.name+'</b><br>'+target+' · '+count+' Officer'+(count>1?'s':'')+' · Overall readiness (average) '+readiness.toFixed(1)+'%<br>Limiting resource: '+savedReadiness.limitingResource+' — '+savedReadiness.limitingReadiness.toFixed(1)+'%<br>'+
    '<small><b>Scenario saved:</b> '+scenarioSaved+'<br><b>Inventory snapshot used:</b> '+inventorySaved+'<br>'+
    'Shared Officer Badges held: <b>'+fmt(sharedBadges)+'</b> · ORV badge equivalents: <b>'+fmt(orvEq)+'</b> · ORV remainder: <b>'+fmt(savedScenarioOrvRemainder(h,f))+'</b> · Selection Chests held: <b>'+fmt(selectionChests)+'</b> · Stars held: <b>'+fmt(h.stars)+'</b> · XP held: <b>'+fmt(h.xp)+'</b><br>'+
    ''+
