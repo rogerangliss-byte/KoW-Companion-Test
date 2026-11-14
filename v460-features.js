@@ -160,7 +160,7 @@
         badgeAvailable+=val('legendarySelectionChestHeld');
       }
       let orvHeld=val('orvHeld');
-      if(chestMode==='orv')orvHeld+=badgeChests*(typeof latestLegendaryOrvChestRate==='function'?latestLegendaryOrvChestRate():0);
+      if(chestMode==='orv')orvHeld+=badgeChests*(typeof latestLegendaryOrvChestRate==='function'?latestLegendaryOrvChestRate():720);
       if(readiness&&Number(o.orv)>0)badgeAvailable+=Math.floor(orvHeld/Number(o.orv));
     }
 
