@@ -856,7 +856,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
     </div>
     <div class="table-wrap" style="margin-top:12px">
       <table id="savedOfficerProgressTable">
-        <thead><tr><th>Officer</th><th>Overall progress</th><th>Development</th><th>Stars</th><th>XP</th><th>Officer Badge shortfall</th><th>Skill Fragment shortfall</th><th>Star shortfall</th><th>XP shortfall</th><th>Status</th></tr></thead>
+        <thead><tr><th>Officer</th><th>Overall progress</th><th>Development</th><th>Stars</th><th>XP</th><th>Officer Badge shortfall</th><th>Skill Badge shortfall</th><th>Star shortfall</th><th>XP shortfall</th><th>Status</th></tr></thead>
         <tbody id="savedOfficerProgressRows"></tbody>
       </table>
     </div>
@@ -880,7 +880,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
     <div id="compareProgressRecommendation" class="notice" style="display:none;margin-top:12px"></div>
     <div class="table-wrap" id="compareProgressResultsWrap" style="display:none;margin-top:12px">
       <table>
-        <thead><tr><th>Officer</th><th>Overall progress</th><th>Development</th><th>Stars</th><th>XP</th><th>Officer Badges Needed</th><th>Skill Fragments Needed</th><th>Stars Needed</th><th>XP Needed</th><th>Status</th></tr></thead>
+        <thead><tr><th>Officer</th><th>Overall progress</th><th>Development</th><th>Stars</th><th>XP</th><th>Officer Badges Needed</th><th>Skill Badges Needed</th><th>Stars Needed</th><th>XP Needed</th><th>Status</th></tr></thead>
         <tbody id="compareProgressResults"></tbody>
       </table>
     </div>
@@ -1211,11 +1211,11 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
   <h4>🏅 New Skill Progression System</h4>
   <ul>
     <li>Each Officer has four primary Skill Strands, each progressing through Levels 1–10 (36 paid upgrades in total).</li>
-    <li>Skill Fragment requirements are rarity-based and separate from Officer Badges: <b>Elite (Blue): 340</b>, <b>Epic (Purple): 440</b>, and <b>Legendary (Gold): 690</b>.</li>
+    <li>Officer Badge costs for completing Skills are rarity-based and included in the total Officer Badge requirement: <b>Elite (Blue): 340</b>, <b>Epic (Purple): 440</b>, and <b>Legendary (Gold): 690</b>.</li>
     <li>The fifth Skill is available only for Epic and Legendary Officers, and unlocks after all four primary Skills reach Level 10. Elite Officers do not have a fifth Skill.</li>
   </ul>
   <h4>🔒 Training prerequisite</h4>
-  <p>All four primary Skills must reach Level 10 before Training can begin. Training remains a separate Officer Badge requirement and is not included in Skill Fragment totals.</p>
+  <p>All four primary Skills must reach Level 10 before Training can begin. Training requires additional Officer Badges after all four primary Skills reach Level 10.</p>
   <ul>
     <li>Legendary: 5 Officer Badges per Training level (900 for Levels 1–180).</li>
     <li>Epic: 25 Officer Badges per Training level (4,500 for Levels 1–180).</li>
@@ -1306,7 +1306,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
       <p>Set the Officer's current and target Star level. The Stars tab automatically follows the selected Officer rarity: Legendary, Epic or Elite Star I / II / III. <b>Star Readiness Vouchers (SRV)</b> are shown only for Legendary Officers and cannot be used by Epic or Elite Officers.</p>
 
       <h3>4. Development</h3>
-      <p>Enter the Officer's unlock status and progress each of the four primary Skill Strands independently from Level 1 to Level 10. Skill costs are tracked as rarity-specific Skill Fragments, not Officer Badges: Elite (Blue) 340, Epic (Purple) 440 and Legendary (Gold) 690 in total.</p>
+      <p>Enter the Officer's unlock status and progress each of the four primary Skill Strands independently from Level 1 to Level 10. Skill costs are included in the Officer Badge requirement: Elite (Blue) 340, Epic (Purple) 440 and Legendary (Gold) 690 in total.</p>
       <p><b>Fifth Skill:</b> Epic and Legendary Officers unlock their fifth Skill only after all four primary Skills reach Level 10. Elite Officers do not have a fifth Skill.</p>
       <p><b>Training prerequisite:</b> Training Levels 0–180 remain unavailable until all four primary Skills are Level 10. Training then uses separate Officer Badges: 5 per level for Legendary, 25 for Epic and 100 for Elite. Unlocking an Officer costs a separate 10 Officer Badges.</p>
       <p>Each <b>Universal Legendary Badge</b> is worth <b>1 Officer Badge</b> for a Legendary Officer.</p>
@@ -1327,7 +1327,7 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
 
       <h3>8. Save Progress</h3>
       <p><b>MAX Officer:</b> use the ⭐ MAX Officer button to set the selected Officer to 5 Stars, Level 70, Unlocked, all 4 primary Skills at Level 10 and Training Level 180. The Officer profile is saved immediately. Shared inventory is not spent or changed.</p>
-      <p><b>Development sequence:</b> unlock → complete the four primary Skills (36 paid upgrades) → Training to Level 180. For Epic and Legendary Officers, the fifth Skill becomes available when the four primary Skills are complete. Skill Fragments and Officer Badges are separate resource types.</p>
+      <p><b>Development sequence:</b> unlock → complete the four primary Skills (36 paid upgrades) → Training to Level 180. For Epic and Legendary Officers, the fifth Skill becomes available when the four primary Skills are complete. Skill Badge costs are included in the Officer Badge total.</p>
       <p>Use <b>Save Progress</b> after entering or changing Officer progress information. Progress is stored locally in the browser on the current device. Save Progress does not publish your personal data to other users.</p>
 
       <h3>9. Database</h3>
@@ -1375,8 +1375,8 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
   <div class="two">
     <div>
       <label>Officer Badges required</label>
-      <input id="forecastBadges" type="number" min="0" step="1" value="910">
-      <small>Legendary Skill Fragments: 690 required separately per Officer; they are not covered by ORV.</small>
+      <input id="forecastBadges" type="number" min="0" step="1" value="1600">
+      <small>Legendary Officer Skills require 690 Officer Badges, included in the 1,600 total; ORV can contribute to eligible badges.</small>
     </div>
     <div>
       <label>Officer Star value required</label>
@@ -1543,7 +1543,7 @@ function savePlannerWorkingState(){
 function normalizeMultiPlanRows(rows){
  return (Array.isArray(rows)?rows:[]).map(x=>{
   const index=Math.max(0,Math.min(Math.max(0,officers.length-1),Number(x.officerIndex)||0)),o=officers[index]||officers[0];
-  const max=typeof maxBadgesForOfficer==='function'?maxBadgesForOfficer(o):910;
+  const max=typeof maxBadgesForOfficer==='function'?maxBadgesForOfficer(o):1600;
   return {officerIndex:index,badgesNeeded:Math.min(max,Math.max(0,Number(x.badgesNeeded)||0))};
  });
 }
@@ -1611,8 +1611,8 @@ function skillCostStatusText(o=currentOfficer()){
  const remaining=Math.max(0,total-spent);
  const state=levels.map((lvl,i)=>`Skill ${i+1}: Lv${lvl}`).join(' · ');
  return n>=36
-   ? `${state} · Primary skills complete · ${spent}/${total} fragments used · 0 remaining.`
-   : `${state} · Next cost: ${next} fragments · ${spent}/${total} used · ${remaining} remaining.`;
+   ? `${state} · Primary skills complete · ${spent}/${total} Officer Badges used · 0 remaining.`
+   : `${state} · Next cost: ${next} Officer Badges · ${spent}/${total} used · ${remaining} remaining.`;
 }
 function updateSkillCostSummaries(){
  const o=currentOfficer();
@@ -1622,7 +1622,7 @@ function updateSkillCostSummaries(){
 function updateSkillRarityNotice(o=currentOfficer()){
  const el=$('skillSequenceNotice');if(!el||!o)return;
  const rarity=officerRarity(o),costs=skillCostsForOfficer(o),total=costs.reduce((a,b)=>a+b,0);
- el.innerHTML=`Four primary skills unlock with the Officer’s Current Star Level: 0★ = Skill 1, 1★ = Skills 1–2, 2★ = Skills 1–3, and 3★+ = all four. Each starts at Level 1. <b>${rarity} fragment progression:</b> ${total} fragments total. ${hasFifthSkill(o)?'The fifth skill unlocks when all four primary skills reach Level 10.':'Elite Officers do not have a fifth skill.'}`;
+ el.innerHTML=`Four primary skills unlock with the Officer’s Current Star Level: 0★ = Skill 1, 1★ = Skills 1–2, 2★ = Skills 1–3, and 3★+ = all four. Each starts at Level 1. <b>${rarity} Skill Badge progression:</b> ${total} Officer Badges total. ${hasFifthSkill(o)?'The fifth skill unlocks when all four primary skills reach Level 10.':'Elite Officers do not have a fifth skill.'}`;
 }
 function openSkillCostInfo(){
  const used=totalPaidSkillUpgrades(),rows=document.getElementById('skillCostSequenceRows');
@@ -1630,7 +1630,7 @@ function openSkillCostInfo(){
  const o=currentOfficer();
  const cur=document.getElementById('skillCostCurrent');if(cur)cur.innerHTML=`<b>${officerRarity(o)} Officer · ${skillCostStatusText(o)}</b>`;
  const levels=getSkillStrandLevels(),next=nextSkillUpgradeCost(o),per=document.getElementById('skillCostPerStrand');
- if(per)per.innerHTML=levels.map((lvl,i)=>lvl>=10?`<b>Skill ${i+1}:</b> Level 10 — MAX`:`<b>Skill ${i+1}:</b> Level ${lvl} → Level ${lvl+1} costs ${next} fragments`).join('<br>');
+ if(per)per.innerHTML=levels.map((lvl,i)=>lvl>=10?`<b>Skill ${i+1}:</b> Level 10 — MAX`:`<b>Skill ${i+1}:</b> Level ${lvl} → Level ${lvl+1} costs ${next} Officer Badges`).join('<br>');
  document.getElementById('skillCostInfoModal').style.display='block';
 }
 function closeSkillCostInfo(){document.getElementById('skillCostInfoModal').style.display='none';}
@@ -1791,7 +1791,7 @@ function updateLegendaryChestRateLabels(){
 }
 function trainingBadgeCost(o=currentOfficer()){ return officerRarity(o)==='Elite'?100:officerRarity(o)==='Epic'?25:5; }
 function promotionBadgeTotal(o=currentOfficer()){return officerRarity(o)==='Epic'?440:officerRarity(o)==='Elite'?340:690;}
-function maxBadgesForOfficer(o=currentOfficer()){ return 10+180*trainingBadgeCost(o); }
+function maxBadgesForOfficer(o=currentOfficer()){ return 10+promotionBadgeTotal(o)+180*trainingBadgeCost(o); }
 function seasonSort(a,b){
  if(a==='Original')return -1;if(b==='Original')return 1;
  const an=Number(String(a).match(/\d+/)?.[0]||999),bn=Number(String(b).match(/\d+/)?.[0]||999);
@@ -1998,7 +1998,7 @@ function calculate(){
  $('universalBadgesAvailable').textContent=fmt(universalBadgesAvailable);
 
  const officerMaxBadges=maxBadgesForOfficer(o);
- const badgesUsed=($('unlocked').checked?10:0)+ +$('training').value*trainingBadgeCost(o);
+ const badgesUsed=($('unlocked').checked?10:0)+skillBadgesSpent(o)+ +$('training').value*trainingBadgeCost(o);
  const badgesFromOrv=readinessEligible&&o.orv>0?Math.floor(orvHeld/o.orv):0;
  const orvRemainder=o.orv>0?orvHeld-badgesFromOrv*o.orv:orvHeld;
  const badgeTotal=badgesUsed+badgesHeld+universalBadgesAvailable+badgesFromOrv;
@@ -2028,7 +2028,7 @@ function renderPlanner(o,cs,starsUsed,legendaryHeld,srvHeld,badgesUsed,badgesHel
  const readinessEligible=o.readinessEligible!==false&&String(o.season||'').toLowerCase()!=='original';
  const g=$('goalSelect').value;let starTarget=0,badgeTarget=0,xpTarget=0;
  if(g==='nextStar')starTarget=STAR_CUM[Math.min(5,cs+1)];else if(g==='fiveStar'||g==='max')starTarget=MAX_STAR;
- if(g==='maxSkills')badgeTarget=10;else if(g==='maxTraining'||g==='max')badgeTarget=maxBadgesForOfficer(o);
+ if(g==='maxSkills')badgeTarget=10+promotionBadgeTotal(o);else if(g==='maxTraining'||g==='max')badgeTarget=maxBadgesForOfficer(o);
  if(g==='max')xpTarget=xpRequiredSelected;
  const rarity=officerRarity(o);
  const srvAllowed=rarity==='Legendary'&&readinessEligible;
@@ -2769,7 +2769,7 @@ function updateFutureOfficerForecast(){
  $('forecastTotalOrv').textContent=fmt(totalOrv);
  $('forecastTotalSrv').textContent=fmt(totalSrv);
  const label=$('forecastRelease').options[$('forecastRelease').selectedIndex]?.textContent||'Future Officer';
- $('forecastNote').innerHTML=`<b>${label}</b><br>Test planning estimate using ${f.growth}% growth per future Officer release from <b>${f.source}</b>. For ${fmt(badges)} Officer Badges (plus 690 separate Skill Fragments per Legendary Officer) and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
+ $('forecastNote').innerHTML=`<b>${label}</b><br>Test planning estimate using ${f.growth}% growth per future Officer release from <b>${f.source}</b>. For ${fmt(badges)} Officer Badges (including 690 Officer Badges for Skills within the 1,600 total) and ${fmt(starValue)} Star value (${fmt(exclusiveStars)} Exclusive Stars), plan for approximately <b>${fmt(totalOrv)} ORV</b> and <b>${fmt(totalSrv)} SRV</b>. Forecast only — replace with confirmed costs when released.`;
 }
 async function init(){
  await loadOfficers();updateLegendaryChestRateLabels();renderOfficerFilters();restoreOfficerFilterState();renderOfficerOptions(getUiState().officerName||undefined);
@@ -2992,12 +2992,12 @@ function savedOfficerProgressData(){
   const skillSpent=paidSkillUpgrades>=36?promotionTotal:skillCosts.slice(0,paidSkillUpgrades).reduce((a,b)=>a+b,0);
   const training=Math.max(0,Math.min(180,Number(p.training)||0)),officerMaxBadges=maxBadgesForOfficer(o);
   const developmentComplete=!!p.unlocked&&paidSkillUpgrades>=36&&training>=180;
-  const rawBadgesUsed=(p.unlocked?10:0)+training*trainingBadgeCost(o);
+  const rawBadgesUsed=(p.unlocked?10:0)+skillSpent+training*trainingBadgeCost(o);
   const badgesUsed=developmentComplete?officerMaxBadges:Math.min(officerMaxBadges,rawBadgesUsed);
   const officerBadgeShort=Math.max(0,officerMaxBadges-badgesUsed);
-  const skillFragmentShort=Math.max(0,promotionTotal-skillSpent);
-  const badgeShort=officerBadgeShort+skillFragmentShort;
-  const developmentRequired=officerMaxBadges+promotionTotal,developmentUsed=Math.min(developmentRequired,badgesUsed+skillSpent);
+  const skillBadgeShort=Math.max(0,promotionTotal-skillSpent);
+  const badgeShort=officerBadgeShort;
+  const developmentRequired=officerMaxBadges,developmentUsed=badgesUsed;
   const dev=developmentComplete?100:savedPct(developmentUsed,developmentRequired);
   const currentStar=Math.max(0,Math.min(5,Number(p.currentStar)||0)),starValue=STAR_CUM[currentStar]||0;
   const starShort=currentStar>=5?0:Math.max(0,MAX_STAR-starValue),stars=currentStar>=5?100:savedPct(starValue,MAX_STAR);
@@ -3005,7 +3005,7 @@ function savedOfficerProgressData(){
   const xpShort=level>=70?0:Math.max(0,MAX_XP-xpUsed),xp=level>=70?100:savedPct(xpUsed,MAX_XP);
   const maxed=developmentComplete&&currentStar>=5&&level>=70,overall=maxed?100:Math.round(((dev+stars+xp)/3)*10)/10;
   const hasProgress=badgesUsed>0||paidSkillUpgrades>0||currentStar>0||level>1,notStarted=!maxed&&!hasProgress,status=maxed?'MAXED':hasProgress?'IN PROGRESS':'NOT STARTED';
-  return {name:displayName,season,overall,dev,stars,xp,badgeShort,officerBadgeShort,skillFragmentShort,starShort,xpShort,maxed,notStarted,status};
+  return {name:displayName,season,overall,dev,stars,xp,badgeShort,officerBadgeShort,skillBadgeShort,starShort,xpShort,maxed,notStarted,status};
  }).sort((a,b)=>{
   const statusRank=r=>r.maxed?0:(r.notStarted?2:1),seasonRank=s=>{const v=String(s||'').trim().toLowerCase();if(v==='original')return 0;const m=v.match(/^s(\d+)$/);return m?Number(m[1]):0;};
   const officerDbIndex=name=>officers.findIndex(o=>String(o.name||'').trim()===String(name||'').trim());
@@ -3019,7 +3019,7 @@ function renderSavedOfficerProgress(){
  if(!allRows.length){body.innerHTML='';summary.textContent='No saved Officer profiles yet. Use Save Officer Progress to add Officers to this overview.';return;}
  const rows=allRows.filter(progressStatusAllowed),ready=allRows.filter(x=>x.maxed),closest=allRows[0];
  summary.innerHTML='<b>'+allRows.length+' saved Officer'+(allRows.length===1?'':'s')+'</b> · <b>'+ready.length+' MAXED</b> · <b>Highest progress:</b> '+esc(closest.name)+' ('+closest.overall+'%)'+(rows.length!==allRows.length?' · <b>Showing '+rows.length+'</b>':'');
- body.innerHTML=rows.length?rows.map(r=>'<tr><td><b>'+esc(r.name)+'</b></td><td>'+meter(r.overall)+'</td><td>'+meter(r.dev)+'</td><td>'+meter(r.stars)+'</td><td>'+meter(r.xp)+'</td><td>'+fmt(r.officerBadgeShort)+'</td><td>'+fmt(r.skillFragmentShort)+'</td><td>'+fmt(r.starShort)+'</td><td>'+fmt(r.xpShort)+'</td><td class="'+(r.maxed?'status-ready':r.notStarted?'':'status-progress')+'">'+r.status+'</td></tr>').join(''):'<tr><td colspan="10" class="muted">No saved Officers match the selected status filters.</td></tr>';
+ body.innerHTML=rows.length?rows.map(r=>'<tr><td><b>'+esc(r.name)+'</b></td><td>'+meter(r.overall)+'</td><td>'+meter(r.dev)+'</td><td>'+meter(r.stars)+'</td><td>'+meter(r.xp)+'</td><td>'+fmt(r.officerBadgeShort)+'</td><td>'+fmt(r.skillBadgeShort)+'</td><td>'+fmt(r.starShort)+'</td><td>'+fmt(r.xpShort)+'</td><td class="'+(r.maxed?'status-ready':r.notStarted?'':'status-progress')+'">'+r.status+'</td></tr>').join(''):'<tr><td colspan="10" class="muted">No saved Officers match the selected status filters.</td></tr>';
 }
 document.addEventListener('DOMContentLoaded',()=>{restoreStatusFilterState();setTimeout(renderSavedOfficerProgress,0)});
 function compareStatusAllowed(r){
@@ -3053,7 +3053,7 @@ function runProgressComparison(){
  const wrap=document.getElementById('compareProgressResultsWrap'),body=document.getElementById('compareProgressResults'),rec=document.getElementById('compareProgressRecommendation');
  if(picks.length<2){wrap.style.display='none';rec.style.display='block';rec.textContent='Select at least 2 saved Officers to compare.';return;}
  picks.sort((a,b)=>Number(b.maxed)-Number(a.maxed)||b.overall-a.overall||a.name.localeCompare(b.name));
- body.innerHTML=picks.map(r=>'<tr><td><b>'+esc(r.name)+'</b></td><td>'+meter(r.overall)+'</td><td>'+meter(r.dev)+'</td><td>'+meter(r.stars)+'</td><td>'+meter(r.xp)+'</td><td>'+fmt(r.officerBadgeShort)+'</td><td>'+fmt(r.skillFragmentShort)+'</td><td>'+fmt(r.starShort)+'</td><td>'+fmt(r.xpShort)+'</td><td class="'+(r.maxed?'status-ready':r.notStarted?'':'status-progress')+'">'+r.status+'</td></tr>').join('');
+ body.innerHTML=picks.map(r=>'<tr><td><b>'+esc(r.name)+'</b></td><td>'+meter(r.overall)+'</td><td>'+meter(r.dev)+'</td><td>'+meter(r.stars)+'</td><td>'+meter(r.xp)+'</td><td>'+fmt(r.officerBadgeShort)+'</td><td>'+fmt(r.skillBadgeShort)+'</td><td>'+fmt(r.starShort)+'</td><td>'+fmt(r.xpShort)+'</td><td class="'+(r.maxed?'status-ready':r.notStarted?'':'status-progress')+'">'+r.status+'</td></tr>').join('');
  const best=picks[0];rec.style.display='block';
  if(best.maxed)rec.innerHTML='<b>'+esc(officerDisplayName(best))+'</b> is already MAXED.';
  else if(picks.every(r=>r.notStarted))rec.innerHTML='<b>No selected Officer has been started yet.</b>';
@@ -3130,8 +3130,8 @@ document.addEventListener('DOMContentLoaded',()=>{
  const spent=cc.slice(0,paid).reduce((a,b)=>a+b,0);
  const remaining=Math.max(0,total-spent);
  summaryBox.innerHTML=paid>=36
-  ? `<b>Primary skills complete · ${spent}/${total} fragments used · 0 remaining.</b>`
-  : `<b>Next cost: ${next} fragments · ${spent}/${total} used · ${remaining} remaining.</b>`;
+  ? `<b>Primary skills complete · ${spent}/${total} Officer Badges used · 0 remaining.</b>`
+  : `<b>Next cost: ${next} Officer Badges · ${spent}/${total} used · ${remaining} remaining.</b>`;
 }
 };
    row.appendChild(select);
@@ -3145,8 +3145,8 @@ document.addEventListener('DOMContentLoaded',()=>{
  const spent=cc.slice(0,paid).reduce((a,b)=>a+b,0);
  const remaining=Math.max(0,total-spent);
  summary.innerHTML=paid>=36
-  ? `<b>Primary skills complete · ${spent}/${total} fragments used · 0 remaining.</b>`
-  : `<b>Next cost: ${next} fragments · ${spent}/${total} used · ${remaining} remaining.</b>`;
+  ? `<b>Primary skills complete · ${spent}/${total} Officer Badges used · 0 remaining.</b>`
+  : `<b>Next cost: ${next} Officer Badges · ${spent}/${total} used · ${remaining} remaining.</b>`;
 }
 }
  function quickPrimarySkillsComplete(){
@@ -3402,7 +3402,7 @@ function kowOfficerReadiness(){
    ['🔓','Unlock',totalBadgePower>=10,Math.max(0,10-totalBadgePower),'Officer Badges'],
    ['⭐','Next Star',cs>=5||starPower>=nextStarTarget,cs>=5?0:Math.max(0,nextStarTarget-starPower),'Officer Star value'],
    ['🌟','Reach 5★',starPower>=MAX_STAR,Math.max(0,MAX_STAR-starPower),'Officer Star value'],
-   ['🏅','MAX Skills',typeof totalPaidSkillUpgrades==='function'&&totalPaidSkillUpgrades()>=36,typeof skillCostsForOfficer==='function'?skillCostsForOfficer(o).slice(totalPaidSkillUpgrades()).reduce((a,b)=>a+b,0):skillTarget,'Skill fragments'],
+   ['🏅','MAX Skills',typeof totalPaidSkillUpgrades==='function'&&totalPaidSkillUpgrades()>=36,typeof skillCostsForOfficer==='function'?skillCostsForOfficer(o).slice(totalPaidSkillUpgrades()).reduce((a,b)=>a+b,0):skillTarget,'Officer Badges'],
    ['🎖️','MAX Training',totalBadgePower>=maxBadges,Math.max(0,maxBadges-totalBadgePower),'Officer Badges'],
    ['📘','Level 70 XP',xpHeld>=xpNeed,Math.max(0,xpNeed-xpHeld),'XP'],
   ];
@@ -3714,21 +3714,21 @@ function projectedResourceHtml(projected,inv,mode){
     var box=document.getElementById('kowProjectedResourceForecast');if(!box)return;
     if(!projected.length){box.innerHTML='';return;}
     if(mode==='all'){
-      box.innerHTML='<div class="card" style="margin-top:12px"><h3>🔮 Projected Future Officer Resource Requirement</h3><div class="notice">All Officer sessions includes multiple future release dates, each with a different ORV/SRV forecast. Select January, April, July or October for a specific release. Each Legendary Officer requires 910 Officer Badges plus 690 separate Skill Fragments, 98,000 Star value and 199,646,700 XP. ORV converts into Officer Badges only; it does not pay Skill Fragment costs.</div></div>';return;
+      box.innerHTML='<div class="card" style="margin-top:12px"><h3>🔮 Projected Future Officer Resource Requirement</h3><div class="notice">All Officer sessions includes multiple future release dates, each with a different ORV/SRV forecast. Select January, April, July or October for a specific release. Each Legendary Officer requires 1,600 Officer Badges: 10 to unlock, 690 for Skills and 900 for Training. ORV contributes to the Officer Badge requirement.</div></div>';return;
     }
     var c=forecastS8Costs(mode),starsPerOfficer=Math.ceil(98000/110);
     function scenarioRow(count,label){
-      var badges=910*count,fragments=690*count,stars=98000*count,xp=199646700*count,orv=badges*c.orv,srv=starsPerOfficer*count*c.srv;
-      return '<tr><td><b>'+esc(label)+'</b></td><td>'+badges.toLocaleString()+' Officer Badges + '+fragments.toLocaleString()+' Skill Fragments</td><td>'+stars.toLocaleString()+' Star value</td><td>'+xp.toLocaleString()+' XP</td><td>'+orv.toLocaleString()+' ORV <b>FORECAST</b></td><td>'+srv.toLocaleString()+' SRV <b>FORECAST</b></td></tr>';
+      var badges=1600*count,stars=98000*count,xp=199646700*count,orv=badges*c.orv,srv=starsPerOfficer*count*c.srv;
+      return '<tr><td><b>'+esc(label)+'</b></td><td>'+badges.toLocaleString()+' Officer Badges</td><td>'+stars.toLocaleString()+' Star value</td><td>'+xp.toLocaleString()+' XP</td><td>'+orv.toLocaleString()+' ORV <b>FORECAST</b></td><td>'+srv.toLocaleString()+' SRV <b>FORECAST</b></td></tr>';
     }
     var baseName=projected[0].name.replace(' — PROJECTED','');
     var badgeEquiv=(inv.universal||0)+(inv.badgeChests||0)+Math.floor((inv.orv||0)/Math.max(1,c.orv));
-    var oneBadgeShort=Math.max(0,910-badgeEquiv),twoBadgeShort=Math.max(0,1820-badgeEquiv);
+    var oneBadgeShort=Math.max(0,1600-badgeEquiv),twoBadgeShort=Math.max(0,3200-badgeEquiv);
     var oneXpShort=Math.max(0,199646700-(inv.xp||0)),twoXpShort=Math.max(0,399293400-(inv.xp||0));
     var starUnitsFromSrv=c.srv?Math.floor((inv.srv||0)/c.srv):0,starValueAvailable=(inv.starValue||0)+(starUnitsFromSrv*110);
     var oneStarShort=Math.max(0,98000-starValueAvailable),twoStarShort=Math.max(0,196000-starValueAvailable);
     box.innerHTML='<div class="card" style="margin-top:12px"><h3>🔮 Projected Future Officer Resource Requirement</h3>'+
-      '<div class="notice">Officer Badges and Skill Fragments are separate resources. ORV converts into Officer Badges only. Each Legendary Officer requires 910 Officer Badges, 690 Skill Fragments, 98,000 Star value and 199,646,700 XP. SRV forecasts remain separate.</div>'+
+      '<div class="notice">Each Legendary Officer requires 1,600 Officer Badges (10 unlock + 690 Skills + 900 Training), 98,000 Star value and 199,646,700 XP. ORV contributes to the Officer Badge requirement; SRV forecasts remain separate.</div>'+
       '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse"><thead><tr><th>Scenario</th><th>Development</th><th>Stars</th><th>XP</th><th>ORV forecast</th><th>SRV forecast</th></tr></thead><tbody>'+
       scenarioRow(1,'1 × '+baseName)+scenarioRow(2,'2 × '+baseName)+'</tbody></table></div>'+
       '<div class="two" style="margin-top:10px"><div class="result-box"><b>1 Officer — badge position</b><br>'+(oneBadgeShort===0?'READY':'Short by '+oneBadgeShort.toLocaleString()+' Officer Badges')+'</div>'+
@@ -3737,7 +3737,7 @@ function projectedResourceHtml(projected,inv,mode){
       '<div class="result-box"><b>2 Officers — Star position</b><br>'+(twoStarShort===0?'READY':'Short by '+twoStarShort.toLocaleString()+' Star value')+'</div></div>'+
       '<div class="two"><div class="result-box"><b>1 Officer — XP position</b><br>'+(oneXpShort===0?'READY':'Short by '+oneXpShort.toLocaleString()+' XP')+'</div>'+
       '<div class="result-box"><b>2 Officers — XP position</b><br>'+(twoXpShort===0?'READY':'Short by '+twoXpShort.toLocaleString()+' XP')+'</div></div>'+
-      '<p class="muted" style="margin-top:8px">Skill Fragments are stated separately and are not converted from ORV or included in badge readiness. Forecast basis: '+esc(c.source)+'. Inventory is not changed by this calculation.</p></div>';
+      '<p class="muted" style="margin-top:8px">The 690 Officer Badges for Skills are included in the 1,600 total; eligible ORV contributes to the same badge requirement. Forecast basis: '+esc(c.source)+'. Inventory is not changed by this calculation.</p></div>';
   }
 window.__kowPlannerShowAll=false;
   window.kowPlannerToggleAll=function(showAll){
@@ -3848,7 +3848,7 @@ window.__kowPlannerShowAll=false;
 'use strict';
 const KEY='kow_v4359_planning_scenarios';
 const INV_KEY='kow_central_inventory_v1';
-const TOTAL={badges:910,skillFragments:690,stars:98000,xp:199646700};
+const TOTAL={badges:1600,stars:98000,xp:199646700};
 const LABEL={next:'Next Officer session',october:'October — S9 Rally / Garrison',january:'January — S8 Infantry',april:'April — S8 Tanks',july:'July — S8 Tank Destroyers'};
 const SLOT={january:1,april:2,july:3,october:4};
 function targetReleaseIndex(session,year){
@@ -3915,7 +3915,7 @@ function statusLine(label,held,req,short,unit=''){
 function calculate(){
  const session=document.getElementById('scenarioSession').value,count=n('scenarioOfficerCount')||1,year=n('scenarioYear')||new Date().getFullYear()+1;
  const fc=forecast(session,count,year),held=getHeld(fc.orvPerBadge);
- const req={badges:TOTAL.badges*count,skillFragments:TOTAL.skillFragments*count,stars:TOTAL.stars*count,xp:TOTAL.xp*count};
+ const req={badges:TOTAL.badges*count,stars:TOTAL.stars*count,xp:TOTAL.xp*count};
  const short={badges:Math.max(0,req.badges-held.badges),stars:Math.max(0,req.stars-held.stars),xp:Math.max(0,req.xp-held.xp)};
  const overall=Math.min(pct(held.badges,req.badges),pct(held.stars,req.stars),pct(held.xp,req.xp));
  const additionalOrvForBadgeShortfall=short.badges*fc.orvPerBadge,targetLabel=session==='next'?'Next Officer session':sessionLabel(session,year);
@@ -3924,14 +3924,14 @@ function calculate(){
  document.getElementById('scenarioResult').innerHTML='<b>'+current.name+'</b><br>Target: '+targetLabel+' · '+year+' · '+count+' projected Officer'+(count>1?'s':'')+'<br>'+
  '<b>Badge / Star / XP readiness: '+overall.toFixed(1)+'%</b><br>'+statusLine('Officer Badges available',held.badges,req.badges,short.badges)+'<br>'+
  statusLine('Stars',held.stars,req.stars,short.stars,' Star value')+'<br>'+statusLine('XP',held.xp,req.xp,short.xp)+'<br>'+
- '<b>Separate Skill Fragment requirement:</b> '+fmt(req.skillFragments)+' ('+fmt(TOTAL.skillFragments)+' per Legendary Officer). Skill Fragments are not Officer Badges and cannot be funded by ORV; track Officer skill progress separately in Development.<br>'+
+ ''+
  '<small>Badge breakdown: '+fmt(held.badgeParts.universal)+' Universal Badges + '+fmt(held.badgeParts.badgeChests)+' ordinary Badge Chests + '+fmt(held.badgeParts.orvBadgeEquiv)+' badge equivalents from '+fmt(held.orv)+' ORV at '+fmt(held.badgeParts.orvRate)+' ORV per badge. ORV remainder: '+fmt(held.badgeParts.orvRemainder)+'. Selection Chests held: '+fmt(held.selectionChests)+' and excluded from shared badge totals.</small><br><br>'+
  '<b>Additional voucher requirement — FORECAST</b><br>ORV still needed for the remaining '+fmt(short.badges)+' Officer Badges: <b>'+fmt(additionalOrvForBadgeShortfall)+' ORV</b> ('+fmt(fc.orvPerBadge)+' per badge). Held ORV has already been included in the badge-equivalent total above.<br>'+
  'SRV: '+fmt(fc.srv)+' FORECAST for '+fmt(Math.ceil((TOTAL.stars*count)/110))+' Exclusive Stars · Held '+fmt(held.srv)+' · '+(held.srv>=fc.srv?'<b>READY</b>':'<b>SHORT '+fmt(fc.srv-held.srv)+'</b>')+'<br>'+
- '<small>'+invNote+'<br>Preview only. Inventory has not been changed. Skill Fragments are reported separately and are not included in the ORV calculation. Future ORV/SRV figures remain FORECAST until published.</small>';
+ '<small>'+invNote+'<br>Preview only. Inventory has not been changed. Skill Badge costs are included in the Officer Badge total and ORV calculation. Future ORV/SRV figures remain FORECAST until published.</small>';
  return current;
 }
-function load(){try{const a=JSON.parse(localStorage.getItem(KEY)||'[]');let changed=false;a.forEach(s=>{if(s&&s.req&&s.req.skillFragments===undefined){const count=Number(s.count)||1;s.req.badges=910*count;s.req.skillFragments=690*count;s.short=s.short||{};s.short.badges=Math.max(0,s.req.badges-savedScenarioSharedBadges(s.held||{},s.forecast||{}));s.overall=Math.min(pct(savedScenarioSharedBadges(s.held||{},s.forecast||{}),s.req.badges),pct(s.held?.stars,s.req.stars),pct(s.held?.xp,s.req.xp));changed=true;}});if(changed)store(a);return a;}catch{return[]}}
+function load(){try{const a=JSON.parse(localStorage.getItem(KEY)||'[]');let changed=false;a.forEach(s=>{if(s&&s.req){const count=Number(s.count)||1,target=1600*count;if(Number(s.req.badges)!==target||s.req.skillFragments!==undefined){s.req.badges=target;delete s.req.skillFragments;s.short=s.short||{};s.short.badges=Math.max(0,target-savedScenarioSharedBadges(s.held||{},s.forecast||{}));s.overall=Math.min(pct(savedScenarioSharedBadges(s.held||{},s.forecast||{}),target),pct(s.held?.stars,s.req.stars),pct(s.held?.xp,s.req.xp));changed=true;}}});if(changed)store(a);return a;}catch{return[]}}
 function store(a){localStorage.setItem(KEY,JSON.stringify(a))}
 function savedScenarioSharedBadges(h,f){
  const selectionChests=Number(h?.selectionChests??h?.badgeParts?.selectionChests)||0;
@@ -3950,7 +3950,7 @@ function render(){
  const box=document.getElementById('savedScenarioList');if(!box)return;
  const a=load();if(!a.length){box.innerHTML='No planning scenarios saved yet.';return;}
  box.innerHTML=a.map((s,i)=>{
-  const f=s.forecast||{},h=s.held||{},req=s.req||{},count=Number(s.count)||1,badgeReq=Number(req.badges)||910*count,fragmentReq=Number(req.skillFragments)||690*count;
+  const f=s.forecast||{},h=s.held||{},req=s.req||{},count=Number(s.count)||1,badgeReq=Number(req.badges)||1600*count;
   const selectionChests=Number(h.selectionChests??h.badgeParts?.selectionChests)||0,sharedBadges=savedScenarioSharedBadges(h,f),badgeShort=Math.max(0,badgeReq-sharedBadges);
   const readiness=Math.min(pct(sharedBadges,badgeReq),pct(h.stars,req.stars),pct(h.xp,req.xp));
   const savedAt=s.id?new Date(Number(s.id)):null,scenarioSaved=savedAt&&Number.isFinite(savedAt.getTime())?savedAt.toLocaleString():'Unknown',inventorySaved=h.savedAt?new Date(h.savedAt).toLocaleString():'Not saved';
@@ -3959,7 +3959,7 @@ function render(){
   return '<div class="result-box"><b>'+s.name+'</b><br>'+target+' · '+count+' Officer'+(count>1?'s':'')+' · Badge / Star / XP readiness '+readiness.toFixed(1)+'%<br>'+
    '<small><b>Scenario saved:</b> '+scenarioSaved+'<br><b>Inventory snapshot used:</b> '+inventorySaved+'<br>'+
    'Shared Officer Badges held: <b>'+fmt(sharedBadges)+'</b> · ORV badge equivalents: <b>'+fmt(orvEq)+'</b> · ORV remainder: <b>'+fmt(savedScenarioOrvRemainder(h,f))+'</b> · Selection Chests held: <b>'+fmt(selectionChests)+'</b> · Stars held: <b>'+fmt(h.stars)+'</b> · XP held: <b>'+fmt(h.xp)+'</b><br>'+
-   'Separate Skill Fragments required: <b>'+fmt(fragmentReq)+'</b> ('+fmt(690)+' per Legendary Officer; tracked in Development, not converted from ORV)<br>'+
+   ''+
    (badgeShort?'<b>Officer Badges: SHORT '+fmt(badgeShort)+'</b>':'<b>Officer Badges: READY</b>')+'<br>'+
    ((Number(s.short?.stars)||0)?'<b>Stars: SHORT '+fmt(s.short.stars)+'</b>':'<b>Stars: READY</b>')+'<br>'+
    ((Number(s.short?.xp)||0)?'<b>XP: SHORT '+fmt(s.short.xp)+'</b>':'<b>XP: READY</b>')+
