@@ -1767,7 +1767,7 @@ function latestLegendaryOrvChestRate(){
  // Select the latest published seasonal Legendary release by season and release slot.
  // Do not let an older, more expensive Officer override the newest release's cost.
  const seasonal=source.filter(o=>officerRarity(o)==='Legendary'&&Number(o.orv)>0&&Number(o.srv)>0&&/^S\d+$/i.test(String(o.season||'')));
- if(!seasonal.length)return 0;
+ if(!seasonal.length)return 720;
  const seasonNumber=o=>Number(String(o.season).match(/^S(\d+)$/i)?.[1]||0);
  const releaseSlot=o=>{
    const role=String(o.role||o.notes||'').toLowerCase();
@@ -1900,7 +1900,7 @@ function latestSeasonOrvCost(){
  const seasonal=officers
   .map(o=>({...o,seasonNum:Number(String(o.season||'').match(/^S(\d+)$/i)?.[1]||0)}))
   .filter(o=>o.seasonNum>0&&o.readinessEligible!==false&&Number(o.orv)>0);
- if(!seasonal.length)return 0;
+ if(!seasonal.length)return 720;
  const latest=Math.max(...seasonal.map(o=>o.seasonNum));
  return Math.max(...seasonal.filter(o=>o.seasonNum===latest).map(o=>Number(o.orv)||0));
 }
@@ -1964,7 +1964,7 @@ function calculate(){
  const readinessEligible=o.readinessEligible!==false&&String(o.season||'').toLowerCase()!=='original';
  $('orvCost').value=readinessEligible?o.orv:'N/A';$('srvCost').value=readinessEligible?o.srv:'N/A';$('dashOfficer').textContent=o.name;updateOfficerExperience();
  $('orvHeld').disabled=!readinessEligible||officerRarity(o)!=='Legendary';$('srvHeld').disabled=!readinessEligible||officerRarity(o)!=='Legendary';
- const trc=trainingBadgeCost(o); if($('trainingRarityNote'))$('trainingRarityNote').textContent=`${officerRarity(o)}: ${trc} Officer Badges per Training level · ${fmt(180*trc)} Training Badges to MAX. Skill progression uses ${promotionBadgeTotal(o)} Officer Badges, included in the total badge requirement.`;
+ const trc=trainingBadgeCost(o); if($('trainingRarityNote'))$('trainingRarityNote').textContent=`${officerRarity(o)}: ${trc} Officer Badges per Training level · ${fmt(180*trc)} Officer Badges for Training to MAX. Skill progression uses ${promotionBadgeTotal(o)} Officer Badges, included in the total badge requirement.`;
  updateSkillRarityNotice(o);
  updateSkillCostSummaries();
  $('orvHeld').title=readinessEligible?'':'Officer Readiness Vouchers are not available for Original Officers';
