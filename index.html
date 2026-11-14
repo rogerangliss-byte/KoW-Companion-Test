@@ -3427,7 +3427,7 @@ function kowInvApply(x){
   ['bs1','invEliteStar1'],['bs2','invEliteStar2'],['bs3','invEliteStar3']]
   .forEach(a=>kowInvField(a[0],x[a[1]]));
  [100,500,1000,5000,10000,20000,50000].forEach(v=>kowInvField('xp'+v,x['invXp'+v]));
- const sel=document.getElementById('officerSelect');if(sel&&x.officerBadges){const name=sel.options[sel.selectedIndex]?.textContent?.trim()||'';kowInvField('badgeHeld',x.officerBadges[name]||0);}
+ const sel=document.getElementById('officerSelect');if(sel){const name=sel.options[sel.selectedIndex]?.textContent?.trim()||'';kowInvField('badgeHeld',x.officerBadges?.[name]||0);}
  try{calculate()}catch(e){}
 }
 function kowInvSave(){const old=kowInvGet(),x={officerBadges:old.officerBadges||{},savedAt:new Date().toISOString()};KOW_INV_IDS.forEach(id=>x[id]=Math.max(0,+document.getElementById(id)?.value||0));localStorage.setItem(KOW_INV_KEY,JSON.stringify(x));kowInvApply(x);kowInvLoad();}
