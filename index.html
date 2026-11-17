@@ -3037,7 +3037,7 @@ function savedOfficerProgressData(){
  });
 }
 function sortSavedOfficerProgressRows(rows,mode='recommended'){
- const seasonRank=s=>{const v=String(s||'').trim().toLowerCase();if(v==='original')return 0;const m=v.match(/^s(\\d+)$/);return m?Number(m[1]):0;};
+ const seasonRank=s=>{const v=String(s||'').trim().toLowerCase();if(v==='original')return 0;const m=v.match(/^s(\d+)$/);return m?Number(m[1]):0;};
  const rarityRank=r=>({Legendary:0,Epic:1,Elite:2})[r]??3;
  const statusRank=r=>r.maxed?0:(r.notStarted?2:1);
  const byName=(a,b)=>String(a.name).localeCompare(String(b.name));
@@ -3053,7 +3053,6 @@ function sortSavedOfficerProgressRows(rows,mode='recommended'){
   if(mode==='progress')return b.overall-a.overall||release(a,b);
   if(mode==='priority')return Number(a.maxed)-Number(b.maxed)||a.overall-b.overall||release(a,b);
   return statusRank(a)-statusRank(b)||release(a,b);
- });
 }
 function renderSavedOfficerProgress(){
  const body=document.getElementById('savedOfficerProgressRows'),summary=document.getElementById('savedOfficerProgressSummary');
