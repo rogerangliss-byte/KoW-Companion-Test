@@ -769,6 +769,15 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
 @media(max-width:760px){.v440-summary,.v440-scenario-grid{grid-template-columns:1fr}}
 </style>
 
+<style id="portrait-progress-show-filter-fix">
+/* Match the compact Show filter bar used by Live on narrow Portrait screens. */
+@media (orientation:portrait) and (max-width:760px){
+  #progress #progressStatusFilters{
+    flex-wrap:nowrap !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <header class="topbar">
