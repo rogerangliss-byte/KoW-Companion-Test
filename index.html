@@ -3053,6 +3053,7 @@ function sortSavedOfficerProgressRows(rows,mode='recommended'){
   if(mode==='progress')return b.overall-a.overall||release(a,b);
   if(mode==='priority')return Number(a.maxed)-Number(b.maxed)||a.overall-b.overall||release(a,b);
   return statusRank(a)-statusRank(b)||release(a,b);
+ });
 }
 function renderSavedOfficerProgress(){
  const body=document.getElementById('savedOfficerProgressRows'),summary=document.getElementById('savedOfficerProgressSummary');
