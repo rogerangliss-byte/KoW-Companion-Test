@@ -882,6 +882,19 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
       <label><input type="checkbox" class="compareStatusFilter" value="progress" checked> IN PROGRESS</label>
       <label><input type="checkbox" class="compareStatusFilter" value="notStarted" checked> NOT STARTED</label>
     </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+      <label for="compareProgressSortOrder"><b>Sort Officers:</b></label>
+      <select id="compareProgressSortOrder" aria-label="Sort Compare Officer list">
+        <option value="recommended">Recommended order</option>
+        <option value="season">Season — newest first</option>
+        <option value="rarity-legendary">Legendary Officers</option>
+        <option value="rarity-epic">Epic Officers</option>
+        <option value="rarity-elite">Elite Officers</option>
+        <option value="role">Role</option>
+        <option value="progress">Progress — highest first</option>
+        <option value="priority">Upgrade priority — lowest first</option>
+      </select>
+    </div>
     <div style="display:flex;gap:8px;flex-wrap:nowrap;margin-bottom:12px">
       <button type="button" id="compareProgressSelectAll" class="app-action-secondary">Select All</button>
       <button type="button" id="compareProgressClear" class="app-action-secondary">Clear All</button>
@@ -3024,16 +3037,22 @@ function savedOfficerProgressData(){
  });
 }
 function sortSavedOfficerProgressRows(rows,mode='recommended'){
- const seasonRank=s=>{const v=String(s||'').trim().toLowerCase();if(v==='original')return 0;const m=v.match(/^s(\d+)$/);return m?Number(m[1]):0;};
+ const seasonRank=s=>{const v=String(s||'').trim().toLowerCase();if(v==='original')return 0;const m=v.match(/^s(\\d+)$/);return m?Number(m[1]):0;};
  const rarityRank=r=>({Legendary:0,Epic:1,Elite:2})[r]??3;
  const statusRank=r=>r.maxed?0:(r.notStarted?2:1);
  const byName=(a,b)=>String(a.name).localeCompare(String(b.name));
+ const release=(a,b)=>(Number(a.releaseOrder)||0)-(Number(b.releaseOrder)||0)||byName(a,b);
  return rows.slice().sort((a,b)=>{
-  if(mode==='season')return seasonRank(b.season)-seasonRank(a.season)||(Number(a.releaseOrder)||0)-(Number(b.releaseOrder)||0)||byName(a,b);
-  if(mode==='rarity')return rarityRank(a.rarity)-rarityRank(b.rarity)||(Number(a.releaseOrder)||0)-(Number(b.releaseOrder)||0)||byName(a,b);
-  if(mode==='progress')return b.overall-a.overall||(Number(a.releaseOrder)||0)-(Number(b.releaseOrder)||0)||byName(a,b);
-  if(mode==='priority')return Number(a.maxed)-Number(b.maxed)||a.overall-b.overall||(Number(a.releaseOrder)||0)-(Number(b.releaseOrder)||0)||byName(a,b);
-  return statusRank(a)-statusRank(b)||(Number(a.releaseOrder)||0)-(Number(b.releaseOrder)||0)||byName(a,b);
+  if(mode==='season')return seasonRank(b.season)-seasonRank(a.season)||release(a,b);
+  if(mode==='rarity')return rarityRank(a.rarity)-rarityRank(b.rarity)||release(a,b);
+  if(mode==='rarity-legendary'||mode==='rarity-epic'||mode==='rarity-elite'){
+   const target=mode==='rarity-legendary'?'Legendary':mode==='rarity-epic'?'Epic':'Elite';
+   return Number(b.rarity===target)-Number(a.rarity===target)||release(a,b);
+  }
+  if(mode==='role')return String(a.role||'').localeCompare(String(b.role||''))||release(a,b);
+  if(mode==='progress')return b.overall-a.overall||release(a,b);
+  if(mode==='priority')return Number(a.maxed)-Number(b.maxed)||a.overall-b.overall||release(a,b);
+  return statusRank(a)-statusRank(b)||release(a,b);
  });
 }
 function renderSavedOfficerProgress(){
@@ -3067,16 +3086,8 @@ function compareStatusAllowed(r){
 }
 function renderProgressCompareChoices(){
  const box=document.getElementById('compareProgressChoices'); if(!box)return;
- const seasonRank=s=>{
-   const v=String(s||'').trim().toLowerCase();
-   if(v==='original')return 0;
-   const m=v.match(/^s(\d+)$/);
-   return m?Number(m[1]):999;
- };
- const rows=savedOfficerProgressData().filter(compareStatusAllowed).slice().sort((a,b)=>
-   seasonRank(b.season)-seasonRank(a.season) ||
-   String(a.name).localeCompare(String(b.name))
- );
+ const mode=document.getElementById('compareProgressSortOrder')?.value||'season';
+ const rows=sortSavedOfficerProgressRows(savedOfficerProgressData().filter(compareStatusAllowed),mode);
  box.innerHTML=rows.length?rows.map((r,i)=>`<label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #4a3a12;border-radius:8px"><input type="checkbox" class="progressComparePick" value="${i}"> <span>${esc(r.name)}</span></label>`).join(''):'No saved Officer profiles.';
  box.dataset.compareRows=JSON.stringify(rows);restoreComparePickState();
 }
@@ -3084,14 +3095,14 @@ function runProgressComparison(){
  const box=document.getElementById('compareProgressChoices');let all=[];
  try{all=JSON.parse(box?.dataset.compareRows||'[]')}catch{}
  if(!all.length)all=savedOfficerProgressData();
- const picks=[...document.querySelectorAll('.progressComparePick:checked')].map(x=>all[Number(x.value)]).filter(Boolean);
+ const selected=[...document.querySelectorAll('.progressComparePick:checked')].map(x=>all[Number(x.value)]).filter(Boolean);
  const wrap=document.getElementById('compareProgressResultsWrap'),body=document.getElementById('compareProgressResults'),rec=document.getElementById('compareProgressRecommendation');
- if(picks.length<2){wrap.style.display='none';rec.style.display='block';rec.textContent='Select at least 2 saved Officers to compare.';return;}
- picks.sort((a,b)=>Number(b.maxed)-Number(a.maxed)||b.overall-a.overall||a.name.localeCompare(b.name));
+ if(selected.length<2){wrap.style.display='none';rec.style.display='block';rec.textContent='Select at least 2 saved Officers to compare.';return;}
+ const picks=sortSavedOfficerProgressRows(selected,document.getElementById('compareProgressSortOrder')?.value||'season');
  body.innerHTML=picks.map(r=>'<tr><td><b>'+esc(r.name)+'</b></td><td>'+meter(r.overall)+'</td><td>'+meter(r.dev)+'</td><td>'+meter(r.stars)+'</td><td>'+meter(r.xp)+'</td><td>'+fmt(r.officerBadgeShort)+'</td><td>'+fmt(r.skillBadgeShort)+'</td><td>'+fmt(r.starShort)+'</td><td>'+fmt(r.xpShort)+'</td><td class="'+(r.maxed?'status-ready':r.notStarted?'':'status-progress')+'">'+r.status+'</td></tr>').join('');
- const best=picks[0];rec.style.display='block';
+ const best=selected.slice().sort((a,b)=>Number(b.maxed)-Number(a.maxed)||b.overall-a.overall||a.name.localeCompare(b.name))[0];rec.style.display='block';
  if(best.maxed)rec.innerHTML='<b>'+esc(officerDisplayName(best))+'</b> is already MAXED.';
- else if(picks.every(r=>r.notStarted))rec.innerHTML='<b>No selected Officer has been started yet.</b>';
+ else if(selected.every(r=>r.notStarted))rec.innerHTML='<b>No selected Officer has been started yet.</b>';
  else rec.innerHTML='<b>Highest actual progress:</b> '+esc(officerDisplayName(best))+' at '+best.overall+'%.';
  wrap.style.display='block';
 }
@@ -3110,6 +3121,10 @@ document.addEventListener('DOMContentLoaded',()=>{
  document.querySelectorAll('.progressStatusFilter').forEach(x=>x.addEventListener('change',()=>{
    saveStatusFilterState();renderSavedOfficerProgress();
  }));
+ document.getElementById('compareProgressSortOrder')?.addEventListener('change',()=>{
+   renderProgressCompareChoices();
+   if(document.getElementById('compareProgressResultsWrap')?.style.display!=='none')runProgressComparison();
+ });
  document.querySelectorAll('.compareStatusFilter').forEach(x=>x.addEventListener('change',()=>{
    saveStatusFilterState();renderProgressCompareChoices();
    const wrap=document.getElementById('compareProgressResultsWrap');
