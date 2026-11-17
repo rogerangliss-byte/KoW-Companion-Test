@@ -800,12 +800,43 @@ button:disabled,.app-action-primary:disabled,.app-action-save:disabled,.app-acti
 </style>
 
 <style id="portrait-progress-show-filter-fix">
-/* Match the compact Show filter bar used by Live on narrow Portrait screens. */
+/* Portrait Officer Progress: retain the Landscape table/list presentation.
+   The detail panel is an inline expansion beneath its selected Officer row. */
 @media (orientation:portrait) and (max-width:760px){
+  /* Match the compact Show filter bar used by Live on narrow Portrait screens. */
   #progress #progressStatusFilters{
     flex-wrap:nowrap !important;
   }
+  #progress .table-wrap{
+    overflow-x:auto;
+    overflow-y:visible;
+    -webkit-overflow-scrolling:touch;
+    touch-action:pan-x pan-y;
+  }
+  #progress #savedOfficerProgressTable{
+    min-width:1250px;
+    table-layout:auto;
+  }
+  #progress #savedOfficerProgressTable .progress-officer-toggle{
+    min-height:44px;
+  }
+  #progress #savedOfficerProgressTable .progress-detail-row>td{
+    padding:0!important;
+  }
+  #progress #savedOfficerProgressTable .progress-detail-panel{
+    /* Keep the expanded card anchored to the visible phone viewport,
+       rather than stretching it to the wide table's full scroll width. */
+    position:sticky;
+    left:0;
+    z-index:2;
+    box-sizing:border-box;
+    width:calc(100vw - 48px);
+    max-width:720px;
+    white-space:normal;
+    background:var(--card, #171717);
+  }
 }
+
 </style>
 
 </head>
