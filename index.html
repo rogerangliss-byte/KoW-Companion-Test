@@ -3030,10 +3030,10 @@ function sortSavedOfficerProgressRows(rows,mode='recommended'){
  const byName=(a,b)=>String(a.name).localeCompare(String(b.name));
  return rows.slice().sort((a,b)=>{
   if(mode==='season')return seasonRank(b.season)-seasonRank(a.season)||(Number(a.releaseOrder)||0)-(Number(b.releaseOrder)||0)||byName(a,b);
-  if(mode==='rarity')return rarityRank(a.rarity)-rarityRank(b.rarity)||seasonRank(b.season)-seasonRank(a.season)||byName(a,b);
-  if(mode==='progress')return b.overall-a.overall||seasonRank(b.season)-seasonRank(a.season)||byName(a,b);
-  if(mode==='priority')return Number(a.maxed)-Number(b.maxed)||a.overall-b.overall||seasonRank(b.season)-seasonRank(a.season)||byName(a,b);
-  return statusRank(a)-statusRank(b)||seasonRank(b.season)-seasonRank(a.season)||byName(a,b);
+  if(mode==='rarity')return rarityRank(a.rarity)-rarityRank(b.rarity)||(Number(a.releaseOrder)||0)-(Number(b.releaseOrder)||0)||byName(a,b);
+  if(mode==='progress')return b.overall-a.overall||(Number(a.releaseOrder)||0)-(Number(b.releaseOrder)||0)||byName(a,b);
+  if(mode==='priority')return Number(a.maxed)-Number(b.maxed)||a.overall-b.overall||(Number(a.releaseOrder)||0)-(Number(b.releaseOrder)||0)||byName(a,b);
+  return statusRank(a)-statusRank(b)||(Number(a.releaseOrder)||0)-(Number(b.releaseOrder)||0)||byName(a,b);
  });
 }
 function renderSavedOfficerProgress(){
