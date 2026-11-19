@@ -4119,7 +4119,7 @@ function calculate(){
  statusLine('Stars',held.stars,req.stars,short.stars,' Star value')+'<br>'+statusLine('XP',held.xp,req.xp,short.xp)+'<br>'+
  ''+
  '<small>Badge breakdown: '+fmt(held.badgeParts.universal)+' Universal Badges + '+fmt(held.badgeParts.badgeChests)+' ordinary Badge Chests + '+fmt(held.badgeParts.orvBadgeEquiv)+' badge equivalents from '+fmt(held.orv)+' ORV at '+fmt(held.badgeParts.orvRate)+' ORV per badge. ORV remainder: '+fmt(held.badgeParts.orvRemainder)+'. Selection Chests held: '+fmt(held.selectionChests)+' and excluded from shared badge totals.</small><br><br>'+
- '<b>Additional voucher requirement — FORECAST</b><br>ORV still needed for the remaining '+fmt(short.badges)+' Officer Badges: <b>'+fmt(additionalOrvForBadgeShortfall)+' ORV</b> ('+fmt(fc.orvPerBadge)+' per badge). Held ORV has already been included in the badge-equivalent total above.<br>'+
+ '<b>Additional voucher requirement — FORECAST</b><br>ORV still needed for the remaining '+fmt(short.badges)+' Officer Badges: <b>'+fmt(additionalOrvForBadgeShortfall)+' ORV</b> ('+fmt(fc.orvPerBadge)+' per badge). The '+fmt(held.badgeParts.orvRemainder)+' ORV remainder is credited against this additional requirement; whole badge equivalents are counted above.<br>'+
  'SRV: '+fmt(fc.srv)+' FORECAST for '+fmt(Math.ceil((TOTAL.stars*count)/110))+' Exclusive Stars · Held '+fmt(held.srv)+' · '+(held.srv>=fc.srv?'<b>READY</b>':'<b>SHORT '+fmt(fc.srv-held.srv)+'</b>')+'<br>'+
  '<small>'+invNote+'<br>Preview only. Inventory has not been changed. Skill Badge costs are included in the Officer Badge total and ORV calculation. Future ORV/SRV figures remain FORECAST until published.</small>';
  return current;
